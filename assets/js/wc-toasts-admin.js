@@ -154,13 +154,21 @@
 			}
 		}
 
-		// 3. Position Cards selection.
+		// 3. Position & Theme Live Feedback.
 		$('.wc-toasts-pos-card').on('click', function () {
 			$('.wc-toasts-pos-card').removeClass('selected');
 			$(this).addClass('selected');
 			var posVal = $(this).find('input').val();
 			$('#stage-toast-slot').removeClass('pos-top-right pos-top-left pos-top-center pos-bottom-right pos-bottom-left pos-bottom-center')
 				.addClass('pos-' + posVal);
+		});
+
+		$('#wc-toasts-theme-select').on('change', function () {
+			var themeVal = $(this).val();
+			var $slot = $('#stage-toast-slot');
+			$slot.attr('class', function (i, c) {
+				return (c || '').replace(/(^|\s)theme-\S+/g, '');
+			}).addClass('theme-' + themeVal);
 		});
 
 		// 4. Sliders Live Feedback.
@@ -267,6 +275,7 @@
 		var $slot = $('#stage-toast-slot');
 		$slot.empty();
 
+		var radius = $('#wc-toasts-radius-range').val() || 10;
 		var pos = $('.wc-toasts-pos-card.selected input').val() || 'top-right';
 		var animClass = (pos.indexOf('left') !== -1) ? 'anim-horizontal-in-left' : 'anim-horizontal-in-right';
 		var exitClass = (pos.indexOf('left') !== -1) ? 'anim-horizontal-out-left' : 'anim-horizontal-out-right';
@@ -279,13 +288,25 @@
 			}
 		});
 
-		// Icon.
+		// 1. Icon pillar (fixed 52px wide, full height).
 		var $iconWrap = $('<div>', { class: 'wc-toast-icon-wrap' });
 		$iconWrap.html(icons[iconKey] || icons.info || '');
 		$toast.append($iconWrap);
 
-		// Content.
+		// 2. Content area.
 		var $content = $('<div>', { class: 'wc-toast-content' });
+
+		// Micro eyebrow tag.
+		var eyebrowText = '';
+		if (notice.category) {
+			eyebrowText = notice.category.toUpperCase() + ' // ' + (notice.type === 'error' ? 'ALERT' : (notice.type === 'success' ? 'STATUS' : 'INFO'));
+		} else if (notice.type) {
+			eyebrowText = 'SYSTEM // ' + notice.type.toUpperCase();
+		}
+		if (eyebrowText) {
+			$content.append($('<div>', { class: 'wc-toast-eyebrow', text: eyebrowText }));
+		}
+
 		$content.append($('<div>', { class: 'wc-toast-title', text: notice.title }));
 		$content.append($('<div>', { class: 'wc-toast-message', text: notice.message }));
 
@@ -294,14 +315,14 @@
 			$actWrap.append($('<a>', {
 				class: 'wc-toast-action-btn',
 				href: '#preview',
-				text: notice.action.text,
+				html: notice.action.text + ' <span class="arrow-icon">&rarr;</span>',
 				click: function (e) { e.preventDefault(); }
 			}));
 			$content.append($actWrap);
 		}
 		$toast.append($content);
 
-		// Close button.
+		// 3. Close button.
 		var $close = $('<button>', {
 			type: 'button',
 			class: 'wc-toast-close-btn',
@@ -313,7 +334,7 @@
 		});
 		$toast.append($close);
 
-		// Progress bar.
+		// 4. Progress bar.
 		var $progress = $('<div>', { class: 'wc-toast-progress-bar' });
 		$toast.append($progress);
 

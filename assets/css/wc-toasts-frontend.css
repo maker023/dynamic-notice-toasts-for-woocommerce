@@ -1,22 +1,44 @@
 /**
  * WooCommerce Dynamic Notice Toasts - Frontend Styles
  *
- * Solid state styling, zero borders, full-height square icon block,
- * and pure horizontal fade animations.
+ * Modern Awwwards-inspired design system:
+ * - 3 Distinct Archetypes (Editorial Monolith, Swiss Basalt & Signal, Nordic Gallery)
+ * - Fixed 52px geometric icon pillar with hairline separator
+ * - Swiss Neo-Grotesk typography (tight tracking, micro-eyebrows)
+ * - Kinetic action buttons with traveling arrow
+ * - 1.5px hairline GPU progress line
+ * - Pure horizontal exponential deceleration (zero scale)
  *
  * @package WooCommerce_Toasts
  */
 
 :root {
-	--wc-toast-radius: 12px;
-	--wc-toast-width: 380px;
-	--wc-toast-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.18), 0 6px 14px -2px rgba(0, 0, 0, 0.1);
+	--wc-toast-radius: 10px;
+	--wc-toast-width: 400px;
+	--wc-toast-pillar-width: 52px;
 
-	/* Solid State Colors */
-	--wc-toast-color-success: #10b981;
-	--wc-toast-color-error: #ef4444;
-	--wc-toast-color-info: #3b82f6;
-	--wc-toast-color-warning: #f59e0b;
+	/* Editorial Monolith Saturated Tones (Awwwards Field Colors) */
+	--wc-editorial-pine: #064e3b;
+	--wc-editorial-pine-pillar: #043c2d;
+	--wc-editorial-crimson: #881337;
+	--wc-editorial-crimson-pillar: #70102d;
+	--wc-editorial-ultramarine: #1e3a8a;
+	--wc-editorial-ultramarine-pillar: #172e6e;
+	--wc-editorial-saffron: #78350f;
+	--wc-editorial-saffron-pillar: #612b0c;
+
+	/* Swiss Basalt Ground & Signal Accents */
+	--wc-basalt-ground: #0d0f12;
+	--wc-basalt-pillar: #15181e;
+	--wc-signal-lime: #a3e635;
+	--wc-signal-crimson: #f43f5e;
+	--wc-signal-blue: #38bdf8;
+	--wc-signal-amber: #fbbf24;
+
+	/* Nordic Gallery Tones */
+	--wc-nordic-ground: #ffffff;
+	--wc-nordic-ink: #0f172a;
+	--wc-nordic-muted: #475569;
 }
 
 /* ==========================================================================
@@ -27,7 +49,7 @@
 	z-index: 9999999;
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 10px;
 	pointer-events: none;
 	width: calc(100% - 32px);
 	max-width: var(--wc-toast-width);
@@ -75,120 +97,106 @@
 }
 
 /* ==========================================================================
-   2. Toast Item Card (Solid color, No borders)
+   2. Core Toast Card Layout (Zero Borders, Structural Precision)
    ========================================================================== */
 .wc-toast {
 	position: relative;
 	pointer-events: auto;
 	width: 100%;
-	background: var(--wc-toast-bg, var(--wc-toast-color-info));
-	color: #ffffff;
 	border: none !important; /* Zero borders */
 	border-radius: var(--wc-toast-radius);
-	box-shadow: var(--wc-toast-shadow);
-	padding: 0;
+	box-shadow: 0 14px 34px -4px rgba(0, 0, 0, 0.22), 0 6px 14px -2px rgba(0, 0, 0, 0.12);
 	box-sizing: border-box;
 	display: flex;
-	align-items: stretch; /* Icon extends full height */
+	align-items: stretch; /* Pillar matches 100% height */
 	overflow: hidden;
 	user-select: text;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-	font-size: 14px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+	font-size: 13.5px;
 	line-height: 1.45;
-	transition: opacity 0.28s ease, transform 0.28s ease;
+	transition: opacity 0.24s ease, transform 0.24s ease;
 }
 
 .wc-toast:hover {
-	box-shadow: 0 16px 38px -4px rgba(0, 0, 0, 0.24), 0 8px 18px -2px rgba(0, 0, 0, 0.12);
+	box-shadow: 0 18px 42px -4px rgba(0, 0, 0, 0.28), 0 8px 18px -2px rgba(0, 0, 0, 0.16);
 }
 
 /* ==========================================================================
-   3. Solid State Background Colors
-   ========================================================================== */
-.wc-toast.type-success {
-	--wc-toast-bg: var(--wc-toast-color-success);
-	background: var(--wc-toast-color-success);
-}
-
-.wc-toast.type-error {
-	--wc-toast-bg: var(--wc-toast-color-error);
-	background: var(--wc-toast-color-error);
-}
-
-.wc-toast.type-notice,
-.wc-toast.type-info {
-	--wc-toast-bg: var(--wc-toast-color-info);
-	background: var(--wc-toast-color-info);
-}
-
-.wc-toast.type-warning {
-	--wc-toast-bg: var(--wc-toast-color-warning);
-	background: var(--wc-toast-color-warning);
-}
-
-/* ==========================================================================
-   4. Icon Container (Full height, Equal width to height, Matching border-radius)
+   3. Fixed-Width Geometric Icon Pillar (52px wide, Hairline Divider)
    ========================================================================== */
 .wc-toast-icon-wrap {
-	align-self: stretch;
 	flex-shrink: 0;
-	aspect-ratio: 1 / 1;
-	min-width: 54px;
+	width: var(--wc-toast-pillar-width);
+	min-width: var(--wc-toast-pillar-width);
+	max-width: var(--wc-toast-pillar-width);
+	align-self: stretch;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: rgba(0, 0, 0, 0.14);
-	color: #ffffff;
 	border-radius: var(--wc-toast-radius) 0 0 var(--wc-toast-radius);
 	border: none !important;
+	border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+	box-sizing: border-box;
 	padding: 0;
 	margin: 0;
 }
 
 .wc-toast-icon-wrap svg {
-	width: 24px;
-	height: 24px;
+	width: 22px;
+	height: 22px;
 	stroke-width: 2.2px;
-	color: #ffffff;
 }
 
 /* ==========================================================================
-   5. Content Body
+   4. Content Body & Swiss Typography Hierarchy
    ========================================================================== */
 .wc-toast-content {
 	flex: 1;
 	min-width: 0;
-	padding: 13px 14px 13px 14px;
+	padding: 13px 15px 13px 15px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 }
 
+/* Micro Eyebrow Category Tag */
+.wc-toast-eyebrow {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	margin-bottom: 2px;
+	opacity: 0.72;
+	line-height: 1.2;
+}
+
+/* Title: Tight negative tracking */
 .wc-toast-title {
 	font-weight: 700;
 	font-size: 13.5px;
-	color: #ffffff;
-	margin-bottom: 2px;
-	letter-spacing: -0.01em;
-	line-height: 1.3;
+	letter-spacing: -0.025em;
+	line-height: 1.25;
+	margin-bottom: 3px;
 }
 
+/* Message: Comfortable reading with tabular figures */
 .wc-toast-message {
 	font-size: 13px;
-	color: rgba(255, 255, 255, 0.92);
+	line-height: 1.42;
+	letter-spacing: -0.01em;
 	word-break: break-word;
-	line-height: 1.4;
+	font-variant-numeric: tabular-nums;
 }
 
 .wc-toast-message a {
-	color: #ffffff;
 	text-decoration: underline;
 	font-weight: 600;
 }
 
-/* Action Button: crisp white high-contrast pill */
+/* Action Button: Kinetic Pill with Traveling Arrow */
 .wc-toast-action {
-	margin-top: 8px;
+	margin-top: 9px;
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -198,50 +206,50 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	padding: 5px 13px;
-	font-size: 12px;
+	gap: 6px;
+	padding: 4px 12px;
+	font-size: 11.5px;
 	font-weight: 700;
 	border-radius: 6px;
 	text-decoration: none !important;
-	color: var(--wc-toast-bg) !important;
-	background: #ffffff;
 	border: none !important;
 	cursor: pointer;
 	line-height: 1.2;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-	transition: background 0.15s ease, transform 0.15s ease;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+	transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
 }
 
 .wc-toast-action-btn:hover {
-	background: rgba(255, 255, 255, 0.94);
-	color: var(--wc-toast-bg) !important;
 	transform: translateY(-1px);
 }
 
 .wc-toast-action-btn:active {
-	transform: translateY(0);
+	transform: scale(0.97);
 }
 
-/* Close button */
+.wc-toast-action-btn .arrow-icon {
+	display: inline-block;
+	transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.wc-toast-action-btn:hover .arrow-icon {
+	transform: translateX(3px);
+}
+
+/* Dismiss Close Button */
 .wc-toast-close-btn {
 	flex-shrink: 0;
 	align-self: flex-start;
 	background: none;
 	border: none !important;
-	color: rgba(255, 255, 255, 0.7);
 	cursor: pointer;
 	padding: 6px;
 	margin: 8px 8px 0 0;
-	border-radius: 6px;
+	border-radius: 5px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	transition: color 0.15s ease, background 0.15s ease;
-}
-
-.wc-toast-close-btn:hover {
-	color: #ffffff;
-	background: rgba(255, 255, 255, 0.2);
 }
 
 .wc-toast-close-btn svg {
@@ -249,13 +257,12 @@
 	height: 14px;
 }
 
-/* Progress bar (translucent white line) */
+/* Hairline 1.5px Progress Track */
 .wc-toast-progress-bar {
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	height: 3px;
-	background: rgba(255, 255, 255, 0.45);
+	height: 1.5px;
 	width: 100%;
 	transform-origin: left center;
 }
@@ -265,14 +272,218 @@
 }
 
 /* ==========================================================================
-   6. Horizontal Only Entrance & Exit Animations (NO SCALE)
+   5. ARCHETYPE 1: THE EDITORIAL MONOLITH (Saturated Fields & Milk White)
    ========================================================================== */
+.wc-toasts-container.theme-editorial-monolith .wc-toast {
+	color: #ffffff;
+}
 
-/* Entrance: Slide in horizontally with fade */
+.wc-toasts-container.theme-editorial-monolith .wc-toast.type-success {
+	background: var(--wc-editorial-pine);
+	--wc-toast-accent: var(--wc-editorial-pine);
+}
+.wc-toasts-container.theme-editorial-monolith .wc-toast.type-success .wc-toast-icon-wrap {
+	background: var(--wc-editorial-pine-pillar);
+	color: #ffffff;
+}
+
+.wc-toasts-container.theme-editorial-monolith .wc-toast.type-error {
+	background: var(--wc-editorial-crimson);
+	--wc-toast-accent: var(--wc-editorial-crimson);
+}
+.wc-toasts-container.theme-editorial-monolith .wc-toast.type-error .wc-toast-icon-wrap {
+	background: var(--wc-editorial-crimson-pillar);
+	color: #ffffff;
+}
+
+.wc-toasts-container.theme-editorial-monolith .wc-toast.type-notice,
+.wc-toasts-container.theme-editorial-monolith .wc-toast.type-info {
+	background: var(--wc-editorial-ultramarine);
+	--wc-toast-accent: var(--wc-editorial-ultramarine);
+}
+.wc-toasts-container.theme-editorial-monolith .wc-toast.type-notice .wc-toast-icon-wrap,
+.wc-toasts-container.theme-editorial-monolith .wc-toast.type-info .wc-toast-icon-wrap {
+	background: var(--wc-editorial-ultramarine-pillar);
+	color: #ffffff;
+}
+
+.wc-toasts-container.theme-editorial-monolith .wc-toast.type-warning {
+	background: var(--wc-editorial-saffron);
+	--wc-toast-accent: var(--wc-editorial-saffron);
+}
+.wc-toasts-container.theme-editorial-monolith .wc-toast.type-warning .wc-toast-icon-wrap {
+	background: var(--wc-editorial-saffron-pillar);
+	color: #ffffff;
+}
+
+.wc-toasts-container.theme-editorial-monolith .wc-toast-title {
+	color: #ffffff;
+}
+.wc-toasts-container.theme-editorial-monolith .wc-toast-message {
+	color: rgba(255, 255, 255, 0.92);
+}
+.wc-toasts-container.theme-editorial-monolith .wc-toast-action-btn {
+	background: #ffffff;
+	color: var(--wc-toast-accent) !important;
+}
+.wc-toasts-container.theme-editorial-monolith .wc-toast-close-btn {
+	color: rgba(255, 255, 255, 0.7);
+}
+.wc-toasts-container.theme-editorial-monolith .wc-toast-close-btn:hover {
+	color: #ffffff;
+	background: rgba(255, 255, 255, 0.18);
+}
+.wc-toasts-container.theme-editorial-monolith .wc-toast-progress-bar {
+	background: rgba(255, 255, 255, 0.55);
+	box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+/* ==========================================================================
+   6. ARCHETYPE 2: SWISS BASALT & SIGNAL (Obsidian Ground, Precise Signal)
+   ========================================================================== */
+.wc-toasts-container.theme-swiss-basalt .wc-toast {
+	background: var(--wc-basalt-ground);
+	color: #f8fafc;
+	box-shadow: 0 16px 38px -6px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.wc-toasts-container.theme-swiss-basalt .wc-toast-icon-wrap {
+	background: var(--wc-basalt-pillar);
+	border-right-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.wc-toasts-container.theme-swiss-basalt .wc-toast.type-success .wc-toast-icon-wrap {
+	color: var(--wc-signal-lime);
+}
+.wc-toasts-container.theme-swiss-basalt .wc-toast.type-success .wc-toast-eyebrow {
+	color: var(--wc-signal-lime);
+	opacity: 1;
+}
+
+.wc-toasts-container.theme-swiss-basalt .wc-toast.type-error .wc-toast-icon-wrap {
+	color: var(--wc-signal-crimson);
+}
+.wc-toasts-container.theme-swiss-basalt .wc-toast.type-error .wc-toast-eyebrow {
+	color: var(--wc-signal-crimson);
+	opacity: 1;
+}
+
+.wc-toasts-container.theme-swiss-basalt .wc-toast.type-notice .wc-toast-icon-wrap,
+.wc-toasts-container.theme-swiss-basalt .wc-toast.type-info .wc-toast-icon-wrap {
+	color: var(--wc-signal-blue);
+}
+.wc-toasts-container.theme-swiss-basalt .wc-toast.type-notice .wc-toast-eyebrow,
+.wc-toasts-container.theme-swiss-basalt .wc-toast.type-info .wc-toast-eyebrow {
+	color: var(--wc-signal-blue);
+	opacity: 1;
+}
+
+.wc-toasts-container.theme-swiss-basalt .wc-toast.type-warning .wc-toast-icon-wrap {
+	color: var(--wc-signal-amber);
+}
+.wc-toasts-container.theme-swiss-basalt .wc-toast.type-warning .wc-toast-eyebrow {
+	color: var(--wc-signal-amber);
+	opacity: 1;
+}
+
+.wc-toasts-container.theme-swiss-basalt .wc-toast-title {
+	color: #ffffff;
+}
+.wc-toasts-container.theme-swiss-basalt .wc-toast-message {
+	color: #94a3b8;
+}
+.wc-toasts-container.theme-swiss-basalt .wc-toast-action-btn {
+	background: #1e293b;
+	color: #ffffff !important;
+	border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+.wc-toasts-container.theme-swiss-basalt .wc-toast-action-btn:hover {
+	background: #334155;
+}
+.wc-toasts-container.theme-swiss-basalt .wc-toast-close-btn {
+	color: #64748b;
+}
+.wc-toasts-container.theme-swiss-basalt .wc-toast-close-btn:hover {
+	color: #ffffff;
+	background: rgba(255, 255, 255, 0.1);
+}
+.wc-toasts-container.theme-swiss-basalt .wc-toast-progress-bar {
+	background: rgba(255, 255, 255, 0.35);
+}
+
+/* ==========================================================================
+   7. ARCHETYPE 3: THE NORDIC GALLERY (Chalk White, Full-Bleed Pillar)
+   ========================================================================== */
+.wc-toasts-container.theme-nordic-gallery .wc-toast {
+	background: var(--wc-nordic-ground);
+	color: var(--wc-nordic-ink);
+	box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.12), inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+.wc-toasts-container.theme-nordic-gallery .wc-toast-icon-wrap {
+	border-right: none !important;
+	color: #ffffff;
+}
+
+.wc-toasts-container.theme-nordic-gallery .wc-toast.type-success .wc-toast-icon-wrap {
+	background: var(--wc-editorial-pine);
+}
+.wc-toasts-container.theme-nordic-gallery .wc-toast.type-error .wc-toast-icon-wrap {
+	background: var(--wc-editorial-crimson);
+}
+.wc-toasts-container.theme-nordic-gallery .wc-toast.type-notice .wc-toast-icon-wrap,
+.wc-toasts-container.theme-nordic-gallery .wc-toast.type-info .wc-toast-icon-wrap {
+	background: var(--wc-editorial-ultramarine);
+}
+.wc-toasts-container.theme-nordic-gallery .wc-toast.type-warning .wc-toast-icon-wrap {
+	background: var(--wc-editorial-saffron);
+}
+
+.wc-toasts-container.theme-nordic-gallery .wc-toast-eyebrow {
+	color: var(--wc-nordic-muted);
+}
+.wc-toasts-container.theme-nordic-gallery .wc-toast-title {
+	color: var(--wc-nordic-ink);
+}
+.wc-toasts-container.theme-nordic-gallery .wc-toast-message {
+	color: var(--wc-nordic-muted);
+}
+.wc-toasts-container.theme-nordic-gallery .wc-toast-action-btn {
+	background: var(--wc-nordic-ink);
+	color: #ffffff !important;
+}
+.wc-toasts-container.theme-nordic-gallery .wc-toast-action-btn:hover {
+	opacity: 0.9;
+}
+.wc-toasts-container.theme-nordic-gallery .wc-toast-close-btn {
+	color: #94a3b8;
+}
+.wc-toasts-container.theme-nordic-gallery .wc-toast-close-btn:hover {
+	color: var(--wc-nordic-ink);
+	background: rgba(15, 23, 42, 0.06);
+}
+.wc-toasts-container.theme-nordic-gallery .wc-toast-progress-bar {
+	background: var(--wc-nordic-ink);
+	opacity: 0.3;
+}
+
+/* ==========================================================================
+   8. Standard / Fallback Themes (Modern Light, Glass, Dark Slate)
+   ========================================================================== */
+.wc-toasts-container.theme-modern-light .wc-toast {
+	background: #ffffff;
+	color: #0f172a;
+}
+.wc-toasts-container.theme-modern-light .wc-toast-title { color: #0f172a; }
+.wc-toasts-container.theme-modern-light .wc-toast-message { color: #64748b; }
+.wc-toasts-container.theme-modern-light .wc-toast-icon-wrap { background: #f1f5f9; color: #0f172a; }
+.wc-toasts-container.theme-modern-light .wc-toast-action-btn { background: #0f172a; color: #ffffff !important; }
+
+/* ==========================================================================
+   9. Horizontal-Only Motion (Cubic-Bezier Deceleration & Exit, Zero Scale)
+   ========================================================================== */
 @keyframes wcToastHorizontalInRight {
 	from {
 		opacity: 0;
-		transform: translateX(80px);
+		transform: translateX(70px);
 	}
 	to {
 		opacity: 1;
@@ -283,7 +494,7 @@
 @keyframes wcToastHorizontalInLeft {
 	from {
 		opacity: 0;
-		transform: translateX(-80px);
+		transform: translateX(-70px);
 	}
 	to {
 		opacity: 1;
@@ -291,7 +502,6 @@
 	}
 }
 
-/* Exit: Slide out horizontally with fade */
 @keyframes wcToastHorizontalOutRight {
 	from {
 		opacity: 1;
@@ -299,7 +509,7 @@
 	}
 	to {
 		opacity: 0;
-		transform: translateX(80px);
+		transform: translateX(70px);
 	}
 }
 
@@ -310,31 +520,34 @@
 	}
 	to {
 		opacity: 0;
-		transform: translateX(-80px);
+		transform: translateX(-70px);
 	}
 }
 
-/* Animation Classes */
 .wc-toast.anim-horizontal-in-right {
-	animation: wcToastHorizontalInRight 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation: wcToastHorizontalInRight 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .wc-toast.anim-horizontal-in-left {
-	animation: wcToastHorizontalInLeft 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation: wcToastHorizontalInLeft 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .wc-toast.anim-horizontal-out-right {
-	animation: wcToastHorizontalOutRight 0.24s ease-in forwards;
+	animation: wcToastHorizontalOutRight 0.20s cubic-bezier(0.7, 0, 0.84, 0) forwards;
 }
 
 .wc-toast.anim-horizontal-out-left {
-	animation: wcToastHorizontalOutLeft 0.24s ease-in forwards;
+	animation: wcToastHorizontalOutLeft 0.20s cubic-bezier(0.7, 0, 0.84, 0) forwards;
 }
 
 /* ==========================================================================
-   7. Mobile Responsiveness
+   10. Mobile Responsiveness
    ========================================================================== */
 @media (max-width: 640px) {
+	.wc-toasts-container {
+		--wc-toast-pillar-width: 46px;
+	}
+
 	.wc-toasts-container.mobile-dock-bottom {
 		top: auto !important;
 		bottom: 16px !important;
@@ -352,9 +565,7 @@
 	}
 }
 
-/* ==========================================================================
-   8. Complete Layout Shift Elimination
-   ========================================================================== */
+/* Layout Shift Prevention */
 .woocommerce-notices-wrapper:empty,
 .woocommerce-NoticeGroup:empty {
 	display: none !important;

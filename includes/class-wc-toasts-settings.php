@@ -35,13 +35,13 @@ class WC_Toasts_Settings {
 			'enabled'                   => 1,
 			'hide_default_notices'      => 1,
 			'position'                  => 'top-right',
-			'theme'                     => 'modern-light',
+			'theme'                     => 'editorial-monolith',
 			'max_toasts'                => 4,
 			'newest_on_top'             => 1,
 			'deduplication'             => 1,
 
 			// Appearance.
-			'border_radius'             => 12,
+			'border_radius'             => 10,
 			'box_shadow'                => 'medium',
 			'toast_width'               => 380,
 			'animation_in'              => 'slide-in',
@@ -151,7 +151,7 @@ class WC_Toasts_Settings {
 		$allowed_positions = array( 'top-right', 'top-left', 'top-center', 'bottom-right', 'bottom-left', 'bottom-center' );
 		$output['position'] = ( isset( $input['position'] ) && in_array( $input['position'], $allowed_positions, true ) ) ? $input['position'] : $defaults['position'];
 
-		$allowed_themes  = array( 'modern-light', 'glassmorphism', 'dark-slate', 'minimal', 'woocommerce-purple', 'custom' );
+		$allowed_themes  = array( 'editorial-monolith', 'swiss-basalt', 'nordic-gallery', 'modern-light', 'glassmorphism', 'dark-slate', 'minimal', 'woocommerce-purple', 'custom' );
 		$output['theme'] = ( isset( $input['theme'] ) && in_array( $input['theme'], $allowed_themes, true ) ) ? $input['theme'] : $defaults['theme'];
 
 		$output['max_toasts']    = isset( $input['max_toasts'] ) ? max( 1, min( 10, absint( $input['max_toasts'] ) ) ) : $defaults['max_toasts'];

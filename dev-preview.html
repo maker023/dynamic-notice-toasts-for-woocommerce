@@ -4,35 +4,56 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>WooCommerce Dynamic Notice Toasts — Developer Presentation & Interactive Sandbox</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
 	<style>
+		:root {
+			--font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+			--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+			--global-radius: 10px;
+		}
+
+		body {
+			font-family: var(--font-sans);
+			background-color: #090a0f;
+			color: #e2e8f0;
+			overflow-x: hidden;
+		}
+
+		.code-font {
+			font-family: var(--font-mono);
+		}
+
+		/* Subtle architectural grid */
+		.bg-grid-mesh {
+			background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+			background-size: 28px 28px;
+		}
+
 		/* Custom scrollbars */
-		::-webkit-scrollbar { width: 6px; height: 6px; }
-		::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); }
-		::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 999px; }
-		::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.28); }
+		::-webkit-scrollbar { width: 5px; height: 5px; }
+		::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
+		::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 999px; }
+		::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.28); }
 
-		.code-font { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+		/* ==========================================================================
+		   AWWWARDS SITE OF THE DAY TOAST DESIGN ARCHETYPES (juliobsz/skills)
+		   ========================================================================== */
 
-		/* =================================================================
-		   Redesigned Toast System:
-		   - No borders used
-		   - Solid color per state
-		   - Icons extend full height, equal width to height (aspect-ratio 1/1)
-		   - Border radius alongside the toast
-		   - Pure horizontal translation & opacity fade (no scale)
-		   ================================================================= */
+		/* Shared Toast Container */
 		.demo-toast-container {
 			position: absolute;
 			z-index: 1000;
 			display: flex;
 			flex-direction: column;
-			gap: 12px;
+			gap: 10px;
 			pointer-events: none;
 			width: calc(100% - 32px);
-			max-width: 390px;
+			max-width: 410px;
 			box-sizing: border-box;
-			transition: all 0.25s ease;
+			transition: all 0.22s ease;
 		}
 
 		.demo-toast-container.pos-top-right { top: 20px; right: 20px; align-items: flex-end; }
@@ -42,153 +63,472 @@
 		.demo-toast-container.pos-bottom-left { bottom: 20px; left: 20px; align-items: flex-start; }
 		.demo-toast-container.pos-bottom-center { bottom: 20px; left: 50%; transform: translateX(-50%); align-items: center; }
 
+		/* Base Toast Card (Zero Borders, Structural Precision) */
 		.demo-toast {
 			position: relative;
 			pointer-events: auto;
 			width: 100%;
-			background: var(--toast-bg, #3b82f6);
-			color: #ffffff;
 			border: none !important; /* Zero borders */
-			border-radius: 12px;
-			box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.2), 0 6px 14px -2px rgba(0, 0, 0, 0.12);
-			padding: 0;
+			border-radius: var(--global-radius, 10px);
 			box-sizing: border-box;
 			display: flex;
-			align-items: stretch; /* Icon stretches to 100% height */
+			align-items: stretch; /* Full height pillar */
 			overflow: hidden;
+			font-family: var(--font-sans);
 			font-size: 13.5px;
 			line-height: 1.45;
-			transition: opacity 0.26s ease, transform 0.26s ease;
+			user-select: text;
+			box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.3), 0 6px 14px -2px rgba(0, 0, 0, 0.16);
+			transition: box-shadow 0.2s ease;
 		}
 
-		/* Solid State Colors */
-		.demo-toast.type-success {
-			--toast-bg: #10b981;
-			background: #10b981;
-		}
-		.demo-toast.type-error {
-			--toast-bg: #ef4444;
-			background: #ef4444;
-		}
-		.demo-toast.type-notice, .demo-toast.type-info {
-			--toast-bg: #3b82f6;
-			background: #3b82f6;
-		}
-		.demo-toast.type-warning {
-			--toast-bg: #f59e0b;
-			background: #f59e0b;
+		.demo-toast:hover {
+			box-shadow: 0 20px 46px -4px rgba(0, 0, 0, 0.38), 0 8px 18px -2px rgba(0, 0, 0, 0.22);
 		}
 
-		/* Icon Container: Full height, Equal width to height, Matches left border-radius */
-		.demo-toast-icon {
-			align-self: stretch;
+		/* Fixed 52px Geometric Icon Pillar */
+		.demo-toast-pillar {
 			flex-shrink: 0;
-			aspect-ratio: 1 / 1;
-			min-width: 56px;
+			width: 52px;
+			min-width: 52px;
+			max-width: 52px;
+			align-self: stretch;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			background: rgba(0, 0, 0, 0.15);
-			color: #ffffff;
-			border-radius: 12px 0 0 12px; /* Curves alongside toast */
+			border-radius: var(--global-radius, 10px) 0 0 var(--global-radius, 10px);
 			border: none !important;
+			box-sizing: border-box;
 			padding: 0;
 			margin: 0;
 		}
 
-		.demo-toast-icon svg {
-			width: 24px;
-			height: 24px;
+		.demo-toast-pillar svg {
+			width: 22px;
+			height: 22px;
 			stroke-width: 2.2px;
-			color: #ffffff;
+			flex-shrink: 0;
 		}
 
 		/* Content Area */
 		.demo-toast-content {
 			flex: 1;
 			min-width: 0;
-			padding: 13px 14px;
+			padding: 13px 15px;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
 		}
 
+		/* Micro Eyebrow Category Tag */
+		.demo-toast-eyebrow {
+			font-family: var(--font-mono);
+			font-size: 10px;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			margin-bottom: 2px;
+			line-height: 1.2;
+		}
+
+		/* Title: Tight negative tracking */
 		.demo-toast-title {
 			font-weight: 700;
 			font-size: 13.5px;
-			color: #ffffff;
-			margin-bottom: 2px;
-			line-height: 1.3;
+			letter-spacing: -0.025em;
+			line-height: 1.25;
+			margin-bottom: 3px;
 		}
 
+		/* Message: Tabular figures */
 		.demo-toast-msg {
 			font-size: 13px;
-			color: rgba(255, 255, 255, 0.92);
+			line-height: 1.42;
+			letter-spacing: -0.01em;
 			word-break: break-word;
-			line-height: 1.4;
+			font-variant-numeric: tabular-nums;
 		}
 
-		/* Action button: High-contrast white pill */
+		/* Action Button: Kinetic Pill with Traveling Arrow */
+		.demo-toast-action {
+			margin-top: 9px;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
 		.demo-toast-action-btn {
 			display: inline-flex;
 			align-items: center;
+			justify-content: center;
+			gap: 6px;
 			padding: 4px 12px;
-			font-size: 12px;
+			font-size: 11.5px;
 			font-weight: 700;
 			border-radius: 6px;
-			color: var(--toast-bg, #10b981) !important;
-			background: #ffffff;
+			text-decoration: none !important;
 			border: none !important;
-			margin-top: 8px;
-			text-decoration: none;
-			box-shadow: 0 2px 6px rgba(0,0,0,0.16);
-			transition: background 0.15s ease, transform 0.15s ease;
+			cursor: pointer;
+			line-height: 1.2;
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+			transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
 		}
+
 		.demo-toast-action-btn:hover {
-			background: rgba(255, 255, 255, 0.92);
 			transform: translateY(-1px);
 		}
 
-		/* Close button */
+		.demo-toast-action-btn:active {
+			transform: scale(0.97);
+		}
+
+		.demo-toast-action-btn .arrow-icon {
+			display: inline-block;
+			transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		}
+
+		.demo-toast-action-btn:hover .arrow-icon {
+			transform: translateX(3px);
+		}
+
+		/* Dismiss Button */
 		.demo-toast-close {
-			flex-shrink: 0;
-			align-self: flex-start;
-			background: none;
-			border: none !important;
-			cursor: pointer;
-			color: rgba(255, 255, 255, 0.7);
-			padding: 6px;
-			margin: 8px 8px 0 0;
-			border-radius: 6px;
+			position: absolute;
+			top: 8px;
+			right: 8px;
+			width: 22px;
+			height: 22px;
+			border-radius: 5px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			transition: color 0.15s ease, background 0.15s ease;
-		}
-		.demo-toast-close:hover {
-			color: #ffffff;
-			background: rgba(255, 255, 255, 0.2);
+			cursor: pointer;
+			border: none !important;
+			background: transparent;
+			opacity: 0.55;
+			font-size: 15px;
+			line-height: 1;
+			transition: opacity 0.15s ease, background 0.15s ease;
+			padding: 0;
 		}
 
-		/* Progress bar */
+		.demo-toast-close:hover {
+			opacity: 1;
+			background: rgba(255, 255, 255, 0.12);
+		}
+
+		/* 1.5px GPU Progress Line */
 		.demo-toast-progress {
 			position: absolute;
 			bottom: 0;
 			left: 0;
-			height: 3px;
-			background: rgba(255, 255, 255, 0.45);
-			width: 100%;
+			right: 0;
+			height: 1.5px;
 			transform-origin: left;
+			will-change: transform;
 			transition: transform 4500ms linear;
 		}
 
-		/* =================================================================
-		   Horizontal Only Animations (NO SCALE)
-		   ================================================================= */
-		@keyframes horizontalInRight {
+		/* ==========================================================================
+		   ARCHETYPE 1: THE EDITORIAL MONOLITH (Awwwards E-Commerce Standard)
+		   ========================================================================== */
+		.archetype-monolith .demo-toast {
+			color: #ffffff;
+		}
+
+		.archetype-monolith .demo-toast.type-success {
+			background: #064e3b; /* Alpine Pine Deep Emerald */
+		}
+		.archetype-monolith .demo-toast.type-success .demo-toast-pillar {
+			background: #022c22;
+			border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+			color: #34d399;
+		}
+		.archetype-monolith .demo-toast.type-success .demo-toast-eyebrow {
+			color: #a7f3d0;
+		}
+		.archetype-monolith .demo-toast.type-success .demo-toast-action-btn {
+			background: #ffffff;
+			color: #064e3b !important;
+		}
+		.archetype-monolith .demo-toast.type-success .demo-toast-action-btn:hover {
+			background: #ecfdf5;
+		}
+		.archetype-monolith .demo-toast.type-success .demo-toast-progress {
+			background: #34d399;
+		}
+
+		.archetype-monolith .demo-toast.type-error {
+			background: #881337; /* Venetian Red / Black Cherry */
+		}
+		.archetype-monolith .demo-toast.type-error .demo-toast-pillar {
+			background: #4c0519;
+			border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+			color: #fb7185;
+		}
+		.archetype-monolith .demo-toast.type-error .demo-toast-eyebrow {
+			color: #fecdd3;
+		}
+		.archetype-monolith .demo-toast.type-error .demo-toast-action-btn {
+			background: #ffffff;
+			color: #881337 !important;
+		}
+		.archetype-monolith .demo-toast.type-error .demo-toast-action-btn:hover {
+			background: #fff1f2;
+		}
+		.archetype-monolith .demo-toast.type-error .demo-toast-progress {
+			background: #fb7185;
+		}
+
+		.archetype-monolith .demo-toast.type-notice,
+		.archetype-monolith .demo-toast.type-info {
+			background: #1e3a8a; /* Deep Ultramarine */
+		}
+		.archetype-monolith .demo-toast.type-notice .demo-toast-pillar,
+		.archetype-monolith .demo-toast.type-info .demo-toast-pillar {
+			background: #172554;
+			border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+			color: #60a5fa;
+		}
+		.archetype-monolith .demo-toast.type-notice .demo-toast-eyebrow,
+		.archetype-monolith .demo-toast.type-info .demo-toast-eyebrow {
+			color: #bfdbfe;
+		}
+		.archetype-monolith .demo-toast.type-notice .demo-toast-action-btn,
+		.archetype-monolith .demo-toast.type-info .demo-toast-action-btn {
+			background: #ffffff;
+			color: #1e3a8a !important;
+		}
+		.archetype-monolith .demo-toast.type-notice .demo-toast-action-btn:hover,
+		.archetype-monolith .demo-toast.type-info .demo-toast-action-btn:hover {
+			background: #eff6ff;
+		}
+		.archetype-monolith .demo-toast.type-notice .demo-toast-progress,
+		.archetype-monolith .demo-toast.type-info .demo-toast-progress {
+			background: #60a5fa;
+		}
+
+		.archetype-monolith .demo-toast.type-warning {
+			background: #78350f; /* Burnt Saffron */
+		}
+		.archetype-monolith .demo-toast.type-warning .demo-toast-pillar {
+			background: #451a03;
+			border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+			color: #fbbf24;
+		}
+		.archetype-monolith .demo-toast.type-warning .demo-toast-eyebrow {
+			color: #fde68a;
+		}
+		.archetype-monolith .demo-toast.type-warning .demo-toast-action-btn {
+			background: #ffffff;
+			color: #78350f !important;
+		}
+		.archetype-monolith .demo-toast.type-warning .demo-toast-action-btn:hover {
+			background: #fffbeb;
+		}
+		.archetype-monolith .demo-toast.type-warning .demo-toast-progress {
+			background: #fbbf24;
+		}
+
+		/* ==========================================================================
+		   ARCHETYPE 2: SWISS BASALT & SIGNAL (Luxury Tech & Cyber Minimalist)
+		   ========================================================================== */
+		.archetype-basalt .demo-toast {
+			background: #0d0f12; /* Obsidian Basalt */
+			color: #f1f5f9;
+			box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.6), 0 6px 14px -2px rgba(0, 0, 0, 0.4);
+		}
+		.archetype-basalt .demo-toast-pillar {
+			background: #16191f;
+			border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+		}
+		.archetype-basalt .demo-toast-msg {
+			color: #94a3b8;
+		}
+		.archetype-basalt .demo-toast-close {
+			color: #94a3b8;
+		}
+
+		/* Basalt Signals */
+		.archetype-basalt .demo-toast.type-success .demo-toast-pillar {
+			color: #05df72; /* Electric Mint */
+		}
+		.archetype-basalt .demo-toast.type-success .demo-toast-eyebrow {
+			color: #05df72;
+		}
+		.archetype-basalt .demo-toast.type-success .demo-toast-action-btn {
+			background: #1e242d;
+			color: #05df72 !important;
+		}
+		.archetype-basalt .demo-toast.type-success .demo-toast-action-btn:hover {
+			background: #28303c;
+		}
+		.archetype-basalt .demo-toast.type-success .demo-toast-progress {
+			background: #05df72;
+		}
+
+		.archetype-basalt .demo-toast.type-error .demo-toast-pillar {
+			color: #ff3b5c; /* Hot Crimson */
+		}
+		.archetype-basalt .demo-toast.type-error .demo-toast-eyebrow {
+			color: #ff3b5c;
+		}
+		.archetype-basalt .demo-toast.type-error .demo-toast-action-btn {
+			background: #1e242d;
+			color: #ff3b5c !important;
+		}
+		.archetype-basalt .demo-toast.type-error .demo-toast-action-btn:hover {
+			background: #28303c;
+		}
+		.archetype-basalt .demo-toast.type-error .demo-toast-progress {
+			background: #ff3b5c;
+		}
+
+		.archetype-basalt .demo-toast.type-notice .demo-toast-pillar,
+		.archetype-basalt .demo-toast.type-info .demo-toast-pillar {
+			color: #3b82f6; /* Hyper Cobalt */
+		}
+		.archetype-basalt .demo-toast.type-notice .demo-toast-eyebrow,
+		.archetype-basalt .demo-toast.type-info .demo-toast-eyebrow {
+			color: #3b82f6;
+		}
+		.archetype-basalt .demo-toast.type-notice .demo-toast-action-btn,
+		.archetype-basalt .demo-toast.type-info .demo-toast-action-btn {
+			background: #1e242d;
+			color: #3b82f6 !important;
+		}
+		.archetype-basalt .demo-toast.type-notice .demo-toast-action-btn:hover,
+		.archetype-basalt .demo-toast.type-info .demo-toast-action-btn:hover {
+			background: #28303c;
+		}
+		.archetype-basalt .demo-toast.type-notice .demo-toast-progress,
+		.archetype-basalt .demo-toast.type-info .demo-toast-progress {
+			background: #3b82f6;
+		}
+
+		.archetype-basalt .demo-toast.type-warning .demo-toast-pillar {
+			color: #f59e0b; /* Pure Amber */
+		}
+		.archetype-basalt .demo-toast.type-warning .demo-toast-eyebrow {
+			color: #f59e0b;
+		}
+		.archetype-basalt .demo-toast.type-warning .demo-toast-action-btn {
+			background: #1e242d;
+			color: #f59e0b !important;
+		}
+		.archetype-basalt .demo-toast.type-warning .demo-toast-action-btn:hover {
+			background: #28303c;
+		}
+		.archetype-basalt .demo-toast.type-warning .demo-toast-progress {
+			background: #f59e0b;
+		}
+
+		/* ==========================================================================
+		   ARCHETYPE 3: THE NORDIC GALLERY (Warm Architectural Minimalist)
+		   ========================================================================== */
+		.archetype-nordic .demo-toast {
+			background: #ffffff; /* Chalk White */
+			color: #0f172a; /* Deep Charcoal Ink */
+			box-shadow: 0 20px 42px -6px rgba(15, 23, 42, 0.16), 0 8px 16px -3px rgba(15, 23, 42, 0.08);
+		}
+		.archetype-nordic .demo-toast-title {
+			color: #0f172a;
+		}
+		.archetype-nordic .demo-toast-msg {
+			color: #475569;
+		}
+		.archetype-nordic .demo-toast-close {
+			color: #64748b;
+		}
+		.archetype-nordic .demo-toast-close:hover {
+			background: rgba(0, 0, 0, 0.06);
+		}
+
+		/* Nordic Pillars */
+		.archetype-nordic .demo-toast.type-success .demo-toast-pillar {
+			background: #059669;
+			color: #ffffff;
+		}
+		.archetype-nordic .demo-toast.type-success .demo-toast-eyebrow {
+			color: #059669;
+		}
+		.archetype-nordic .demo-toast.type-success .demo-toast-action-btn {
+			background: #0f172a;
+			color: #ffffff !important;
+		}
+		.archetype-nordic .demo-toast.type-success .demo-toast-action-btn:hover {
+			background: #1e293b;
+		}
+		.archetype-nordic .demo-toast.type-success .demo-toast-progress {
+			background: #059669;
+		}
+
+		.archetype-nordic .demo-toast.type-error .demo-toast-pillar {
+			background: #dc2626;
+			color: #ffffff;
+		}
+		.archetype-nordic .demo-toast.type-error .demo-toast-eyebrow {
+			color: #dc2626;
+		}
+		.archetype-nordic .demo-toast.type-error .demo-toast-action-btn {
+			background: #0f172a;
+			color: #ffffff !important;
+		}
+		.archetype-nordic .demo-toast.type-error .demo-toast-action-btn:hover {
+			background: #1e293b;
+		}
+		.archetype-nordic .demo-toast.type-error .demo-toast-progress {
+			background: #dc2626;
+		}
+
+		.archetype-nordic .demo-toast.type-notice .demo-toast-pillar,
+		.archetype-nordic .demo-toast.type-info .demo-toast-pillar {
+			background: #2563eb;
+			color: #ffffff;
+		}
+		.archetype-nordic .demo-toast.type-notice .demo-toast-eyebrow,
+		.archetype-nordic .demo-toast.type-info .demo-toast-eyebrow {
+			color: #2563eb;
+		}
+		.archetype-nordic .demo-toast.type-notice .demo-toast-action-btn,
+		.archetype-nordic .demo-toast.type-info .demo-toast-action-btn {
+			background: #0f172a;
+			color: #ffffff !important;
+		}
+		.archetype-nordic .demo-toast.type-notice .demo-toast-action-btn:hover,
+		.archetype-nordic .demo-toast.type-info .demo-toast-action-btn:hover {
+			background: #1e293b;
+		}
+		.archetype-nordic .demo-toast.type-notice .demo-toast-progress,
+		.archetype-nordic .demo-toast.type-info .demo-toast-progress {
+			background: #2563eb;
+		}
+
+		.archetype-nordic .demo-toast.type-warning .demo-toast-pillar {
+			background: #d97706;
+			color: #ffffff;
+		}
+		.archetype-nordic .demo-toast.type-warning .demo-toast-eyebrow {
+			color: #d97706;
+		}
+		.archetype-nordic .demo-toast.type-warning .demo-toast-action-btn {
+			background: #0f172a;
+			color: #ffffff !important;
+		}
+		.archetype-nordic .demo-toast.type-warning .demo-toast-action-btn:hover {
+			background: #1e293b;
+		}
+		.archetype-nordic .demo-toast.type-warning .demo-toast-progress {
+			background: #d97706;
+		}
+
+		/* ==========================================================================
+		   HORIZONTAL-ONLY ENTRANCE & EXIT ANIMATIONS (NO SCALE)
+		   ========================================================================== */
+		@keyframes toastInRight {
 			from {
 				opacity: 0;
-				transform: translateX(80px);
+				transform: translateX(45px);
 			}
 			to {
 				opacity: 1;
@@ -196,10 +536,10 @@
 			}
 		}
 
-		@keyframes horizontalInLeft {
+		@keyframes toastInLeft {
 			from {
 				opacity: 0;
-				transform: translateX(-80px);
+				transform: translateX(-45px);
 			}
 			to {
 				opacity: 1;
@@ -207,292 +547,361 @@
 			}
 		}
 
-		@keyframes horizontalOutRight {
+		@keyframes toastOutRight {
 			from {
 				opacity: 1;
 				transform: translateX(0);
 			}
 			to {
 				opacity: 0;
-				transform: translateX(80px);
+				transform: translateX(45px);
 			}
 		}
 
-		@keyframes horizontalOutLeft {
+		@keyframes toastOutLeft {
 			from {
 				opacity: 1;
 				transform: translateX(0);
 			}
 			to {
 				opacity: 0;
-				transform: translateX(-80px);
+				transform: translateX(-45px);
 			}
 		}
 
 		.anim-horizontal-in-right {
-			animation: horizontalInRight 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+			animation: toastInRight 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 		}
 
 		.anim-horizontal-in-left {
-			animation: horizontalInLeft 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+			animation: toastInLeft 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 		}
 
 		.anim-horizontal-out-right {
-			animation: horizontalOutRight 0.24s ease-in forwards;
+			animation: toastOutRight 0.22s cubic-bezier(0.7, 0, 0.84, 0) forwards;
 		}
 
 		.anim-horizontal-out-left {
-			animation: horizontalOutLeft 0.24s ease-in forwards;
+			animation: toastOutLeft 0.22s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+		}
+
+		/* Architectural glass cards */
+		.glass-panel {
+			background: rgba(18, 20, 29, 0.75);
+			backdrop-filter: blur(16px);
+			-webkit-backdrop-filter: blur(16px);
+			border: 1px solid rgba(255, 255, 255, 0.08);
+		}
+		.glass-card {
+			background: rgba(255, 255, 255, 0.03);
+			border: 1px solid rgba(255, 255, 255, 0.06);
 		}
 	</style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+<body class="bg-grid-mesh min-h-screen text-slate-200 antialiased selection:bg-emerald-500 selection:text-white">
 
-	<!-- Top Navigation Bar -->
-	<header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-		<div class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
+	<!-- Top Header Nav & Archetype Switcher -->
+	<header class="border-b border-white/10 bg-[#090a0f]/90 backdrop-blur-md sticky top-0 z-50">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+			<!-- Product Branding -->
 			<div class="flex items-center gap-3">
-				<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-700 to-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-purple-500/20">
-					<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
-						<path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
-					</svg>
+				<div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold">
+					<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
 				</div>
 				<div>
 					<div class="flex items-center gap-2">
-						<h1 class="text-base font-bold text-slate-900 leading-tight">WooCommerce Dynamic Notice Toasts</h1>
-						<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 border border-purple-200">v1.1.0 Solid UI</span>
-						<span class="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Developer Presentation</span>
+						<h1 class="text-sm font-bold text-white tracking-tight">WooCommerce Notice Toasts</h1>
+						<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase">v1.0.0 Commercial</span>
 					</div>
-					<p class="text-xs text-slate-500">Solid State Color Design &bull; Zero Borders &bull; Full-Height Square Icon &bull; Pure Horizontal Motion</p>
+					<div class="text-[11px] text-slate-400 font-mono">Modern Swiss Design Systems • Developer Sandbox</div>
 				</div>
 			</div>
 
-			<!-- Tab Links -->
-			<nav class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg text-xs font-medium text-slate-600">
-				<button class="nav-tab px-3 py-1.5 rounded-md bg-white text-purple-700 font-semibold shadow-sm" data-tab="sandbox">
-					🎮 Interactive Sandbox
+			<!-- Navigation Tabs -->
+			<nav class="hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 text-xs">
+				<button class="nav-tab active px-3.5 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition shadow-sm" data-tab="sandbox">
+					Interactive Sandbox
 				</button>
-				<button class="nav-tab px-3 py-1.5 rounded-md hover:text-slate-900" data-tab="architecture">
-					🏛️ Interception Architecture
+				<button class="nav-tab px-3.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition font-medium" data-tab="comparison">
+					Archetype Comparison
 				</button>
-				<button class="nav-tab px-3 py-1.5 rounded-md hover:text-slate-900" data-tab="catalog">
-					📋 WC Notice Catalog (~30 Cases)
+				<button class="nav-tab px-3.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition font-medium" data-tab="catalog">
+					Taxonomy Catalog (30)
 				</button>
-				<button class="nav-tab px-3 py-1.5 rounded-md hover:text-slate-900" data-tab="codebase">
-					📁 Codebase & Standards
+				<button class="nav-tab px-3.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition font-medium" data-tab="architecture">
+					Interception Engine
 				</button>
-				<button class="nav-tab px-3 py-1.5 rounded-md hover:text-slate-900" data-tab="pro-bridge">
-					💎 Pro Bridge & Roadmap
+				<button class="nav-tab px-3.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition font-medium" data-tab="standards">
+					WPCS & HPOS
 				</button>
 			</nav>
+
+			<!-- Quick Status & Clear -->
+			<div class="flex items-center gap-3">
+				<button id="btn-clear-all" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">
+					Clear Toasts (<span id="toast-count">0</span>)
+				</button>
+				<div class="h-4 w-px bg-white/10"></div>
+				<a href="https://github.com/thanos/woocommerce-toasts" target="_blank" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+					Repo <span>&rarr;</span>
+				</a>
+			</div>
 		</div>
 	</header>
 
-	<!-- Main Content Area -->
-	<main class="max-w-7xl mx-auto px-6 py-6">
+	<!-- Main Container -->
+	<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+		<!-- Global Archetype Selector Bar -->
+		<div class="mb-6 glass-panel rounded-2xl p-4 border border-white/10 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+			<div>
+				<div class="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-bold flex items-center gap-2">
+					<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+					Awwwards SOTD Design Archetype
+				</div>
+				<div class="text-xs text-slate-300 mt-0.5">Toggle live aesthetic presets derived from high-craft Swiss & editorial standards.</div>
+			</div>
+
+			<!-- 3 Archetype Radio Buttons -->
+			<div class="flex items-center gap-2 bg-black/40 p-1 rounded-xl border border-white/10" id="archetype-picker">
+				<button class="archetype-btn active flex items-center gap-2.5 px-3.5 py-2 rounded-lg bg-white/10 text-white text-xs font-bold transition shadow-sm border border-white/10" data-theme="monolith">
+					<span class="w-3.5 h-3.5 rounded bg-[#064e3b] border border-emerald-400/50"></span>
+					<span>The Editorial Monolith</span>
+				</button>
+				<button class="archetype-btn flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-slate-400 hover:text-slate-200 text-xs font-semibold transition" data-theme="basalt">
+					<span class="w-3.5 h-3.5 rounded bg-[#0d0f12] border border-[#05df72]"></span>
+					<span>Swiss Basalt & Signal</span>
+				</button>
+				<button class="archetype-btn flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-slate-400 hover:text-slate-200 text-xs font-semibold transition" data-theme="nordic">
+					<span class="w-3.5 h-3.5 rounded bg-[#ffffff] border border-slate-300"></span>
+					<span>The Nordic Gallery</span>
+				</button>
+			</div>
+		</div>
 
 		<!-- ============================================================== -->
 		<!-- TAB 1: INTERACTIVE SANDBOX                                    -->
 		<!-- ============================================================== -->
-		<section id="tab-sandbox" class="tab-panel block space-y-6">
-			<!-- Developer Controls Top Bar -->
-			<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-				<div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100">
-					<div>
-						<h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-							<span>Redesigned Solid Toast Sandbox</span>
-							<span class="text-xs font-normal text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-medium">No Borders &bull; Solid State Colors &bull; Horizontal Animation</span>
-						</h2>
-					</div>
-					<div class="flex items-center gap-2">
-						<button id="btn-clear-all" class="text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">
-							Clear Toasts (0)
-						</button>
-						<button id="btn-sound-preview" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 flex items-center gap-1.5">
-							<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-							Play Audio Chime
-						</button>
-					</div>
-				</div>
+		<section id="tab-sandbox" class="tab-panel space-y-6">
 
-				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 text-xs">
-					<!-- Position Picker -->
-					<div>
-						<label class="block font-semibold text-slate-700 mb-1">Screen Position (Horizontal Slide Direction)</label>
-						<select id="ctrl-position" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs text-slate-800">
-							<option value="top-right" selected>Top Right (Slides from Right)</option>
-							<option value="top-left">Top Left (Slides from Left)</option>
-							<option value="top-center">Top Center</option>
-							<option value="bottom-right">Bottom Right (Slides from Right)</option>
-							<option value="bottom-left">Bottom Left (Slides from Left)</option>
-							<option value="bottom-center">Bottom Center</option>
-						</select>
-					</div>
-
-					<!-- Audio Theme -->
-					<div>
-						<label class="block font-semibold text-slate-700 mb-1">Web Audio Chime</label>
-						<select id="ctrl-sound" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs text-slate-800">
-							<option value="gentle_chime">Gentle Chime (E5-A5-C6 Sine)</option>
-							<option value="modern_ping">Modern Ping (Pitch Sweep)</option>
-							<option value="crisp_pop">Crisp Pop (450Hz->120Hz)</option>
-							<option value="bell_ding">Bell Ding (Harmonic Overtone)</option>
-							<option value="subtle_click">Subtle Haptic Click (35ms)</option>
-						</select>
-					</div>
-
-					<!-- Animation In/Out Summary -->
-					<div>
-						<label class="block font-semibold text-slate-700 mb-1">Motion Specification</label>
-						<div class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 text-xs">
-							<span class="font-bold text-purple-700">Strictly Horizontal Translation</span> + Opacity Fade (0 scale)
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Split Stage: Test Buttons + Live Screen Simulator -->
+			<!-- Sandbox Grid: Configuration Controls + Store Stage -->
 			<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-				<!-- Left Column: Notice Trigger Buttons & Raw HTML Interceptor -->
+				<!-- Left Column: Controls & Triggers (5 cols) -->
 				<div class="lg:col-span-5 space-y-5">
-					<!-- Standard Cases Box -->
-					<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
-						<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Solid State Notifications</h3>
-						<div class="grid grid-cols-1 gap-2">
-							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-emerald-200 bg-emerald-500 text-white hover:bg-emerald-600 transition shadow-sm" data-case="cart_added">
+
+					<!-- Physical Simulation Matrix -->
+					<div class="glass-panel p-5 rounded-2xl border border-white/10 space-y-4">
+						<div class="flex items-center justify-between border-b border-white/10 pb-3">
+							<h3 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Display Parameters</h3>
+							<span class="text-[11px] font-mono text-emerald-400">Live Hardware Binding</span>
+						</div>
+
+						<div class="grid grid-cols-2 gap-4 text-xs">
+							<!-- Position -->
+							<div>
+								<label class="block text-slate-400 text-[11px] font-medium mb-1.5">Screen Position</label>
+								<select id="ctrl-position" class="w-full bg-slate-900/90 border border-white/10 rounded-lg p-2 text-white font-mono text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+									<option value="top-right" selected>Top Right (Default)</option>
+									<option value="top-left">Top Left</option>
+									<option value="top-center">Top Center</option>
+									<option value="bottom-right">Bottom Right</option>
+									<option value="bottom-left">Bottom Left</option>
+									<option value="bottom-center">Bottom Center</option>
+								</select>
+							</div>
+
+							<!-- Sound Synth -->
+							<div>
+								<label class="block text-slate-400 text-[11px] font-medium mb-1.5">Web Audio Synthesizer</label>
+								<div class="flex gap-2">
+									<select id="ctrl-sound" class="flex-1 bg-slate-900/90 border border-white/10 rounded-lg p-2 text-white font-mono text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+										<option value="gentle_chime" selected>Gentle Chime</option>
+										<option value="modern_ping">Modern Ping</option>
+										<option value="crisp_pop">Crisp Pop</option>
+										<option value="bell_ding">Bell Ding</option>
+										<option value="subtle_click">Subtle Click</option>
+									</select>
+									<button id="btn-sound-preview" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition text-xs" title="Test Web Audio Chime">
+										🔊
+									</button>
+								</div>
+							</div>
+						</div>
+
+						<!-- Corner Radius Slider -->
+						<div>
+							<div class="flex items-center justify-between text-xs mb-1.5">
+								<span class="text-slate-400">Geometric Corner Radius:</span>
+								<span id="lbl-radius" class="font-mono text-emerald-400 font-bold">10px</span>
+							</div>
+							<input type="range" id="ctrl-radius" min="0" max="24" step="2" value="10" class="w-full accent-emerald-500 bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer">
+						</div>
+					</div>
+
+					<!-- Standard Notice Cases Trigger Stack -->
+					<div class="glass-panel p-5 rounded-2xl border border-white/10 space-y-3">
+						<div class="flex items-center justify-between">
+							<h3 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Semantic Notice Triggers</h3>
+							<span class="text-[11px] text-slate-400">Click to Dispatch</span>
+						</div>
+
+						<div class="space-y-2">
+							<!-- Cart Add -->
+							<button class="trigger-case w-full text-left p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] flex items-center justify-between transition group" data-case="cart_added">
 								<div class="flex items-center gap-3">
-									<span class="w-7 h-7 rounded bg-emerald-700/60 flex items-center justify-center font-bold text-xs">🛒</span>
+									<span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">🛒</span>
 									<div>
-										<div class="text-xs font-bold">Solid Success: Add to Cart</div>
-										<div class="text-[11px] text-emerald-100">Full-height square icon + White Action Button</div>
+										<div class="text-xs font-bold text-white group-hover:text-emerald-400 transition">Cart: Product Added (Success)</div>
+										<div class="text-[11px] text-slate-400">Solid field, 52px pillar, White Action Pill + Kinetic Arrow</div>
 									</div>
 								</div>
-								<span class="text-xs font-bold">Trigger &rarr;</span>
+								<span class="text-xs font-mono text-slate-500 group-hover:text-emerald-400 transition">&rarr;</span>
 							</button>
 
-							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-red-200 bg-red-500 text-white hover:bg-red-600 transition shadow-sm" data-case="checkout_error">
+							<!-- Coupon Applied -->
+							<button class="trigger-case w-full text-left p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] flex items-center justify-between transition group" data-case="coupon_applied">
 								<div class="flex items-center gap-3">
-									<span class="w-7 h-7 rounded bg-red-700/60 flex items-center justify-center font-bold text-xs">⚠️</span>
+									<span class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs">🎟️</span>
 									<div>
-										<div class="text-xs font-bold">Solid Error: Checkout Missing Field</div>
-										<div class="text-[11px] text-red-100">Deep solid red state alert</div>
+										<div class="text-xs font-bold text-white group-hover:text-purple-400 transition">Coupon: Applied Discount (Success)</div>
+										<div class="text-[11px] text-slate-400">Discount calculation confirmation notice</div>
 									</div>
 								</div>
-								<span class="text-xs font-bold">Trigger &rarr;</span>
+								<span class="text-xs font-mono text-slate-500 group-hover:text-purple-400 transition">&rarr;</span>
 							</button>
 
-							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-blue-200 bg-blue-500 text-white hover:bg-blue-600 transition shadow-sm" data-case="cart_undo">
+							<!-- Checkout Error -->
+							<button class="trigger-case w-full text-left p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] flex items-center justify-between transition group" data-case="checkout_error">
 								<div class="flex items-center gap-3">
-									<span class="w-7 h-7 rounded bg-blue-700/60 flex items-center justify-center font-bold text-xs">🗑️</span>
+									<span class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-xs">⚠️</span>
 									<div>
-										<div class="text-xs font-bold">Solid Notice: Item Removed with Undo</div>
-										<div class="text-[11px] text-blue-100">Solid blue state + Undo action button</div>
+										<div class="text-xs font-bold text-white group-hover:text-rose-400 transition">Checkout: Required Field Missing (Alert)</div>
+										<div class="text-[11px] text-slate-400">Solid Venetian / Crimson alert state</div>
 									</div>
 								</div>
-								<span class="text-xs font-bold">Trigger &rarr;</span>
+								<span class="text-xs font-mono text-slate-500 group-hover:text-rose-400 transition">&rarr;</span>
 							</button>
 
-							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-amber-200 bg-amber-500 text-white hover:bg-amber-600 transition shadow-sm" data-case="stock_low">
+							<!-- Stock Warning -->
+							<button class="trigger-case w-full text-left p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] flex items-center justify-between transition group" data-case="stock_low">
 								<div class="flex items-center gap-3">
-									<span class="w-7 h-7 rounded bg-amber-700/60 flex items-center justify-center font-bold text-xs">📦</span>
+									<span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs">📦</span>
 									<div>
-										<div class="text-xs font-bold">Solid Warning: Stock Limit Exceeded</div>
-										<div class="text-[11px] text-amber-100">Solid amber/orange inventory alert</div>
+										<div class="text-xs font-bold text-white group-hover:text-amber-400 transition">Stock: Limit Exceeded (Warning)</div>
+										<div class="text-[11px] text-slate-400">Solid Saffron / Amber inventory ceiling notice</div>
 									</div>
 								</div>
-								<span class="text-xs font-bold">Trigger &rarr;</span>
+								<span class="text-xs font-mono text-slate-500 group-hover:text-amber-400 transition">&rarr;</span>
 							</button>
 
-							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-emerald-200 bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm" data-case="coupon_applied">
+							<!-- Cart Undo -->
+							<button class="trigger-case w-full text-left p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] flex items-center justify-between transition group" data-case="cart_undo">
 								<div class="flex items-center gap-3">
-									<span class="w-7 h-7 rounded bg-emerald-800/60 flex items-center justify-center font-bold text-xs">🎟️</span>
+									<span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs">🗑️</span>
 									<div>
-										<div class="text-xs font-bold">Solid Success: Coupon Applied ("FALL25")</div>
-										<div class="text-[11px] text-emerald-100">25% discount activated notice</div>
+										<div class="text-xs font-bold text-white group-hover:text-blue-400 transition">Cart: Item Removed (With Undo Action)</div>
+										<div class="text-[11px] text-slate-400">Solid Ultramarine + Reversal action button</div>
 									</div>
 								</div>
-								<span class="text-xs font-bold">Trigger &rarr;</span>
+								<span class="text-xs font-mono text-slate-500 group-hover:text-blue-400 transition">&rarr;</span>
 							</button>
 						</div>
 					</div>
 
-					<!-- Raw WooCommerce Notice Simulator & Parser -->
-					<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+					<!-- Raw WooCommerce DOM Alert Hijacker Simulator -->
+					<div class="glass-panel p-5 rounded-2xl border border-white/10 space-y-3">
 						<div class="flex items-center justify-between">
-							<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Raw WC Alert Simulator</h3>
-							<span class="text-[11px] text-purple-600 font-medium">Tests Parser & Hijacker</span>
+							<h3 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Raw Notice Hijacker & Parser</h3>
+							<span class="text-[11px] font-mono text-purple-400">Real-Time Regex</span>
 						</div>
-						<p class="text-xs text-slate-600 leading-relaxed">
-							Type or paste any legacy WooCommerce markup. Notice how the parser renders solid color, strips borders, stretches the icon, and uses horizontal-only translation.
+						<p class="text-xs text-slate-400 leading-relaxed">
+							Paste legacy WooCommerce HTML banners below. The parser extracts the message, removes messy buttons, categorizes the state, and converts into an award-grade toast:
 						</p>
-						<textarea id="raw-wc-markup" rows="3" class="w-full text-xs code-font bg-slate-900 text-emerald-400 p-2.5 rounded-lg border border-slate-700 focus:outline-none focus:ring-1 focus:ring-purple-500"><div class="woocommerce-message" role="alert"><a href="/cart/" class="button wc-forward">View cart</a> &ldquo;Audio Technica M50x&rdquo; has been added to your cart.</div></textarea>
-						<div class="flex items-center justify-between">
-							<div class="flex gap-2">
-								<button id="btn-quick-error" class="text-[11px] px-2 py-1 rounded bg-slate-100 text-slate-600 hover:bg-slate-200">Load Error Sample</button>
-								<button id="btn-quick-info" class="text-[11px] px-2 py-1 rounded bg-slate-100 text-slate-600 hover:bg-slate-200">Load Info Sample</button>
+
+						<textarea id="raw-wc-markup" rows="3" class="w-full text-xs code-font bg-black/60 text-emerald-400 p-3 rounded-xl border border-white/10 focus:outline-none focus:ring-1 focus:ring-emerald-500"><div class="woocommerce-message" role="alert"><a href="/cart/" class="button wc-forward">View cart</a> &ldquo;Audio Technica ATH-M50x&rdquo; has been added to your cart.</div></textarea>
+
+						<div class="flex items-center justify-between gap-2 pt-1">
+							<div class="flex gap-1.5">
+								<button id="btn-quick-error" class="text-[11px] font-mono px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">Error Alert</button>
+								<button id="btn-quick-info" class="text-[11px] font-mono px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">Free Ship Info</button>
 							</div>
-							<button id="btn-parse-hijack" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-purple-600 text-white hover:bg-purple-700 shadow-sm">
+							<button id="btn-parse-hijack" class="text-xs font-bold px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-sans transition shadow-lg shadow-emerald-500/20">
 								Simulate Hijack &rarr;
 							</button>
 						</div>
 					</div>
 				</div>
 
-				<!-- Right Column: Simulated Store Page Viewport -->
+				<!-- Right Column: Simulated Store Viewport (7 cols) -->
 				<div class="lg:col-span-7">
-					<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[580px]">
-						<!-- Mock Browser Window Header -->
-						<div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+					<div class="glass-panel rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col h-[680px]">
+
+						<!-- Mock Store Browser Header Bar -->
+						<div class="bg-black/60 border-b border-white/10 px-4 py-3 flex items-center justify-between">
 							<div class="flex items-center gap-2">
-								<span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
-								<span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-								<span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-								<span class="text-xs font-mono text-slate-400 ml-2">https://mystore.local/shop/</span>
+								<span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
+								<span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
+								<span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+								<div class="ml-3 px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
+									<svg class="w-3 h-3 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+									<span>https://store.local/shop/audio-technica-m50x</span>
+								</div>
 							</div>
-							<div class="text-[11px] text-slate-500 font-medium flex items-center gap-1.5">
-								<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-								Redesigned Toast Engine Active
+
+							<div class="flex items-center gap-2">
+								<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+								<span class="text-[11px] font-mono text-slate-400">Toast Engine 60fps</span>
 							</div>
 						</div>
 
-						<!-- Simulated Store Content Stage -->
-						<div id="sandbox-stage" class="relative flex-1 bg-slate-100/50 p-6 overflow-hidden select-none">
-							<!-- Toast Container (Absolute within Stage) -->
+						<!-- Stage Viewport (with active archetype class applied) -->
+						<div id="sandbox-stage" class="relative flex-1 bg-slate-950 p-6 overflow-hidden select-none archetype-monolith">
+
+							<!-- Toast Container (Absolute Positioned Inside Store) -->
 							<div id="demo-container" class="demo-toast-container pos-top-right"></div>
 
-							<!-- Mock Store Background Elements -->
-							<div class="space-y-6 max-w-lg opacity-40">
-								<div class="flex items-center justify-between border-b border-slate-300 pb-3">
-									<div class="h-5 bg-slate-400 rounded w-32"></div>
+							<!-- Simulated Store Backdrop -->
+							<div class="space-y-6 max-w-lg opacity-30 pointer-events-none">
+								<!-- Store Nav -->
+								<div class="flex items-center justify-between border-b border-white/20 pb-4">
+									<div class="h-6 bg-white/30 rounded w-36"></div>
 									<div class="flex gap-2">
-										<div class="h-4 bg-slate-300 rounded w-12"></div>
-										<div class="h-4 bg-slate-300 rounded w-12"></div>
+										<div class="h-5 bg-white/20 rounded w-14"></div>
+										<div class="h-5 bg-white/20 rounded w-14"></div>
+										<div class="h-5 bg-white/20 rounded w-10"></div>
 									</div>
 								</div>
 
+								<!-- Product Grid Mock -->
 								<div class="grid grid-cols-2 gap-4">
-									<div class="bg-white p-3 rounded-lg border border-slate-200 space-y-2">
-										<div class="h-24 bg-slate-200 rounded"></div>
-										<div class="h-4 bg-slate-300 rounded w-3/4"></div>
-										<div class="h-3 bg-slate-200 rounded w-1/2"></div>
-										<div class="h-6 bg-purple-300 rounded mt-2"></div>
+									<div class="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
+										<div class="h-28 bg-white/10 rounded-lg"></div>
+										<div class="h-4 bg-white/20 rounded w-3/4"></div>
+										<div class="h-3 bg-white/10 rounded w-1/2"></div>
+										<div class="h-8 bg-emerald-500/30 rounded-lg mt-2"></div>
 									</div>
-									<div class="bg-white p-3 rounded-lg border border-slate-200 space-y-2">
-										<div class="h-24 bg-slate-200 rounded"></div>
-										<div class="h-4 bg-slate-300 rounded w-3/4"></div>
-										<div class="h-3 bg-slate-200 rounded w-1/2"></div>
-										<div class="h-6 bg-purple-300 rounded mt-2"></div>
+									<div class="bg-white/5 p-4 rounded-xl border border-white/10 space-y-3">
+										<div class="h-28 bg-white/10 rounded-lg"></div>
+										<div class="h-4 bg-white/20 rounded w-3/4"></div>
+										<div class="h-3 bg-white/10 rounded w-1/2"></div>
+										<div class="h-8 bg-emerald-500/30 rounded-lg mt-2"></div>
 									</div>
 								</div>
 
-								<!-- Suppressed Alert Placeholder Box -->
-								<div class="p-3 bg-amber-50 border border-dashed border-amber-300 rounded-lg text-amber-800 text-xs">
-									<span class="font-bold">Notice Suppression Active:</span> Default WooCommerce banner area <code>.woocommerce-notices-wrapper</code> is hidden. No content shift occurs!
+								<!-- Suppressed Alert Proof Callout -->
+								<div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs">
+									<div class="font-bold flex items-center gap-1.5 mb-1">
+										<svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+										Default Notice Wrapper Suppressed (0 CLS)
+									</div>
+									<div class="text-[11px] text-emerald-200/80 leading-relaxed">
+										The legacy <code>.woocommerce-notices-wrapper</code> is neutralized server-side at <code>template_redirect</code>. No abrupt layout jump occurs.
+									</div>
 								</div>
 							</div>
 						</div>
+
 					</div>
 				</div>
 
@@ -500,78 +909,256 @@
 		</section>
 
 		<!-- ============================================================== -->
-		<!-- TAB 2: ARCHITECTURE & INTERCEPTION DEEP DIVE                  -->
+		<!-- TAB 2: SIDE-BY-SIDE ARCHETYPE COMPARISON                      -->
+		<!-- ============================================================== -->
+		<section id="tab-comparison" class="tab-panel hidden space-y-6">
+			<div class="glass-panel p-6 rounded-2xl border border-white/10 space-y-6">
+				<div>
+					<h2 class="text-base font-bold text-white tracking-tight">The 3 Design Archetypes (Awwwards SOTD Standards)</h2>
+					<p class="text-xs text-slate-400 mt-1">
+						Moving beyond generic "candy AI" styling. Each archetype features zero borders, a fixed 52px geometric pillar, a micro-eyebrow category tag, and horizontal kinetic motion.
+					</p>
+				</div>
+
+				<!-- 3 Column Archetype Display -->
+				<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+					<!-- Card 1: Editorial Monolith -->
+					<div class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-4">
+						<div class="flex items-center justify-between border-b border-white/10 pb-3">
+							<div>
+								<div class="text-[10px] font-mono uppercase text-emerald-400 font-bold tracking-wider">Archetype 01</div>
+								<h3 class="text-sm font-bold text-white">The Editorial Monolith</h3>
+							</div>
+							<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-300">Awwwards E-Com</span>
+						</div>
+
+						<p class="text-xs text-slate-400 leading-relaxed">
+							Saturated deep field colors (Alpine Pine <code class="text-emerald-400">#064e3b</code>, Venetian Red <code class="text-rose-400">#881337</code>), hairline 1px divider, Swiss white typography, and white action pill with traveling kinetic arrow.
+						</p>
+
+						<!-- Static Sample -->
+						<div class="archetype-monolith pt-2">
+							<div class="demo-toast type-success">
+								<div class="demo-toast-pillar">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg>
+								</div>
+								<div class="demo-toast-content">
+									<div class="demo-toast-eyebrow">CART // STATUS</div>
+									<div class="demo-toast-title">Product Added to Cart</div>
+									<div class="demo-toast-msg">&ldquo;Audio Technica ATH-M50x&rdquo; has been added.</div>
+									<div class="demo-toast-action">
+										<a href="#" class="demo-toast-action-btn" onclick="return false;">View cart <span class="arrow-icon">&rarr;</span></a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="text-[11px] font-mono text-slate-400 space-y-1 bg-black/40 p-3 rounded-xl border border-white/5">
+							<div>Pillar: <span class="text-white">52px fixed width, 1px divider</span></div>
+							<div>Motion: <span class="text-white">Exponential decel cubic-bezier</span></div>
+							<div>Surface: <span class="text-white">Solid saturated jewel field</span></div>
+						</div>
+					</div>
+
+					<!-- Card 2: Swiss Basalt & Signal -->
+					<div class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-4">
+						<div class="flex items-center justify-between border-b border-white/10 pb-3">
+							<div>
+								<div class="text-[10px] font-mono uppercase text-[#05df72] font-bold tracking-wider">Archetype 02</div>
+								<h3 class="text-sm font-bold text-white">Swiss Basalt & Signal</h3>
+							</div>
+							<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/10 text-slate-200">Luxury Tech</span>
+						</div>
+
+						<p class="text-xs text-slate-400 leading-relaxed">
+							Obsidian ground (<code class="text-slate-300">#0d0f12</code>), dark basalt pillar (<code class="text-slate-300">#16191f</code>), and precision signal beacons (Electric Mint <code class="text-[#05df72]">#05df72</code>, Hot Crimson <code class="text-[#ff3b5c]">#ff3b5c</code>) with dark action pill.
+						</p>
+
+						<!-- Static Sample -->
+						<div class="archetype-basalt pt-2">
+							<div class="demo-toast type-success">
+								<div class="demo-toast-pillar">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg>
+								</div>
+								<div class="demo-toast-content">
+									<div class="demo-toast-eyebrow">CART // STATUS</div>
+									<div class="demo-toast-title">Product Added to Cart</div>
+									<div class="demo-toast-msg">&ldquo;Audio Technica ATH-M50x&rdquo; has been added.</div>
+									<div class="demo-toast-action">
+										<a href="#" class="demo-toast-action-btn" onclick="return false;">View cart <span class="arrow-icon">&rarr;</span></a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="text-[11px] font-mono text-slate-400 space-y-1 bg-black/40 p-3 rounded-xl border border-white/5">
+							<div>Pillar: <span class="text-white">Dark Basalt, Fluorescent Beacon</span></div>
+							<div>Motion: <span class="text-white">Horizontal only, Zero Scale</span></div>
+							<div>Surface: <span class="text-white">Obsidian Basalt #0d0f12</span></div>
+						</div>
+					</div>
+
+					<!-- Card 3: The Nordic Gallery -->
+					<div class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-4">
+						<div class="flex items-center justify-between border-b border-white/10 pb-3">
+							<div>
+								<div class="text-[10px] font-mono uppercase text-sky-400 font-bold tracking-wider">Archetype 03</div>
+								<h3 class="text-sm font-bold text-white">The Nordic Gallery</h3>
+							</div>
+							<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-sky-500/20 text-sky-300">Warm Architectural</span>
+						</div>
+
+						<p class="text-xs text-slate-400 leading-relaxed">
+							Ultra-refined Chalk-White card (<code class="text-white">#ffffff</code>), full-bleed rich jewel-tone state pillar (<code class="text-emerald-400">#059669</code>), deep charcoal ink (<code class="text-slate-300">#0f172a</code>), and charcoal action button.
+						</p>
+
+						<!-- Static Sample -->
+						<div class="archetype-nordic pt-2">
+							<div class="demo-toast type-success">
+								<div class="demo-toast-pillar">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg>
+								</div>
+								<div class="demo-toast-content">
+									<div class="demo-toast-eyebrow">CART // STATUS</div>
+									<div class="demo-toast-title">Product Added to Cart</div>
+									<div class="demo-toast-msg">&ldquo;Audio Technica ATH-M50x&rdquo; has been added.</div>
+									<div class="demo-toast-action">
+										<a href="#" class="demo-toast-action-btn" onclick="return false;">View cart <span class="arrow-icon">&rarr;</span></a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="text-[11px] font-mono text-slate-400 space-y-1 bg-black/40 p-3 rounded-xl border border-white/5">
+							<div>Pillar: <span class="text-white">Full-Bleed Forest Green #059669</span></div>
+							<div>Motion: <span class="text-white">Horizontal Glide & Fade</span></div>
+							<div>Surface: <span class="text-white">Chalk White, Charcoal Typography</span></div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</section>
+
+		<!-- ============================================================== -->
+		<!-- TAB 3: WC NOTICE TAXONOMY CATALOG (~30 CASES)                 -->
+		<!-- ============================================================== -->
+		<section id="tab-catalog" class="tab-panel hidden space-y-6">
+			<div class="glass-panel p-6 rounded-2xl border border-white/10 space-y-4">
+				<div class="flex flex-wrap items-center justify-between gap-4">
+					<div>
+						<h2 class="text-base font-bold text-white tracking-tight">WooCommerce Core Notice Taxonomy (30 Cases)</h2>
+						<p class="text-xs text-slate-400 mt-1">Classified across 6 semantic e-commerce domains with tailored regexes, titles, and icons</p>
+					</div>
+
+					<!-- Category Filter Badges -->
+					<div class="flex items-center gap-1.5 text-xs font-mono" id="cat-filter-buttons">
+						<button class="cat-filter active px-3 py-1 rounded-lg bg-emerald-500 text-slate-950 font-bold" data-cat="all">ALL (30)</button>
+						<button class="cat-filter px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300" data-cat="cart">CART (8)</button>
+						<button class="cat-filter px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300" data-cat="coupon">COUPONS (9)</button>
+						<button class="cat-filter px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300" data-cat="checkout">CHECKOUT (7)</button>
+						<button class="cat-filter px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300" data-cat="stock">STOCK (5)</button>
+						<button class="cat-filter px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300" data-cat="account">ACCOUNT (4)</button>
+					</div>
+				</div>
+
+				<div class="overflow-x-auto border border-white/10 rounded-xl">
+					<table class="w-full text-left text-xs text-slate-300">
+						<thead class="bg-black/50 border-b border-white/10 font-mono text-slate-400 uppercase tracking-wider text-[11px]">
+							<tr>
+								<th class="p-3.5">Domain</th>
+								<th class="p-3.5">Case ID</th>
+								<th class="p-3.5">State</th>
+								<th class="p-3.5">Toast Title</th>
+								<th class="p-3.5">Regex Match Expression</th>
+								<th class="p-3.5 text-right">Instant Test</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-white/5" id="catalog-table-body">
+							<!-- Injected by JavaScript -->
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- ============================================================== -->
+		<!-- TAB 4: INTERCEPTION ENGINE DEEP DIVE                          -->
 		<!-- ============================================================== -->
 		<section id="tab-architecture" class="tab-panel hidden space-y-6">
-			<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+			<div class="glass-panel p-6 rounded-2xl border border-white/10 space-y-6">
 				<div>
-					<h2 class="text-base font-bold text-slate-900">Notice Interception Architecture</h2>
-					<p class="text-xs text-slate-500 mt-1">How WooCommerce Dynamic Notice Toasts eliminates layout shifts and intercepts every alert vector</p>
+					<h2 class="text-base font-bold text-white tracking-tight">Triple-Vector Notice Interception Engine</h2>
+					<p class="text-xs text-slate-400 mt-1">Guarantees zero Cumulative Layout Shift (CLS) across classic templates, block checkouts, and 3rd-party AJAX</p>
 				</div>
 
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-					<div class="p-4 rounded-xl border border-purple-100 bg-purple-50/40 space-y-2.5">
-						<div class="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-xs">1</div>
-						<h3 class="text-xs font-bold text-slate-900">Server-Side Interception (PHP)</h3>
-						<p class="text-xs text-slate-600 leading-relaxed">
-							In <code class="code-font bg-white px-1 py-0.5 rounded border border-purple-200">class-wc-toasts-interceptor.php</code>, hooks into <code class="code-font bg-white px-1 py-0.5 rounded">template_redirect</code> and <code class="code-font bg-white px-1 py-0.5 rounded">woocommerce_output_all_notices</code> at priority 1.
+					<!-- Vector 1 -->
+					<div class="p-5 rounded-xl bg-white/[0.02] border border-white/10 space-y-3">
+						<div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-mono font-bold text-xs">01</div>
+						<h3 class="text-xs font-bold text-white uppercase tracking-wider font-mono">Server Interception (PHP)</h3>
+						<p class="text-xs text-slate-400 leading-relaxed">
+							Hooks into <code class="code-font text-emerald-400">template_redirect</code> and <code class="code-font text-emerald-400">woocommerce_output_all_notices</code> at Priority 1.
 						</p>
-						<ul class="text-[11px] text-slate-600 space-y-1 list-disc pl-4">
-							<li>Extracts notices via <code class="code-font">wc_get_notices()</code></li>
-							<li>Calls <code class="code-font">wc_clear_notices()</code> so templates omit static markup</li>
-							<li>Injects suppression CSS in <code class="code-font">wp_head</code></li>
-							<li>Serializes notices into frontend JS payload</li>
+						<ul class="text-[11px] text-slate-400 space-y-1.5 list-disc pl-4 font-mono">
+							<li>Extracts notices via <code class="text-slate-200">wc_get_notices()</code></li>
+							<li>Calls <code class="text-slate-200">wc_clear_notices()</code> immediately</li>
+							<li>Suppresses wrapper via <code class="text-slate-200">wp_head</code> CSS</li>
+							<li>Serializes payload into localized JS</li>
 						</ul>
 					</div>
 
-					<div class="p-4 rounded-xl border border-blue-100 bg-blue-50/40 space-y-2.5">
-						<div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs">2</div>
-						<h3 class="text-xs font-bold text-slate-900">AJAX Event Interception (JS)</h3>
-						<p class="text-xs text-slate-600 leading-relaxed">
-							In <code class="code-font bg-white px-1 py-0.5 rounded border border-blue-200">wc-toasts-frontend.js</code>, hooks directly into WooCommerce jQuery triggers and native response pipelines.
+					<!-- Vector 2 -->
+					<div class="p-5 rounded-xl bg-white/[0.02] border border-white/10 space-y-3">
+						<div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-mono font-bold text-xs">02</div>
+						<h3 class="text-xs font-bold text-white uppercase tracking-wider font-mono">AJAX Interception (JS)</h3>
+						<p class="text-xs text-slate-400 leading-relaxed">
+							Listens directly on WooCommerce jQuery document triggers and native AJAX pipelines.
 						</p>
-						<ul class="text-[11px] text-slate-600 space-y-1 list-disc pl-4">
-							<li><code class="code-font">$(document.body).on('added_to_cart')</code></li>
-							<li><code class="code-font">$(document.body).on('checkout_error')</code></li>
-							<li><code class="code-font">$(document.body).on('applied_coupon')</code></li>
-							<li>Global <code class="code-font">ajaxSuccess</code> inspects failure fragments</li>
+						<ul class="text-[11px] text-slate-400 space-y-1.5 list-disc pl-4 font-mono">
+							<li><code class="text-slate-200">added_to_cart</code> (Add to Cart events)</li>
+							<li><code class="text-slate-200">checkout_error</code> (Validation errors)</li>
+							<li><code class="text-slate-200">applied_coupon</code> / <code class="text-slate-200">removed_coupon</code></li>
+							<li>Global <code class="text-slate-200">ajaxSuccess</code> failure parser</li>
 						</ul>
 					</div>
 
-					<div class="p-4 rounded-xl border border-emerald-100 bg-emerald-50/40 space-y-2.5">
-						<div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">3</div>
-						<h3 class="text-xs font-bold text-slate-900">MutationObserver Fallback</h3>
-						<p class="text-xs text-slate-600 leading-relaxed">
-							Catches rogue notices appended directly to the DOM by 3rd-party plugins, checkout gateways, or custom themes.
+					<!-- Vector 3 -->
+					<div class="p-5 rounded-xl bg-white/[0.02] border border-white/10 space-y-3">
+						<div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-mono font-bold text-xs">03</div>
+						<h3 class="text-xs font-bold text-white uppercase tracking-wider font-mono">DOM MutationObserver</h3>
+						<p class="text-xs text-slate-400 leading-relaxed">
+							Catches rogue notices appended directly to the DOM by external payment gateways or custom themes.
 						</p>
-						<ul class="text-[11px] text-slate-600 space-y-1 list-disc pl-4">
-							<li>Observes <code class="code-font">.woocommerce-notices-wrapper</code> and body</li>
-							<li>Instantly sets <code class="code-font">display: none !important</code></li>
-							<li>Parses inner text and action links</li>
-							<li>Converts dynamically into toast with zero delay</li>
+						<ul class="text-[11px] text-slate-400 space-y-1.5 list-disc pl-4 font-mono">
+							<li>Monitors <code class="text-slate-200">.woocommerce-notices-wrapper</code></li>
+							<li>Sets <code class="text-slate-200">display: none !important</code></li>
+							<li>Parses inner HTML & action links</li>
+							<li>Spawns toast with zero latency</li>
 						</ul>
 					</div>
 				</div>
 
-				<!-- Action Parser Breakdown -->
-				<div class="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
-					<h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">The Intelligent Action Link Parser</h3>
-					<p class="text-xs text-slate-600 leading-relaxed">
-						WooCommerce frequently packs HTML links inside notices, like <code class="code-font">&lt;a href="/cart/" class="button wc-forward"&gt;View cart&lt;/a&gt;</code> or <code class="code-font">&lt;a class="restore-item"&gt;Undo?&lt;/a&gt;</code>.
-						Rather than leaving messy unstyled anchor tags inside text, the engine:
+				<!-- Action Link Parser Comparison -->
+				<div class="p-5 rounded-xl bg-black/40 border border-white/10 space-y-3">
+					<h3 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">Intelligent Action Link Decoupler</h3>
+					<p class="text-xs text-slate-400 leading-relaxed">
+						WooCommerce frequently packs raw <code class="code-font text-white">&lt;a class="button wc-forward"&gt;View cart&lt;/a&gt;</code> anchors directly inside plain notice text strings. The Toast Engine parses and decouples them:
 					</p>
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-						<div class="bg-white p-3 rounded-lg border border-slate-200 space-y-1.5">
-							<div class="font-bold text-red-600">Before (Default WooCommerce Markup):</div>
-							<code class="code-font text-[11px] block bg-slate-900 text-slate-200 p-2 rounded overflow-x-auto">
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+						<div class="p-3 rounded-lg bg-red-950/20 border border-red-500/20 space-y-1">
+							<div class="text-rose-400 font-bold">Standard WooCommerce Output:</div>
+							<div class="text-[11px] text-slate-400 break-all">
 								&lt;div class="woocommerce-message"&gt;&lt;a href="/cart/" class="button"&gt;View cart&lt;/a&gt; &ldquo;Shirt&rdquo; has been added to your cart.&lt;/div&gt;
-							</code>
+							</div>
 						</div>
-						<div class="bg-white p-3 rounded-lg border border-slate-200 space-y-1.5">
-							<div class="font-bold text-emerald-600">After (Toast Engine Transformation):</div>
-							<div class="text-[11px] bg-white border border-slate-200 p-2 rounded space-y-1">
-								<div><strong>Clean Message:</strong> &ldquo;Shirt&rdquo; has been added to your cart.</div>
-								<div><strong>Action Button:</strong> <span class="bg-emerald-500 text-white px-2 py-0.5 rounded text-[10px] font-bold">View cart &rarr;</span></div>
+						<div class="p-3 rounded-lg bg-emerald-950/20 border border-emerald-500/20 space-y-1">
+							<div class="text-emerald-400 font-bold">Toast Engine Output:</div>
+							<div class="text-[11px] text-slate-300">
+								<div><strong>Clean Body:</strong> &ldquo;Shirt&rdquo; has been added to your cart.</div>
+								<div><strong>Action Button:</strong> <span class="bg-white text-slate-900 font-bold px-2 py-0.5 rounded text-[10px]">View cart &rarr;</span></div>
 							</div>
 						</div>
 					</div>
@@ -580,247 +1167,86 @@
 		</section>
 
 		<!-- ============================================================== -->
-		<!-- TAB 3: WC NOTICE CATALOG EXPLORER                             -->
+		<!-- TAB 5: WORDPRESS STANDARDS & HPOS COMPLIANCE                  -->
 		<!-- ============================================================== -->
-		<section id="tab-catalog" class="tab-panel hidden space-y-6">
-			<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
-				<div class="flex flex-wrap items-center justify-between gap-4">
-					<div>
-						<h2 class="text-base font-bold text-slate-900">WooCommerce Notification Catalog</h2>
-						<p class="text-xs text-slate-500 mt-1">Complete taxonomy of core WooCommerce alerts classified into 6 semantic domains</p>
-					</div>
-					<!-- Category Filter Badges -->
-					<div class="flex items-center gap-1.5 text-xs" id="cat-filter-buttons">
-						<button class="cat-filter active px-2.5 py-1 rounded-md bg-purple-600 text-white font-medium" data-cat="all">All (30)</button>
-						<button class="cat-filter px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="cart">Cart (8)</button>
-						<button class="cat-filter px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="coupon">Coupons (9)</button>
-						<button class="cat-filter px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="checkout">Checkout (7)</button>
-						<button class="cat-filter px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="stock">Stock (5)</button>
-						<button class="cat-filter px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="account">Account (6)</button>
-					</div>
-				</div>
-
-				<div class="overflow-x-auto border border-slate-200 rounded-lg">
-					<table class="w-full text-left text-xs text-slate-700">
-						<thead class="bg-slate-50 border-b border-slate-200 font-semibold text-slate-900 uppercase tracking-wider text-[11px]">
-							<tr>
-								<th class="p-3">Category</th>
-								<th class="p-3">Case Identifier</th>
-								<th class="p-3">Type</th>
-								<th class="p-3">Notification Title</th>
-								<th class="p-3">Regex / Match Pattern</th>
-								<th class="p-3 text-right">Quick Test</th>
-							</tr>
-						</thead>
-						<tbody class="divide-y divide-slate-100" id="catalog-table-body">
-							<!-- Filled dynamically in JS -->
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</section>
-
-		<!-- ============================================================== -->
-		<!-- TAB 4: CODEBASE & STANDARDS                                   -->
-		<!-- ============================================================== -->
-		<section id="tab-codebase" class="tab-panel hidden space-y-6">
+		<section id="tab-standards" class="tab-panel hidden space-y-6">
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-				<!-- Left: File Architecture Map -->
-				<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
-					<h2 class="text-sm font-bold text-slate-900">Project File Architecture</h2>
-					<div class="space-y-2 text-xs code-font">
-						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-							<span>📄 <strong>woocommerce-toasts.php</strong></span>
-							<span class="text-[11px] text-slate-400">Bootstrap & HPOS declaration</span>
-						</div>
-						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-							<span>📄 <strong>uninstall.php</strong></span>
-							<span class="text-[11px] text-slate-400">Database cleanup handler</span>
-						</div>
-						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-							<span>📁 <strong>includes/class-wc-toasts.php</strong></span>
-							<span class="text-[11px] text-slate-400">Singleton & Admin UI</span>
-						</div>
-						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-							<span>📁 <strong>includes/class-wc-toasts-catalog.php</strong></span>
-							<span class="text-[11px] text-slate-400">Catalog, Classifier, SVGs</span>
-						</div>
-						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-							<span>📁 <strong>includes/class-wc-toasts-interceptor.php</strong></span>
-							<span class="text-[11px] text-slate-400">Server Notice Hijacker</span>
-						</div>
-						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-							<span>📁 <strong>includes/class-wc-toasts-settings.php</strong></span>
-							<span class="text-[11px] text-slate-400">Options Schema & Sanitization</span>
-						</div>
-						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-							<span>📁 <strong>includes/class-wc-toasts-ajax.php</strong></span>
-							<span class="text-[11px] text-slate-400">Admin Live Test & Resets</span>
-						</div>
-						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-							<span>📁 <strong>includes/class-wc-toasts-pro-bridge.php</strong></span>
-							<span class="text-[11px] text-slate-400">Pro Extension Hooks</span>
-						</div>
-						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-							<span>🎨 <strong>assets/css/wc-toasts-frontend.css</strong></span>
-							<span class="text-[11px] text-slate-400">Solid themes & horizontal motion</span>
-						</div>
-						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
-							<span>⚡ <strong>assets/js/wc-toasts-frontend.js</strong></span>
-							<span class="text-[11px] text-slate-400">Audio Synth & Event Engine</span>
-						</div>
-					</div>
-				</div>
-
-				<!-- Right: WordPress Coding Standards Checklist -->
-				<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
-					<h2 class="text-sm font-bold text-slate-900">WordPress.org Standards Checklist</h2>
+				<!-- Architecture Checklist -->
+				<div class="glass-panel p-6 rounded-2xl border border-white/10 space-y-4">
+					<h2 class="text-sm font-bold text-white tracking-tight">WordPress.org Standards Checklist</h2>
 					<div class="space-y-3 text-xs">
-						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
-							<span class="text-emerald-600 font-bold">✔</span>
+						<div class="flex items-start gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+							<span class="text-emerald-400 font-bold font-mono text-sm">✔</span>
 							<div>
-								<div class="font-bold text-emerald-900">HPOS & Cart/Checkout Blocks Compatible</div>
-								<div class="text-[11px] text-emerald-700">Declared via <code class="code-font">FeaturesUtil::declare_compatibility()</code></div>
+								<div class="font-bold text-white">HPOS (High-Performance Order Storage) Compatible</div>
+								<div class="text-[11px] text-slate-400 mt-0.5">Declared via <code class="code-font text-emerald-400">FeaturesUtil::declare_compatibility()</code> on <code class="code-font">before_woocommerce_init</code>.</div>
 							</div>
 						</div>
 
-						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
-							<span class="text-emerald-600 font-bold">✔</span>
+						<div class="flex items-start gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+							<span class="text-emerald-400 font-bold font-mono text-sm">✔</span>
 							<div>
-								<div class="font-bold text-emerald-900">Direct Script Access Blocked</div>
-								<div class="text-[11px] text-emerald-700">Every PHP file initiates with <code class="code-font">defined( 'ABSPATH' ) || exit;</code></div>
+								<div class="font-bold text-white">Direct File Execution Prevention</div>
+								<div class="text-[11px] text-slate-400 mt-0.5">Every PHP class executes <code class="code-font text-emerald-400">defined( 'ABSPATH' ) || exit;</code> before parsing.</div>
 							</div>
 						</div>
 
-						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
-							<span class="text-emerald-600 font-bold">✔</span>
+						<div class="flex items-start gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+							<span class="text-emerald-400 font-bold font-mono text-sm">✔</span>
 							<div>
-								<div class="font-bold text-emerald-900">Strict Nonce & Capability Verification</div>
-								<div class="text-[11px] text-emerald-700">All forms & AJAX check <code class="code-font">current_user_can('manage_woocommerce')</code> & nonces</div>
+								<div class="font-bold text-white">Strict Nonce & Capability Verification</div>
+								<div class="text-[11px] text-slate-400 mt-0.5">All AJAX and settings requests enforce <code class="code-font text-emerald-400">check_admin_referer()</code> and <code class="code-font">current_user_can('manage_woocommerce')</code>.</div>
 							</div>
 						</div>
 
-						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
-							<span class="text-emerald-600 font-bold">✔</span>
+						<div class="flex items-start gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+							<span class="text-emerald-400 font-bold font-mono text-sm">✔</span>
 							<div>
-								<div class="font-bold text-emerald-900">Data Sanitization & Late Escaping</div>
-								<div class="text-[11px] text-emerald-700">Uses <code class="code-font">sanitize_hex_color()</code>, <code class="code-font">esc_html()</code>, <code class="code-font">esc_attr()</code>, <code class="code-font">esc_url()</code></div>
+								<div class="font-bold text-white">Data Sanitization & Late Escaping</div>
+								<div class="text-[11px] text-slate-400 mt-0.5">All inputs filtered through <code class="code-font text-emerald-400">sanitize_hex_color()</code>, <code class="code-font">absint()</code>, <code class="code-font">esc_html()</code>.</div>
 							</div>
 						</div>
 
-						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
-							<span class="text-emerald-600 font-bold">✔</span>
+						<div class="flex items-start gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+							<span class="text-emerald-400 font-bold font-mono text-sm">✔</span>
 							<div>
-								<div class="font-bold text-emerald-900">Internationalization & Translation Ready</div>
-								<div class="text-[11px] text-emerald-700">Text domain <code class="code-font">woocommerce-toasts</code> with complete <code class="code-font">.pot</code> template</div>
-							</div>
-						</div>
-
-						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
-							<span class="text-emerald-600 font-bold">✔</span>
-							<div>
-								<div class="font-bold text-emerald-900">PHP 7.4 to 8.3 Syntax Compatibility</div>
-								<div class="text-[11px] text-emerald-700">Verified via CLI linter across all classes with 0 parse errors</div>
+								<div class="font-bold text-white">PHP 7.4 through 8.3 Verified</div>
+								<div class="text-[11px] text-slate-400 mt-0.5">Zero syntax errors, full backwards compatibility, strict types where supported.</div>
 							</div>
 						</div>
 					</div>
 				</div>
 
-			</div>
-		</section>
+				<!-- Pro Bridge Filter Hooks -->
+				<div class="glass-panel p-6 rounded-2xl border border-white/10 space-y-4">
+					<h2 class="text-sm font-bold text-white tracking-tight">Pro Bridge Extensibility Hooks</h2>
+					<p class="text-xs text-slate-400">Designed so commercial addons hook seamlessly without modifying the core plugin:</p>
 
-		<!-- ============================================================== -->
-		<!-- TAB 5: PRO BRIDGE & ROADMAP                                   -->
-		<!-- ============================================================== -->
-		<section id="tab-pro-bridge" class="tab-panel hidden space-y-6">
-			<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
-				<div>
-					<h2 class="text-base font-bold text-slate-900">Pro Extensibility Bridge & Commercial Architecture</h2>
-					<p class="text-xs text-slate-500 mt-1">Designed so extra premium features hook cleanly without breaking WordPress.org store guidelines</p>
-				</div>
-
-				<!-- Available Hooks Table -->
-				<div class="border border-slate-200 rounded-lg overflow-hidden">
-					<table class="w-full text-left text-xs text-slate-700">
-						<thead class="bg-slate-50 border-b border-slate-200 font-semibold text-slate-900 text-[11px]">
-							<tr>
-								<th class="p-3">Hook Name</th>
-								<th class="p-3">Type</th>
-								<th class="p-3">Purpose</th>
-								<th class="p-3">Pro Application</th>
-							</tr>
-						</thead>
-						<tbody class="divide-y divide-slate-100 code-font text-[11.5px]">
-							<tr>
-								<td class="p-3 font-bold text-purple-700">wc_toasts_is_pro_active</td>
-								<td class="p-3 text-slate-500">Filter</td>
-								<td class="p-3 text-slate-700 font-sans">Returns true when Pro license / addon is installed</td>
-								<td class="p-3 text-slate-700 font-sans">Unlocks pro settings & presets</td>
-							</tr>
-							<tr>
-								<td class="p-3 font-bold text-purple-700">wc_toasts_categories</td>
-								<td class="p-3 text-slate-500">Filter</td>
-								<td class="p-3 text-slate-700 font-sans">Registers new notification category domains</td>
-								<td class="p-3 text-slate-700 font-sans">Adds Wishlist, Subscriptions, Bookings</td>
-							</tr>
-							<tr>
-								<td class="p-3 font-bold text-purple-700">wc_toasts_cases</td>
-								<td class="p-3 text-slate-500">Filter</td>
-								<td class="p-3 text-slate-700 font-sans">Appends custom regex match patterns</td>
-								<td class="p-3 text-slate-700 font-sans">Custom plugin compatibility cases</td>
-							</tr>
-							<tr>
-								<td class="p-3 font-bold text-purple-700">wc_toasts_classified_notice</td>
-								<td class="p-3 text-slate-500">Filter</td>
-								<td class="p-3 text-slate-700 font-sans">Intercepts payload before serialization</td>
-								<td class="p-3 text-slate-700 font-sans">Injects In-Toast Cross-Sells & Upsells</td>
-							</tr>
-							<tr>
-								<td class="p-3 font-bold text-purple-700">wc_toasts_themes</td>
-								<td class="p-3 text-slate-500">Filter</td>
-								<td class="p-3 text-slate-700 font-sans">Registers extra CSS visual themes</td>
-								<td class="p-3 text-slate-700 font-sans">Neon Glow, Luxury Obsidian & Gold</td>
-							</tr>
-							<tr>
-								<td class="p-3 font-bold text-purple-700">wc_toasts_sounds</td>
-								<td class="p-3 text-slate-500">Filter</td>
-								<td class="p-3 text-slate-700 font-sans">Extends audio synthesizer presets</td>
-								<td class="p-3 text-slate-700 font-sans">Custom MP3 / WAV audio file uploads</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-
-				<!-- Proposed Pro Features Discussion Cards -->
-				<div class="space-y-3">
-					<h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Candidate Features for Next Development Iteration</h3>
-					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-						<div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
-							<span class="text-purple-600 font-bold text-xs">🚀 High AOV Booster</span>
-							<h4 class="text-xs font-bold text-slate-900">Dynamic Free Shipping Progress</h4>
-							<p class="text-[11.5px] text-slate-600 leading-relaxed">
-								When user adds an item to cart, calculate remaining spend to unlock Free Shipping and display a live animated meter right inside the toast!
-							</p>
+					<div class="space-y-2 text-xs font-mono">
+						<div class="p-2.5 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between">
+							<span class="text-emerald-400 font-bold">wc_toasts_is_pro_active</span>
+							<span class="text-[11px] text-slate-400">License verification bridge</span>
 						</div>
-
-						<div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
-							<span class="text-purple-600 font-bold text-xs">💰 Revenue Generator</span>
-							<h4 class="text-xs font-bold text-slate-900">In-Toast 1-Click Cross-Sell</h4>
-							<p class="text-[11.5px] text-slate-600 leading-relaxed">
-								Display a compact "Frequently Bought Together" thumbnail item with an instant "Add for $12" button directly inside the add-to-cart toast.
-							</p>
+						<div class="p-2.5 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between">
+							<span class="text-emerald-400 font-bold">wc_toasts_theme_presets</span>
+							<span class="text-[11px] text-slate-400">Register extra aesthetic themes</span>
 						</div>
-
-						<div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
-							<span class="text-purple-600 font-bold text-xs">📊 Conversion Analytics</span>
-							<h4 class="text-xs font-bold text-slate-900">Toast Click-Through Metrics</h4>
-							<p class="text-[11.5px] text-slate-600 leading-relaxed">
-								Track how many shoppers click "View Cart", how many dismiss, and notice recovery rates for checkout field errors.
-							</p>
+						<div class="p-2.5 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between">
+							<span class="text-emerald-400 font-bold">wc_toasts_registered_cases</span>
+							<span class="text-[11px] text-slate-400">Append 3rd-party notice regexes</span>
+						</div>
+						<div class="p-2.5 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between">
+							<span class="text-emerald-400 font-bold">wc_toasts_classified_notice</span>
+							<span class="text-[11px] text-slate-400">Inject 1-Click Upsells into payload</span>
+						</div>
+						<div class="p-2.5 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between">
+							<span class="text-emerald-400 font-bold">wc_toasts_audio_presets</span>
+							<span class="text-[11px] text-slate-400">Custom MP3 / WAV synthesizer hook</span>
 						</div>
 					</div>
 				</div>
+
 			</div>
 		</section>
 
@@ -844,13 +1270,13 @@
 				return audioCtx;
 			}
 
-			function play(type, theme) {
+			function play(type, customTheme) {
 				var ctx = getContext();
 				if (!ctx) return;
-				theme = theme || document.getElementById('ctrl-sound').value || 'gentle_chime';
+				var theme = customTheme || document.getElementById('ctrl-sound').value || 'gentle_chime';
 
 				var masterGain = ctx.createGain();
-				masterGain.gain.setValueAtTime(0.3, ctx.currentTime);
+				masterGain.gain.setValueAtTime(0.32, ctx.currentTime);
 				masterGain.connect(ctx.destination);
 
 				if (theme === 'crisp_pop') {
@@ -927,7 +1353,7 @@
 		// SVG Icons Dictionary
 		// =================================================================
 		var Icons = {
-			check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>',
+			check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M20 6L9 17l-5-5"/></svg>',
 			cart_check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/><path d="m9 11 2 2 4-4"/></svg>',
 			trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
 			ticket_check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="m9 12 2 2 4-4"/></svg>',
@@ -937,12 +1363,12 @@
 		};
 
 		// =================================================================
-		// Catalog Data (~30 Cases)
+		// Catalog Cases (30 Core WooCommerce Scenarios)
 		// =================================================================
 		var CatalogCases = [
-			{ cat: 'cart', id: 'cart_item_added', type: 'success', title: 'Product Added to Cart', pattern: '/has been added to your cart/i', icon: 'cart_check', msg: '“Audio Technica M50x” has been added to your cart.', action: { text: 'View cart →', url: '#' } },
-			{ cat: 'cart', id: 'cart_item_removed', type: 'notice', title: 'Item Removed from Cart', pattern: '/removed\.\s*(Undo\?)?/i', icon: 'trash', msg: '“Audio Technica M50x” removed.', action: { text: 'Undo? ↺', url: '#' } },
-			{ cat: 'cart', id: 'cart_item_restored', type: 'success', title: 'Item Restored to Cart', pattern: '/restored to cart/i', icon: 'check', msg: '“Audio Technica M50x” restored to cart.' },
+			{ cat: 'cart', id: 'cart_item_added', type: 'success', title: 'Product Added to Cart', pattern: '/has been added to your cart/i', icon: 'cart_check', msg: '“Audio Technica ATH-M50x” has been added to your cart.', action: { text: 'View cart', url: '#' } },
+			{ cat: 'cart', id: 'cart_item_removed', type: 'notice', title: 'Item Removed from Cart', pattern: '/removed\\.\\s*(Undo\\?)?/i', icon: 'trash', msg: '“Audio Technica ATH-M50x” removed.', action: { text: 'Undo?', url: '#' } },
+			{ cat: 'cart', id: 'cart_item_restored', type: 'success', title: 'Item Restored to Cart', pattern: '/restored to cart/i', icon: 'check', msg: '“Audio Technica ATH-M50x” restored to cart.' },
 			{ cat: 'cart', id: 'cart_updated', type: 'success', title: 'Cart Updated', pattern: '/cart updated/i', icon: 'check', msg: 'Cart updated successfully.' },
 			{ cat: 'cart', id: 'cart_empty', type: 'notice', title: 'Cart is Empty', pattern: '/cart is currently empty/i', icon: 'info', msg: 'Your cart is currently empty.' },
 			{ cat: 'cart', id: 'cart_minimum_order', type: 'error', title: 'Minimum Order Required', pattern: '/minimum of.*to place your order/i', icon: 'alert_triangle', msg: 'You must have an order with a minimum of $50.00 to place your order.' },
@@ -980,7 +1406,7 @@
 		];
 
 		// =================================================================
-		// Toast Dispatcher inside Sandbox (Solid State & Horizontal Only)
+		// Toast Dispatcher (Archetype-Aware, Horizontal Motion Only)
 		// =================================================================
 		var activeToasts = [];
 
@@ -991,53 +1417,75 @@
 			var toast = document.createElement('div');
 			toast.className = 'demo-toast type-' + (payload.type || 'notice');
 
-			// Strictly horizontal animation based on position:
+			// Strictly horizontal animation based on side
 			var animInClass = (position.indexOf('left') !== -1) ? 'anim-horizontal-in-left' : 'anim-horizontal-in-right';
 			toast.classList.add(animInClass);
 
-			// Full height, square icon container
-			var iconWrap = document.createElement('div');
-			iconWrap.className = 'demo-toast-icon';
+			// 1. Fixed 52px Geometric Icon Pillar
+			var pillar = document.createElement('div');
+			pillar.className = 'demo-toast-pillar';
 			var iconSvg = Icons[payload.icon] || Icons.info;
-			iconWrap.innerHTML = iconSvg;
-			toast.appendChild(iconWrap);
+			pillar.innerHTML = iconSvg;
+			toast.appendChild(pillar);
 
-			// Content area
+			// 2. Content Area
 			var content = document.createElement('div');
 			content.className = 'demo-toast-content';
 
+			// Micro Eyebrow Category Tag
+			var eyebrowText = '';
+			if (payload.category) {
+				eyebrowText = payload.category.toUpperCase() + ' // ' + (payload.type === 'error' ? 'ALERT' : (payload.type === 'success' ? 'STATUS' : 'INFO'));
+			} else if (payload.type) {
+				eyebrowText = 'SYSTEM // ' + payload.type.toUpperCase();
+			}
+			if (eyebrowText) {
+				var eyebrow = document.createElement('div');
+				eyebrow.className = 'demo-toast-eyebrow';
+				eyebrow.textContent = eyebrowText;
+				content.appendChild(eyebrow);
+			}
+
+			// Title
 			var title = document.createElement('div');
 			title.className = 'demo-toast-title';
 			title.textContent = payload.title || 'Store Notice';
 			content.appendChild(title);
 
+			// Message Body
 			var msg = document.createElement('div');
 			msg.className = 'demo-toast-msg';
 			msg.textContent = payload.message || '';
 			content.appendChild(msg);
 
-			// Action button (White pill)
+			// Kinetic Action Button (with traveling arrow)
 			if (payload.action && payload.action.text) {
+				var actWrap = document.createElement('div');
+				actWrap.className = 'demo-toast-action';
+
 				var actionBtn = document.createElement('a');
 				actionBtn.className = 'demo-toast-action-btn';
 				actionBtn.href = payload.action.url || '#';
-				actionBtn.textContent = payload.action.text;
+				actionBtn.innerHTML = payload.action.text + ' <span class="arrow-icon">&rarr;</span>';
 				actionBtn.onclick = function(e) { e.preventDefault(); };
-				content.appendChild(actionBtn);
+
+				actWrap.appendChild(actionBtn);
+				content.appendChild(actWrap);
 			}
 
 			toast.appendChild(content);
 
-			// Close button
+			// 3. Close Button
 			var closeBtn = document.createElement('button');
 			closeBtn.className = 'demo-toast-close';
 			closeBtn.innerHTML = '&times;';
+			closeBtn.title = 'Dismiss notice';
 			closeBtn.onclick = function() {
 				dismissToast(toast, position);
 			};
 			toast.appendChild(closeBtn);
 
-			// Progress bar
+			// 4. Hairline Progress Bar
 			var progress = document.createElement('div');
 			progress.className = 'demo-toast-progress';
 			toast.appendChild(progress);
@@ -1061,10 +1509,10 @@
 				progress.style.transition = 'none';
 			});
 
-			// Audio chime play
+			// Synthesizer chime
 			AudioEngine.play(payload.type);
 
-			updateClearButton();
+			updateToastCount();
 		}
 
 		function dismissToast(toast, position) {
@@ -1079,25 +1527,51 @@
 					toast.parentNode.removeChild(toast);
 				}
 				activeToasts = activeToasts.filter(function(t) { return t !== toast; });
-				updateClearButton();
-			}, 240);
+				updateToastCount();
+			}, 220);
 		}
 
-		function updateClearButton() {
-			document.getElementById('btn-clear-all').textContent = 'Clear Toasts (' + activeToasts.length + ')';
+		function updateToastCount() {
+			document.getElementById('toast-count').textContent = activeToasts.length;
 		}
 
 		// =================================================================
-		// DOM Event Handlers
+		// DOM Bindings
 		// =================================================================
 		document.addEventListener('DOMContentLoaded', function() {
-			// Tab switching
+
+			// Archetype Switcher
+			document.querySelectorAll('.archetype-btn').forEach(function(btn) {
+				btn.addEventListener('click', function() {
+					document.querySelectorAll('.archetype-btn').forEach(function(b) {
+						b.classList.remove('active', 'bg-white/10', 'text-white', 'border', 'border-white/10');
+						b.classList.add('text-slate-400');
+					});
+					this.classList.add('active', 'bg-white/10', 'text-white', 'border', 'border-white/10');
+					this.classList.remove('text-slate-400');
+
+					var theme = this.getAttribute('data-theme');
+					var stage = document.getElementById('sandbox-stage');
+					stage.className = 'relative flex-1 p-6 overflow-hidden select-none archetype-' + theme;
+					if (theme === 'nordic') {
+						stage.classList.add('bg-slate-900');
+					} else if (theme === 'basalt') {
+						stage.classList.add('bg-[#050608]');
+					} else {
+						stage.classList.add('bg-slate-950');
+					}
+				});
+			});
+
+			// Tab Switching
 			document.querySelectorAll('.nav-tab').forEach(function(btn) {
 				btn.addEventListener('click', function() {
 					document.querySelectorAll('.nav-tab').forEach(function(b) {
-						b.classList.remove('bg-white', 'text-purple-700', 'font-semibold', 'shadow-sm');
+						b.classList.remove('active', 'bg-emerald-500', 'text-slate-950', 'font-bold');
+						b.classList.add('text-slate-300');
 					});
-					this.classList.add('bg-white', 'text-purple-700', 'font-semibold', 'shadow-sm');
+					this.classList.add('active', 'bg-emerald-500', 'text-slate-950', 'font-bold');
+					this.classList.remove('text-slate-300');
 
 					var targetTab = this.getAttribute('data-tab');
 					document.querySelectorAll('.tab-panel').forEach(function(panel) {
@@ -1107,45 +1581,55 @@
 				});
 			});
 
-			// Position change
+			// Position Change
 			document.getElementById('ctrl-position').addEventListener('change', function() {
 				var container = document.getElementById('demo-container');
 				container.className = 'demo-toast-container pos-' + this.value;
 			});
 
-			// Play Sound preview button
+			// Corner Radius Slider
+			document.getElementById('ctrl-radius').addEventListener('input', function() {
+				var val = this.value;
+				document.getElementById('lbl-radius').textContent = val + 'px';
+				document.documentElement.style.setProperty('--global-radius', val + 'px');
+			});
+
+			// Web Audio Preview Button
 			document.getElementById('btn-sound-preview').addEventListener('click', function() {
 				AudioEngine.play('success');
 			});
 
-			// Clear all
+			// Clear All Toasts
 			document.getElementById('btn-clear-all').addEventListener('click', function() {
 				activeToasts.slice().forEach(function(t) {
 					dismissToast(t);
 				});
 			});
 
-			// Predefined case trigger buttons
+			// Predefined Case Buttons
 			document.querySelectorAll('.trigger-case').forEach(function(btn) {
 				btn.addEventListener('click', function() {
 					var caseKey = this.getAttribute('data-case');
 					if (caseKey === 'cart_added') {
 						showToast({
+							category: 'cart',
 							type: 'success',
 							icon: 'cart_check',
 							title: 'Product Added to Cart',
 							message: '“Audio Technica ATH-M50x” has been added to your cart.',
-							action: { text: 'View cart →', url: '#' }
+							action: { text: 'View cart', url: '#' }
 						});
 					} else if (caseKey === 'coupon_applied') {
 						showToast({
+							category: 'coupon',
 							type: 'success',
 							icon: 'ticket_check',
-							title: 'Coupon Applied',
-							message: 'Coupon code "FALL25" applied successfully! 25% discount activated.'
+							title: 'Coupon Code Applied',
+							message: 'Coupon code "FALL25" applied successfully! 25% off activated.'
 						});
 					} else if (caseKey === 'checkout_error') {
 						showToast({
+							category: 'checkout',
 							type: 'error',
 							icon: 'alert_triangle',
 							title: 'Required Field Missing',
@@ -1153,6 +1637,7 @@
 						});
 					} else if (caseKey === 'stock_low') {
 						showToast({
+							category: 'stock',
 							type: 'warning',
 							icon: 'archive_alert',
 							title: 'Insufficient Inventory',
@@ -1160,11 +1645,12 @@
 						});
 					} else if (caseKey === 'cart_undo') {
 						showToast({
+							category: 'cart',
 							type: 'notice',
 							icon: 'trash',
 							title: 'Item Removed',
 							message: '“Audio Technica ATH-M50x” removed.',
-							action: { text: 'Undo? ↺', url: '#' }
+							action: { text: 'Undo?', url: '#' }
 						});
 					}
 				});
@@ -1178,12 +1664,15 @@
 
 				var type = 'notice';
 				var icon = 'info';
+				var category = 'system';
 				if (rawHtml.indexOf('woocommerce-error') !== -1) {
 					type = 'error';
 					icon = 'alert_triangle';
+					category = 'checkout';
 				} else if (rawHtml.indexOf('woocommerce-message') !== -1) {
 					type = 'success';
 					icon = 'check';
+					category = 'cart';
 				}
 
 				var action = null;
@@ -1199,6 +1688,7 @@
 				var cleanText = temp.textContent.trim();
 
 				showToast({
+					category: category,
 					type: type,
 					icon: icon,
 					title: type === 'success' ? 'Store Notice' : (type === 'error' ? 'Validation Error' : 'Information'),
@@ -1223,26 +1713,27 @@
 					if (filterCat !== 'all' && item.cat !== filterCat) return;
 
 					var tr = document.createElement('tr');
-					tr.className = 'hover:bg-slate-50 transition';
+					tr.className = 'hover:bg-white/[0.03] transition font-sans';
 
-					var catBadgeColor = item.cat === 'cart' ? 'bg-emerald-50 text-emerald-700' :
-										(item.cat === 'coupon' ? 'bg-purple-50 text-purple-700' :
-										(item.cat === 'checkout' ? 'bg-red-50 text-red-700' :
-										(item.cat === 'stock' ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700')));
+					var catColor = item.cat === 'cart' ? 'bg-emerald-500/20 text-emerald-400' :
+								  (item.cat === 'coupon' ? 'bg-purple-500/20 text-purple-400' :
+								  (item.cat === 'checkout' ? 'bg-rose-500/20 text-rose-400' :
+								  (item.cat === 'stock' ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-500/20 text-blue-400')));
 
-					var typeBadgeColor = item.type === 'success' ? 'bg-emerald-100 text-emerald-800' :
-										 (item.type === 'error' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800');
+					var typeColor = item.type === 'success' ? 'bg-emerald-500/20 text-emerald-400' :
+								   (item.type === 'error' ? 'bg-rose-500/20 text-rose-400' : 'bg-blue-500/20 text-blue-400');
 
-					tr.innerHTML = '<td class="p-3"><span class="px-2 py-0.5 rounded text-[10.5px] font-bold uppercase ' + catBadgeColor + '">' + item.cat + '</span></td>' +
-								   '<td class="p-3 code-font text-[11px] font-medium">' + item.id + '</td>' +
-								   '<td class="p-3"><span class="px-2 py-0.5 rounded text-[10.5px] font-bold uppercase ' + typeBadgeColor + '">' + item.type + '</span></td>' +
-								   '<td class="p-3 font-semibold text-slate-800">' + item.title + '</td>' +
-								   '<td class="p-3 code-font text-[11px] text-slate-500">' + item.pattern + '</td>' +
-								   '<td class="p-3 text-right"><button class="btn-table-test px-2.5 py-1 rounded bg-slate-100 hover:bg-purple-100 hover:text-purple-700 font-medium text-[11px] transition">Test Case ⚡</button></td>';
+					tr.innerHTML = '<td class="p-3.5"><span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase ' + catColor + '">' + item.cat + '</span></td>' +
+								   '<td class="p-3.5 font-mono text-xs text-slate-300">' + item.id + '</td>' +
+								   '<td class="p-3.5"><span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ' + typeColor + '">' + item.type + '</span></td>' +
+								   '<td class="p-3.5 font-semibold text-white">' + item.title + '</td>' +
+								   '<td class="p-3.5 font-mono text-[11px] text-slate-400">' + item.pattern + '</td>' +
+								   '<td class="p-3.5 text-right"><button class="btn-table-test px-2.5 py-1 rounded bg-white/10 hover:bg-emerald-500 hover:text-slate-950 font-mono text-[11px] text-slate-300 transition">Test ⚡</button></td>';
 
 					tr.querySelector('.btn-table-test').addEventListener('click', function() {
 						document.querySelector('.nav-tab[data-tab="sandbox"]').click();
 						showToast({
+							category: item.cat,
 							type: item.type,
 							icon: item.icon,
 							title: item.title,
@@ -1257,29 +1748,30 @@
 
 			renderCatalogTable('all');
 
-			// Catalog Category Filter Buttons
+			// Catalog Filters
 			document.querySelectorAll('.cat-filter').forEach(function(btn) {
 				btn.addEventListener('click', function() {
 					document.querySelectorAll('.cat-filter').forEach(function(b) {
-						b.classList.remove('bg-purple-600', 'text-white');
-						b.classList.add('bg-slate-100', 'text-slate-600');
+						b.classList.remove('bg-emerald-500', 'text-slate-950', 'font-bold');
+						b.classList.add('bg-white/5', 'text-slate-300');
 					});
-					this.classList.remove('bg-slate-100', 'text-slate-600');
-					this.classList.add('bg-purple-600', 'text-white');
+					this.classList.remove('bg-white/5', 'text-slate-300');
+					this.classList.add('bg-emerald-500', 'text-slate-950', 'font-bold');
 					renderCatalogTable(this.getAttribute('data-cat'));
 				});
 			});
 
-			// Initial welcome toast
+			// Welcome Toast on Load
 			setTimeout(function() {
 				showToast({
+					category: 'cart',
 					type: 'success',
 					icon: 'cart_check',
-					title: 'Redesigned Toast System',
-					message: 'Solid state colors, zero borders, full-height square icon, and horizontal movement.',
-					action: { text: 'View cart →', url: '#' }
+					title: 'The Editorial Monolith Active',
+					message: 'Zero borders, fixed 52px geometric pillar, Swiss typography & horizontal kinetic motion.',
+					action: { text: 'View cart', url: '#' }
 				});
-			}, 350);
+			}, 300);
 		});
 	</script>
 </body>

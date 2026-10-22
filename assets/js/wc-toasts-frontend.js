@@ -358,6 +358,20 @@
 			var content = document.createElement('div');
 			content.className = 'wc-toast-content';
 
+			// Micro eyebrow category tag.
+			var eyebrowText = '';
+			if (notice.category) {
+				eyebrowText = notice.category.toUpperCase() + ' // ' + (type === 'error' ? 'ALERT' : (type === 'success' ? 'STATUS' : 'INFO'));
+			} else if (notice.type) {
+				eyebrowText = 'SYSTEM // ' + notice.type.toUpperCase();
+			}
+			if (eyebrowText) {
+				var eyebrow = document.createElement('div');
+				eyebrow.className = 'wc-toast-eyebrow';
+				eyebrow.textContent = eyebrowText;
+				content.appendChild(eyebrow);
+			}
+
 			if (notice.title) {
 				var title = document.createElement('div');
 				title.className = 'wc-toast-title';
@@ -375,7 +389,7 @@
 			}
 			content.appendChild(message);
 
-			// Action button (e.g. View Cart, Undo, Checkout).
+			// Action button (e.g. View Cart, Undo, Checkout) with kinetic traveling arrow.
 			if (notice.action && notice.action.url && notice.action.text) {
 				var actionWrap = document.createElement('div');
 				actionWrap.className = 'wc-toast-action';
@@ -384,7 +398,7 @@
 				actionBtn.className = 'wc-toast-action-btn';
 				actionBtn.href = notice.action.url;
 				actionBtn.target = notice.action.target || '_self';
-				actionBtn.textContent = notice.action.text;
+				actionBtn.innerHTML = notice.action.text + ' <span class="arrow-icon">&rarr;</span>';
 
 				actionWrap.appendChild(actionBtn);
 				content.appendChild(actionWrap);

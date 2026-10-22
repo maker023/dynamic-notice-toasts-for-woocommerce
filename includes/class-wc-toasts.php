@@ -126,11 +126,19 @@ class WC_Toasts {
 		// WP Color Picker.
 		wp_enqueue_style( 'wp-color-picker' );
 
+		// Enqueue frontend styles for accurate live preview in stage.
+		wp_enqueue_style(
+			'wc-toasts-frontend',
+			WC_TOASTS_PLUGIN_URL . 'assets/css/wc-toasts-frontend.css',
+			array(),
+			WC_TOASTS_VERSION
+		);
+
 		// Admin styles.
 		wp_enqueue_style(
 			'wc-toasts-admin',
 			WC_TOASTS_PLUGIN_URL . 'assets/css/wc-toasts-admin.css',
-			array( 'wp-color-picker' ),
+			array( 'wp-color-picker', 'wc-toasts-frontend' ),
 			WC_TOASTS_VERSION
 		);
 
@@ -790,7 +798,7 @@ class WC_Toasts {
 								<div class="stage-mock-line line-body short"></div>
 							</div>
 							<!-- Mini Live Container Inside Simulator -->
-							<div class="stage-toast-slot pos-<?php echo esc_attr( $settings['position'] ); ?>" id="stage-toast-slot">
+							<div class="stage-toast-slot pos-<?php echo esc_attr( $settings['position'] ); ?> theme-<?php echo esc_attr( $settings['theme'] ); ?>" id="stage-toast-slot">
 								<!-- Rendered in JS dynamically -->
 							</div>
 						</div>

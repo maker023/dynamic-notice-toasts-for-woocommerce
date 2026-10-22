@@ -31,8 +31,23 @@ class WC_Toasts_Pro_Bridge {
 	 */
 	public static function get_themes() {
 		$themes = array(
+			'editorial-monolith' => array(
+				'label'       => __( 'The Editorial Monolith (Awwwards SOTD)', 'woocommerce-toasts' ),
+				'description' => __( 'Solid rich saturated fields (Alpine Pine, Venetian Red, Ultramarine) with fixed 52px pillar and Swiss typography.', 'woocommerce-toasts' ),
+				'pro'         => false,
+			),
+			'swiss-basalt'       => array(
+				'label'       => __( 'Swiss Basalt & Signal', 'woocommerce-toasts' ),
+				'description' => __( 'Deep obsidian ground with surgical status beacon, micro-eyebrow metadata, and high-contrast ink.', 'woocommerce-toasts' ),
+				'pro'         => false,
+			),
+			'nordic-gallery'     => array(
+				'label'       => __( 'The Nordic Gallery', 'woocommerce-toasts' ),
+				'description' => __( 'Crisp chalk-white card with solid state pillar, deep charcoal ink, and monochrome action pills.', 'woocommerce-toasts' ),
+				'pro'         => false,
+			),
 			'modern-light'       => array(
-				'label'       => __( 'Modern Light (Default)', 'woocommerce-toasts' ),
+				'label'       => __( 'Modern Light', 'woocommerce-toasts' ),
 				'description' => __( 'Clean white background, subtle drop shadow, sleek border accent.', 'woocommerce-toasts' ),
 				'pro'         => false,
 			),
