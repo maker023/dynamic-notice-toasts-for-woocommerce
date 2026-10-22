@@ -1,0 +1,801 @@
+/**
+ * WooCommerce Dynamic Notice Toasts - Admin Dashboard Styles
+ *
+ * @package WooCommerce_Toasts
+ */
+
+.wc-toasts-admin-wrap {
+	margin-top: 20px;
+	max-width: 1380px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* ==========================================================================
+   1. Header Bar
+   ========================================================================== */
+.wc-toasts-header {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 24px 28px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+	margin-bottom: 24px;
+}
+
+.wc-toasts-header-brand {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+}
+
+.wc-toasts-logo-icon {
+	width: 48px;
+	height: 48px;
+	background: linear-gradient(135deg, #7f54b3, #4f46e5);
+	color: #ffffff;
+	border-radius: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 6px 16px rgba(127, 84, 179, 0.3);
+}
+
+.wc-toasts-logo-icon svg {
+	width: 26px;
+	height: 26px;
+}
+
+.wc-toasts-header h1 {
+	margin: 0;
+	font-size: 22px;
+	font-weight: 700;
+	color: #0f172a;
+	line-height: 1.2;
+}
+
+.wc-toasts-subtitle {
+	margin: 4px 0 0 0;
+	color: #64748b;
+	font-size: 13.5px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.wc-toasts-version-badge {
+	background: #f1f5f9;
+	color: #475569;
+	font-size: 11px;
+	font-weight: 600;
+	padding: 2px 7px;
+	border-radius: 999px;
+	border: 1px solid #e2e8f0;
+}
+
+.wc-toasts-header-actions {
+	display: flex;
+	gap: 10px;
+}
+
+.wc-toasts-header-actions .button {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 14px;
+	height: auto;
+	font-weight: 500;
+}
+
+/* ==========================================================================
+   2. Layout Columns
+   ========================================================================== */
+.wc-toasts-layout {
+	display: grid;
+	grid-template-columns: 1fr 390px;
+	gap: 24px;
+	align-items: start;
+}
+
+@media (max-width: 1080px) {
+	.wc-toasts-layout {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ==========================================================================
+   3. Tabs Navigation
+   ========================================================================== */
+.wc-toasts-nav-tabs {
+	margin-bottom: 20px;
+	border-bottom: 1px solid #cbd5e1;
+	display: flex;
+	gap: 4px;
+	overflow-x: auto;
+	padding-bottom: 0;
+}
+
+.wc-toasts-tab-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 16px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #475569;
+	border-radius: 8px 8px 0 0;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-bottom: none;
+	text-decoration: none;
+	transition: all 0.15s ease;
+}
+
+.wc-toasts-tab-link:hover {
+	background: #ffffff;
+	color: #0f172a;
+}
+
+.wc-toasts-tab-link.nav-tab-active {
+	background: #ffffff;
+	color: #7f54b3;
+	border-color: #cbd5e1;
+	border-bottom-color: #ffffff;
+	margin-bottom: -1px;
+}
+
+.wc-toasts-tab-content {
+	display: none;
+}
+
+.wc-toasts-tab-content.active {
+	display: block;
+}
+
+/* ==========================================================================
+   4. Settings Card Container
+   ========================================================================== */
+.wc-toasts-card {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 28px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+	margin-bottom: 24px;
+}
+
+.wc-toasts-card h2 {
+	margin-top: 0;
+	font-size: 18px;
+	font-weight: 700;
+	color: #0f172a;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #f1f5f9;
+}
+
+.wc-toasts-card .form-table th {
+	width: 240px;
+	font-weight: 600;
+	color: #1e293b;
+	padding: 18px 10px 18px 0;
+}
+
+.wc-toasts-card .form-table td {
+	padding: 16px 10px;
+}
+
+/* ==========================================================================
+   5. Toggle Switches
+   ========================================================================== */
+.wc-toasts-switch {
+	position: relative;
+	display: inline-block;
+	width: 48px;
+	height: 26px;
+	vertical-align: middle;
+}
+
+.wc-toasts-switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.wc-toasts-switch .slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #cbd5e1;
+	transition: 0.25s;
+	border-radius: 34px;
+}
+
+.wc-toasts-switch .slider:before {
+	position: absolute;
+	content: "";
+	height: 20px;
+	width: 20px;
+	left: 3px;
+	bottom: 3px;
+	background-color: white;
+	transition: 0.25s;
+	border-radius: 50%;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.wc-toasts-switch input:checked + .slider {
+	background-color: #10b981;
+}
+
+.wc-toasts-switch input:checked + .slider:before {
+	transform: translateX(22px);
+}
+
+/* ==========================================================================
+   6. Position Selector Grid
+   ========================================================================== */
+.wc-toasts-position-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 10px;
+	max-width: 520px;
+}
+
+.wc-toasts-pos-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 14px 10px;
+	background: #f8fafc;
+	border: 2px solid #e2e8f0;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	text-align: center;
+}
+
+.wc-toasts-pos-card input {
+	position: absolute;
+	opacity: 0;
+}
+
+.wc-toasts-pos-card:hover {
+	border-color: #cbd5e1;
+	background: #ffffff;
+}
+
+.wc-toasts-pos-card.selected {
+	border-color: #7f54b3;
+	background: #fdfaff;
+}
+
+.wc-toasts-pos-card .pos-label {
+	font-size: 12px;
+	font-weight: 600;
+	color: #334155;
+	margin-top: 6px;
+}
+
+.wc-toasts-pos-card.selected .pos-label {
+	color: #7f54b3;
+}
+
+.wc-toasts-pos-card .pos-dot {
+	width: 24px;
+	height: 16px;
+	border: 1px dashed #94a3b8;
+	border-radius: 3px;
+	position: relative;
+}
+
+.wc-toasts-pos-card.selected .pos-dot {
+	border-color: #7f54b3;
+}
+
+.wc-toasts-pos-card .pos-dot::after {
+	content: "";
+	position: absolute;
+	width: 6px;
+	height: 6px;
+	background: #94a3b8;
+	border-radius: 1px;
+}
+
+.wc-toasts-pos-card.selected .pos-dot::after {
+	background: #7f54b3;
+}
+
+.wc-toasts-pos-card .pos-dot.top-left::after { top: 2px; left: 2px; }
+.wc-toasts-pos-card .pos-dot.top-center::after { top: 2px; left: 9px; }
+.wc-toasts-pos-card .pos-dot.top-right::after { top: 2px; right: 2px; }
+.wc-toasts-pos-card .pos-dot.bottom-left::after { bottom: 2px; left: 2px; }
+.wc-toasts-pos-card .pos-dot.bottom-center::after { bottom: 2px; left: 9px; }
+.wc-toasts-pos-card .pos-dot.bottom-right::after { bottom: 2px; right: 2px; }
+
+/* ==========================================================================
+   7. Color Pickers Grid
+   ========================================================================== */
+.wc-toasts-colors-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 16px;
+	margin-top: 14px;
+}
+
+@media (max-width: 900px) {
+	.wc-toasts-colors-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.wc-toasts-color-box {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 16px;
+}
+
+.wc-toasts-color-box h4 {
+	margin: 0 0 10px 0;
+	font-size: 13.5px;
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.wc-toasts-color-box label {
+	display: block;
+	font-size: 12px;
+	color: #64748b;
+	margin-bottom: 4px;
+	margin-top: 10px;
+}
+
+/* ==========================================================================
+   8. Catalog Categories List
+   ========================================================================== */
+.wc-toasts-cat-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-top: 16px;
+	margin-bottom: 28px;
+}
+
+.wc-toasts-cat-item {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 10px;
+	padding: 16px 20px;
+	transition: background 0.15s ease;
+}
+
+.wc-toasts-cat-item:hover {
+	background: #ffffff;
+}
+
+.wc-toasts-cat-item .cat-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.wc-toasts-cat-item .cat-info {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.wc-toasts-cat-item .cat-badge {
+	width: 38px;
+	height: 38px;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #ffffff;
+	flex-shrink: 0;
+}
+
+.wc-toasts-cat-item .cat-badge svg {
+	width: 20px;
+	height: 20px;
+}
+
+.wc-toasts-cat-item h4 {
+	margin: 0;
+	font-size: 14.5px;
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.wc-toasts-cat-item p {
+	margin: 2px 0 0 0;
+	font-size: 12.5px;
+	color: #64748b;
+}
+
+.wc-toasts-cat-item .cat-meta {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.wc-toasts-cat-item .cat-case-count {
+	font-size: 12px;
+	font-weight: 600;
+	background: #e2e8f0;
+	color: #475569;
+	padding: 3px 8px;
+	border-radius: 999px;
+}
+
+.wc-toasts-table-scroll {
+	max-height: 400px;
+	overflow-y: auto;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	margin-top: 12px;
+}
+
+.wc-toasts-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.wc-toasts-badge.badge-success { background: #dcfce7; color: #166534; }
+.wc-toasts-badge.badge-error { background: #fee2e2; color: #991b1b; }
+.wc-toasts-badge.badge-notice { background: #dbeafe; color: #1e40af; }
+
+.wc-toasts-tag {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 600;
+	background: #f1f5f9;
+	color: #334155;
+}
+
+/* ==========================================================================
+   9. Pro Feature Showcase
+   ========================================================================== */
+.wc-toasts-pro-showcase {
+	background: linear-gradient(180deg, #fbfaff 0%, #ffffff 100%);
+	border-color: #e9d5ff;
+}
+
+.pro-banner-head {
+	text-align: center;
+	max-width: 650px;
+	margin: 0 auto 30px auto;
+}
+
+.pro-tag {
+	display: inline-block;
+	background: #7f54b3;
+	color: #ffffff;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	padding: 3px 10px;
+	border-radius: 999px;
+	margin-bottom: 12px;
+}
+
+.pro-banner-head h2 {
+	border-bottom: none;
+	font-size: 22px;
+	margin: 0 0 10px 0;
+	color: #0f172a;
+}
+
+.pro-banner-head p {
+	color: #64748b;
+	font-size: 14px;
+	margin: 0;
+}
+
+.wc-toasts-pro-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px;
+	margin-bottom: 30px;
+}
+
+@media (max-width: 800px) {
+	.wc-toasts-pro-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.wc-toasts-pro-feature {
+	background: #ffffff;
+	border: 1px solid #e9d5ff;
+	border-radius: 10px;
+	padding: 18px;
+	box-shadow: 0 4px 10px rgba(127, 84, 179, 0.04);
+}
+
+.wc-toasts-pro-feature .feature-badge {
+	font-size: 10.5px;
+	font-weight: 700;
+	text-transform: uppercase;
+	color: #7f54b3;
+	background: #f3e8ff;
+	padding: 2px 7px;
+	border-radius: 4px;
+	display: inline-block;
+	margin-bottom: 8px;
+}
+
+.wc-toasts-pro-feature h4 {
+	margin: 0 0 6px 0;
+	font-size: 14px;
+	color: #0f172a;
+}
+
+.wc-toasts-pro-feature p {
+	margin: 0;
+	font-size: 12.5px;
+	color: #64748b;
+	line-height: 1.4;
+}
+
+.pro-cta-box {
+	text-align: center;
+	background: #faf5ff;
+	border: 1px dashed #c084fc;
+	border-radius: 12px;
+	padding: 26px;
+}
+
+.pro-cta-box h3 {
+	margin: 0 0 8px 0;
+	font-size: 16px;
+	color: #581c87;
+}
+
+.pro-cta-box p {
+	margin: 0 0 18px 0;
+	color: #7e22ce;
+	font-size: 13px;
+}
+
+/* ==========================================================================
+   10. Sticky Bottom Submit Bar
+   ========================================================================== */
+.wc-toasts-submit-bar {
+	position: sticky;
+	bottom: 20px;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 10px;
+	padding: 16px 20px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+	z-index: 50;
+	margin-top: 24px;
+}
+
+/* ==========================================================================
+   11. Right Sticky Live Preview
+   ========================================================================== */
+.wc-toasts-sidebar {
+	position: sticky;
+	top: 48px;
+}
+
+.wc-toasts-preview-card {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 22px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.wc-toasts-preview-card .preview-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 6px;
+}
+
+.wc-toasts-preview-card h3 {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 700;
+	color: #0f172a;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.preview-badge {
+	background: #dcfce7;
+	color: #15803d;
+	font-size: 10.5px;
+	font-weight: 700;
+	text-transform: uppercase;
+	padding: 2px 6px;
+	border-radius: 4px;
+}
+
+.preview-note {
+	margin: 0 0 16px 0;
+	font-size: 12.5px;
+	color: #64748b;
+}
+
+.preview-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-bottom: 18px;
+}
+
+.preview-btn {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 7px;
+	padding: 8px 12px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #334155;
+	cursor: pointer;
+	text-align: left;
+	transition: all 0.15s ease;
+}
+
+.preview-btn:hover {
+	background: #ffffff;
+	border-color: #cbd5e1;
+	transform: translateY(-1px);
+}
+
+.preview-btn svg {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+}
+
+.preview-btn.btn-cart svg { color: #10b981; }
+.preview-btn.btn-coupon svg { color: #8b5cf6; }
+.preview-btn.btn-error svg { color: #ef4444; }
+.preview-btn.btn-stock svg { color: #f59e0b; }
+.preview-btn.btn-info svg { color: #3b82f6; }
+
+/* Stage Mockup */
+.preview-screen-stage {
+	position: relative;
+	background: #f1f5f9;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	height: 280px;
+	overflow: hidden;
+	padding: 12px;
+	box-sizing: border-box;
+}
+
+.stage-nav-dots {
+	display: flex;
+	gap: 5px;
+	margin-bottom: 12px;
+}
+
+.stage-nav-dots span {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: #cbd5e1;
+}
+
+.stage-mock-content {
+	opacity: 0.35;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.stage-mock-line {
+	height: 8px;
+	background: #94a3b8;
+	border-radius: 4px;
+}
+
+.stage-mock-line.line-header {
+	width: 50%;
+	height: 12px;
+}
+
+.stage-mock-line.line-body {
+	width: 90%;
+}
+
+.stage-mock-line.line-body.short {
+	width: 65%;
+}
+
+/* Toast Slot inside stage */
+.stage-toast-slot {
+	position: absolute;
+	width: calc(100% - 24px);
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	pointer-events: none;
+	z-index: 10;
+}
+
+.stage-toast-slot.pos-top-right {
+	top: 12px;
+	right: 12px;
+	align-items: flex-end;
+}
+.stage-toast-slot.pos-top-left {
+	top: 12px;
+	left: 12px;
+	align-items: flex-start;
+}
+.stage-toast-slot.pos-top-center {
+	top: 12px;
+	left: 50%;
+	transform: translateX(-50%);
+	align-items: center;
+}
+.stage-toast-slot.pos-bottom-right {
+	bottom: 12px;
+	right: 12px;
+	align-items: flex-end;
+}
+.stage-toast-slot.pos-bottom-left {
+	bottom: 12px;
+	left: 12px;
+	align-items: flex-start;
+}
+.stage-toast-slot.pos-bottom-center {
+	bottom: 12px;
+	left: 50%;
+	transform: translateX(-50%);
+	align-items: center;
+}
+
+.stage-toast-slot .wc-toast {
+	padding: 10px 12px;
+	font-size: 11.5px;
+	border-radius: 8px;
+	max-width: 100%;
+}
+.stage-toast-slot .wc-toast-icon-wrap {
+	width: 22px;
+	height: 22px;
+}
+.stage-toast-slot .wc-toast-icon-wrap svg {
+	width: 13px;
+	height: 13px;
+}
+.stage-toast-slot .wc-toast-title {
+	font-size: 11.5px;
+}
+.stage-toast-slot .wc-toast-message {
+	font-size: 11px;
+}
+.stage-toast-slot .wc-toast-action-btn {
+	padding: 3px 8px;
+	font-size: 10.5px;
+}

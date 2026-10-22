@@ -1,0 +1,584 @@
+/**
+ * WooCommerce Dynamic Notice Toasts - Frontend Styles
+ *
+ * @package WooCommerce_Toasts
+ */
+
+:root {
+	--wc-toast-bg: #ffffff;
+	--wc-toast-text: #0f172a;
+	--wc-toast-muted: #64748b;
+	--wc-toast-border: rgba(15, 23, 42, 0.08);
+	--wc-toast-radius: 12px;
+	--wc-toast-width: 380px;
+	--wc-toast-accent-success: #10b981;
+	--wc-toast-accent-error: #ef4444;
+	--wc-toast-accent-info: #3b82f6;
+	--wc-toast-accent-warning: #f59e0b;
+	--wc-toast-shadow: 0 14px 34px -6px rgba(0, 0, 0, 0.12), 0 8px 14px -4px rgba(0, 0, 0, 0.06);
+}
+
+/* ==========================================================================
+   1. Toast Container Positions
+   ========================================================================== */
+.wc-toasts-container {
+	position: fixed;
+	z-index: 9999999;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	pointer-events: none;
+	width: calc(100% - 32px);
+	max-width: var(--wc-toast-width);
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+}
+
+.wc-toasts-container.pos-top-right {
+	top: 24px;
+	right: 24px;
+	align-items: flex-end;
+}
+
+.wc-toasts-container.pos-top-left {
+	top: 24px;
+	left: 24px;
+	align-items: flex-start;
+}
+
+.wc-toasts-container.pos-top-center {
+	top: 24px;
+	left: 50%;
+	transform: translateX(-50%);
+	align-items: center;
+}
+
+.wc-toasts-container.pos-bottom-right {
+	bottom: 24px;
+	right: 24px;
+	align-items: flex-end;
+}
+
+.wc-toasts-container.pos-bottom-left {
+	bottom: 24px;
+	left: 24px;
+	align-items: flex-start;
+}
+
+.wc-toasts-container.pos-bottom-center {
+	bottom: 24px;
+	left: 50%;
+	transform: translateX(-50%);
+	align-items: center;
+}
+
+/* ==========================================================================
+   2. Toast Item Card
+   ========================================================================== */
+.wc-toast {
+	position: relative;
+	pointer-events: auto;
+	width: 100%;
+	background: var(--wc-toast-bg);
+	color: var(--wc-toast-text);
+	border: 1px solid var(--wc-toast-border);
+	border-radius: var(--wc-toast-radius);
+	box-shadow: var(--wc-toast-shadow);
+	padding: 14px 16px;
+	box-sizing: border-box;
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	overflow: hidden;
+	user-select: text;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-size: 14px;
+	line-height: 1.45;
+	transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.wc-toast:hover {
+	box-shadow: 0 18px 38px -6px rgba(0, 0, 0, 0.16), 0 10px 18px -4px rgba(0, 0, 0, 0.08);
+}
+
+/* Accent side stripe */
+.wc-toast::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 4px;
+	background: var(--wc-toast-accent, var(--wc-toast-accent-info));
+	border-radius: var(--wc-toast-radius) 0 0 var(--wc-toast-radius);
+}
+
+/* ==========================================================================
+   3. Types & Semantic Colors
+   ========================================================================== */
+.wc-toast.type-success {
+	--wc-toast-accent: var(--wc-toast-accent-success);
+}
+
+.wc-toast.type-error {
+	--wc-toast-accent: var(--wc-toast-accent-error);
+}
+
+.wc-toast.type-notice,
+.wc-toast.type-info {
+	--wc-toast-accent: var(--wc-toast-accent-info);
+}
+
+.wc-toast.type-warning {
+	--wc-toast-accent: var(--wc-toast-accent-warning);
+}
+
+/* Icon */
+.wc-toast-icon-wrap {
+	flex-shrink: 0;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--wc-toast-accent);
+	background: rgba(15, 23, 42, 0.04);
+	margin-top: 2px;
+}
+
+.wc-toast.type-success .wc-toast-icon-wrap {
+	background: rgba(16, 185, 129, 0.12);
+}
+
+.wc-toast.type-error .wc-toast-icon-wrap {
+	background: rgba(239, 68, 68, 0.12);
+}
+
+.wc-toast.type-notice .wc-toast-icon-wrap,
+.wc-toast.type-info .wc-toast-icon-wrap {
+	background: rgba(59, 130, 246, 0.12);
+}
+
+.wc-toast.type-warning .wc-toast-icon-wrap {
+	background: rgba(245, 158, 11, 0.12);
+}
+
+.wc-toast-icon-wrap svg {
+	width: 17px;
+	height: 17px;
+	stroke-width: 2.2px;
+}
+
+/* Content */
+.wc-toast-content {
+	flex: 1;
+	min-width: 0;
+}
+
+.wc-toast-title {
+	font-weight: 600;
+	font-size: 13.5px;
+	color: var(--wc-toast-text);
+	margin-bottom: 2px;
+	letter-spacing: -0.01em;
+}
+
+.wc-toast-message {
+	font-size: 13px;
+	color: var(--wc-toast-muted);
+	word-break: break-word;
+	line-height: 1.4;
+}
+
+.wc-toast-message a {
+	color: inherit;
+	text-decoration: underline;
+}
+
+/* Action Button */
+.wc-toast-action {
+	margin-top: 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.wc-toast-action-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 5px 12px;
+	font-size: 12px;
+	font-weight: 600;
+	border-radius: 6px;
+	text-decoration: none !important;
+	color: #ffffff !important;
+	background: var(--wc-toast-accent);
+	border: none;
+	cursor: pointer;
+	line-height: 1.2;
+	transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.wc-toast-action-btn:hover {
+	opacity: 0.9;
+	transform: translateY(-1px);
+	color: #ffffff !important;
+}
+
+.wc-toast-action-btn:active {
+	transform: translateY(0);
+}
+
+/* Close button */
+.wc-toast-close-btn {
+	flex-shrink: 0;
+	background: none;
+	border: none;
+	color: var(--wc-toast-muted);
+	opacity: 0.6;
+	cursor: pointer;
+	padding: 4px;
+	margin: -4px -4px 0 0;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.wc-toast-close-btn:hover {
+	opacity: 1;
+	background: rgba(15, 23, 42, 0.06);
+	color: var(--wc-toast-text);
+}
+
+.wc-toast-close-btn svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* Progress bar */
+.wc-toast-progress-bar {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	height: 3px;
+	background: var(--wc-toast-accent);
+	opacity: 0.7;
+	width: 100%;
+	transform-origin: left center;
+}
+
+.wc-toast:hover .wc-toast-progress-bar {
+	animation-play-state: paused !important;
+}
+
+/* ==========================================================================
+   4. Visual Themes
+   ========================================================================== */
+
+/* Modern Light (Default) */
+.wc-toasts-container.theme-modern-light .wc-toast {
+	background: #ffffff;
+	border-color: rgba(15, 23, 42, 0.08);
+}
+
+/* Frosted Glassmorphism */
+.wc-toasts-container.theme-glassmorphism .wc-toast {
+	background: rgba(255, 255, 255, 0.82);
+	backdrop-filter: blur(14px) saturate(180%);
+	-webkit-backdrop-filter: blur(14px) saturate(180%);
+	border-color: rgba(255, 255, 255, 0.6);
+	box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.14);
+}
+
+/* Dark Slate */
+.wc-toasts-container.theme-dark-slate .wc-toast {
+	background: #0f172a;
+	color: #f8fafc;
+	border-color: rgba(255, 255, 255, 0.1);
+	box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.5);
+}
+.wc-toasts-container.theme-dark-slate .wc-toast-title {
+	color: #f8fafc;
+}
+.wc-toasts-container.theme-dark-slate .wc-toast-message {
+	color: #94a3b8;
+}
+.wc-toasts-container.theme-dark-slate .wc-toast-close-btn {
+	color: #94a3b8;
+}
+.wc-toasts-container.theme-dark-slate .wc-toast-close-btn:hover {
+	background: rgba(255, 255, 255, 0.1);
+	color: #ffffff;
+}
+
+/* Minimalist Clean */
+.wc-toasts-container.theme-minimal .wc-toast {
+	background: #ffffff;
+	border-radius: 4px;
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* WooCommerce Brand Purple */
+.wc-toasts-container.theme-woocommerce-purple .wc-toast {
+	background: #ffffff;
+	border-color: rgba(127, 84, 179, 0.2);
+}
+.wc-toasts-container.theme-woocommerce-purple .wc-toast.type-success {
+	--wc-toast-accent: #7f54b3;
+}
+.wc-toasts-container.theme-woocommerce-purple .wc-toast-icon-wrap {
+	background: rgba(127, 84, 179, 0.1);
+	color: #7f54b3;
+}
+.wc-toasts-container.theme-woocommerce-purple .wc-toast-action-btn {
+	background: #7f54b3;
+}
+
+/* ==========================================================================
+   5. Drop Shadow Variants
+   ========================================================================== */
+.wc-toasts-container.shadow-none .wc-toast {
+	box-shadow: none !important;
+}
+
+.wc-toasts-container.shadow-subtle .wc-toast {
+	box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+}
+
+.wc-toasts-container.shadow-elevated .wc-toast {
+	box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.2), 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+}
+
+.wc-toasts-container.shadow-glow .wc-toast {
+	box-shadow: 0 8px 30px -4px var(--wc-toast-accent);
+}
+
+/* ==========================================================================
+   6. Animations
+   ========================================================================== */
+
+/* Entrance */
+@keyframes wcToastSlideInRight {
+	from {
+		opacity: 0;
+		transform: translateX(60px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes wcToastSlideInLeft {
+	from {
+		opacity: 0;
+		transform: translateX(-60px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes wcToastSlideInTop {
+	from {
+		opacity: 0;
+		transform: translateY(-40px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes wcToastSlideInBottom {
+	from {
+		opacity: 0;
+		transform: translateY(40px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes wcToastFadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes wcToastBounceIn {
+	0% {
+		opacity: 0;
+		transform: scale(0.7);
+	}
+	70% {
+		opacity: 1;
+		transform: scale(1.05);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+@keyframes wcToastZoomIn {
+	from {
+		opacity: 0;
+		transform: scale(0.85);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes wcToastFlipIn {
+	from {
+		opacity: 0;
+		transform: perspective(400px) rotateX(45deg);
+	}
+	to {
+		opacity: 1;
+		transform: perspective(400px) rotateX(0deg);
+	}
+}
+
+/* Exit */
+@keyframes wcToastFadeOut {
+	from {
+		opacity: 1;
+		transform: scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.92);
+	}
+}
+
+@keyframes wcToastSlideOutRight {
+	from {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(80px);
+	}
+}
+
+@keyframes wcToastSlideOutLeft {
+	from {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(-80px);
+	}
+}
+
+@keyframes wcToastSlideOutBottom {
+	from {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(60px);
+	}
+}
+
+@keyframes wcToastZoomOut {
+	from {
+		opacity: 1;
+		transform: scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.8);
+	}
+}
+
+/* Assigned Classes */
+.wc-toast.anim-slide-in-right {
+	animation: wcToastSlideInRight 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.wc-toast.anim-slide-in-left {
+	animation: wcToastSlideInLeft 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.wc-toast.anim-slide-in-top {
+	animation: wcToastSlideInTop 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.wc-toast.anim-slide-in-bottom {
+	animation: wcToastSlideInBottom 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.wc-toast.anim-fade-in {
+	animation: wcToastFadeIn 0.28s ease-out forwards;
+}
+.wc-toast.anim-bounce-in {
+	animation: wcToastBounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.wc-toast.anim-zoom-in {
+	animation: wcToastZoomIn 0.3s ease-out forwards;
+}
+.wc-toast.anim-flip-in {
+	animation: wcToastFlipIn 0.35s ease-out forwards;
+}
+
+.wc-toast.anim-fade-out {
+	animation: wcToastFadeOut 0.24s ease-in forwards;
+}
+.wc-toast.anim-slide-out-right {
+	animation: wcToastSlideOutRight 0.26s ease-in forwards;
+}
+.wc-toast.anim-slide-out-left {
+	animation: wcToastSlideOutLeft 0.26s ease-in forwards;
+}
+.wc-toast.anim-slide-out-bottom {
+	animation: wcToastSlideOutBottom 0.26s ease-in forwards;
+}
+.wc-toast.anim-zoom-out {
+	animation: wcToastZoomOut 0.22s ease-in forwards;
+}
+
+/* ==========================================================================
+   7. Mobile Responsiveness
+   ========================================================================== */
+@media (max-width: 640px) {
+	.wc-toasts-container.mobile-dock-bottom {
+		top: auto !important;
+		bottom: 16px !important;
+		left: 16px !important;
+		right: 16px !important;
+		width: calc(100% - 32px) !important;
+		max-width: none !important;
+		transform: none !important;
+		align-items: center !important;
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+	}
+
+	.wc-toasts-container.mobile-dock-bottom .wc-toast {
+		width: 100% !important;
+	}
+}
+
+/* ==========================================================================
+   8. Complete Layout Shift Elimination
+   ========================================================================== */
+.woocommerce-notices-wrapper:empty,
+.woocommerce-NoticeGroup:empty {
+	display: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	height: 0 !important;
+}
