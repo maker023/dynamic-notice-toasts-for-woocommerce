@@ -337,21 +337,12 @@
 			toast.className = 'wc-toast type-' + type;
 			toast.id = toastId;
 
-			// Entrance animation class.
+			// Entrance animation: Horizontal move + opacity fade only (no scale).
 			var pos = settings.position || 'top-right';
-			var animIn = settings.animation_in || 'slide-in';
-			if (animIn === 'slide-in') {
-				if (pos.indexOf('right') !== -1) {
-					toast.classList.add('anim-slide-in-right');
-				} else if (pos.indexOf('left') !== -1) {
-					toast.classList.add('anim-slide-in-left');
-				} else if (pos.indexOf('bottom') !== -1) {
-					toast.classList.add('anim-slide-in-bottom');
-				} else {
-					toast.classList.add('anim-slide-in-top');
-				}
+			if (pos.indexOf('left') !== -1) {
+				toast.classList.add('anim-horizontal-in-left');
 			} else {
-				toast.classList.add('anim-' + animIn);
+				toast.classList.add('anim-horizontal-in-right');
 			}
 
 			// 1. Icon.
@@ -511,19 +502,12 @@
 			toast.classList.add('is-dismissing');
 
 			var self = this;
+			// Exit animation: Horizontal move + opacity fade only (no scale).
 			var pos = settings.position || 'top-right';
-			var animOut = settings.animation_out || 'fade-out';
-
-			if (animOut === 'slide-out') {
-				if (pos.indexOf('right') !== -1) {
-					toast.classList.add('anim-slide-out-right');
-				} else if (pos.indexOf('left') !== -1) {
-					toast.classList.add('anim-slide-out-left');
-				} else {
-					toast.classList.add('anim-slide-out-bottom');
-				}
+			if (pos.indexOf('left') !== -1) {
+				toast.classList.add('anim-horizontal-out-left');
 			} else {
-				toast.classList.add('anim-' + animOut);
+				toast.classList.add('anim-horizontal-out-right');
 			}
 
 			setTimeout(function () {

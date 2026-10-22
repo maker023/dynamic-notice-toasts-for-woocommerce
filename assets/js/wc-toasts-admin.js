@@ -267,13 +267,13 @@
 		var $slot = $('#stage-toast-slot');
 		$slot.empty();
 
-		var theme = $('#wc-toasts-theme-select').val() || 'modern-light';
-		var radius = $('#wc-toasts-radius-range').val() || '12';
-		var animIn = $('#wc-toasts-anim-in').val() || 'slide-in';
+		var pos = $('.wc-toasts-pos-card.selected input').val() || 'top-right';
+		var animClass = (pos.indexOf('left') !== -1) ? 'anim-horizontal-in-left' : 'anim-horizontal-in-right';
+		var exitClass = (pos.indexOf('left') !== -1) ? 'anim-horizontal-out-left' : 'anim-horizontal-out-right';
 		var iconKey = notice.icon || 'info';
 
 		var $toast = $('<div>', {
-			class: 'wc-toast type-' + notice.type + ' anim-' + animIn,
+			class: 'wc-toast type-' + notice.type + ' ' + animClass,
 			css: {
 				borderRadius: radius + 'px'
 			}
@@ -307,7 +307,8 @@
 			class: 'wc-toast-close-btn',
 			html: icons.close || '&times;',
 			click: function () {
-				$toast.fadeOut(200, function () { $toast.remove(); });
+				$toast.removeClass('anim-horizontal-in-right anim-horizontal-in-left').addClass(exitClass);
+				setTimeout(function () { $toast.remove(); }, 240);
 			}
 		});
 		$toast.append($close);

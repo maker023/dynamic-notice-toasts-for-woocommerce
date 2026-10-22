@@ -12,19 +12,25 @@
 		::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 999px; }
 		::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.28); }
 
-		/* Code block highlights */
 		.code-font { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 
-		/* Toast Styles in Sandbox */
+		/* =================================================================
+		   Redesigned Toast System:
+		   - No borders used
+		   - Solid color per state
+		   - Icons extend full height, equal width to height (aspect-ratio 1/1)
+		   - Border radius alongside the toast
+		   - Pure horizontal translation & opacity fade (no scale)
+		   ================================================================= */
 		.demo-toast-container {
 			position: absolute;
 			z-index: 1000;
 			display: flex;
 			flex-direction: column;
-			gap: 10px;
+			gap: 12px;
 			pointer-events: none;
 			width: calc(100% - 32px);
-			max-width: 380px;
+			max-width: 390px;
 			box-sizing: border-box;
 			transition: all 0.25s ease;
 		}
@@ -40,131 +46,204 @@
 			position: relative;
 			pointer-events: auto;
 			width: 100%;
-			background: #ffffff;
-			color: #0f172a;
-			border: 1px solid rgba(15, 23, 42, 0.08);
+			background: var(--toast-bg, #3b82f6);
+			color: #ffffff;
+			border: none !important; /* Zero borders */
 			border-radius: 12px;
-			box-shadow: 0 14px 34px -6px rgba(0, 0, 0, 0.12), 0 8px 14px -4px rgba(0, 0, 0, 0.06);
-			padding: 14px 16px;
+			box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.2), 0 6px 14px -2px rgba(0, 0, 0, 0.12);
+			padding: 0;
 			box-sizing: border-box;
 			display: flex;
-			align-items: flex-start;
-			gap: 12px;
+			align-items: stretch; /* Icon stretches to 100% height */
 			overflow: hidden;
 			font-size: 13.5px;
 			line-height: 1.45;
-			transition: transform 0.2s ease, opacity 0.2s ease;
+			transition: opacity 0.26s ease, transform 0.26s ease;
 		}
 
-		.demo-toast::before {
-			content: "";
-			position: absolute;
-			top: 0; bottom: 0; left: 0;
-			width: 4px;
-			background: var(--toast-accent, #3b82f6);
-			border-radius: 12px 0 0 12px;
+		/* Solid State Colors */
+		.demo-toast.type-success {
+			--toast-bg: #10b981;
+			background: #10b981;
+		}
+		.demo-toast.type-error {
+			--toast-bg: #ef4444;
+			background: #ef4444;
+		}
+		.demo-toast.type-notice, .demo-toast.type-info {
+			--toast-bg: #3b82f6;
+			background: #3b82f6;
+		}
+		.demo-toast.type-warning {
+			--toast-bg: #f59e0b;
+			background: #f59e0b;
 		}
 
-		.demo-toast.type-success { --toast-accent: #10b981; }
-		.demo-toast.type-error { --toast-accent: #ef4444; }
-		.demo-toast.type-notice, .demo-toast.type-info { --toast-accent: #3b82f6; }
-		.demo-toast.type-warning { --toast-accent: #f59e0b; }
-
-		/* Theme variants */
-		.theme-glassmorphism .demo-toast {
-			background: rgba(255, 255, 255, 0.82);
-			backdrop-filter: blur(14px) saturate(180%);
-			border-color: rgba(255, 255, 255, 0.7);
-			box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.14);
-		}
-
-		.theme-dark-slate .demo-toast {
-			background: #0f172a;
-			color: #f8fafc;
-			border-color: rgba(255, 255, 255, 0.12);
-			box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.5);
-		}
-		.theme-dark-slate .demo-toast-title { color: #f8fafc !important; }
-		.theme-dark-slate .demo-toast-msg { color: #94a3b8 !important; }
-		.theme-dark-slate .demo-toast-close { color: #94a3b8 !important; }
-
-		.theme-minimal .demo-toast {
-			border-radius: 4px !important;
-			box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-			border: 1px solid #e2e8f0;
-		}
-
-		.theme-woocommerce-purple .demo-toast {
-			border-color: rgba(127, 84, 179, 0.25);
-		}
-		.theme-woocommerce-purple .demo-toast.type-success {
-			--toast-accent: #7f54b3;
-		}
-
+		/* Icon Container: Full height, Equal width to height, Matches left border-radius */
 		.demo-toast-icon {
+			align-self: stretch;
 			flex-shrink: 0;
-			width: 28px;
-			height: 28px;
-			border-radius: 50%;
+			aspect-ratio: 1 / 1;
+			min-width: 56px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			color: var(--toast-accent);
-			background: rgba(15, 23, 42, 0.05);
-			margin-top: 1px;
+			background: rgba(0, 0, 0, 0.15);
+			color: #ffffff;
+			border-radius: 12px 0 0 12px; /* Curves alongside toast */
+			border: none !important;
+			padding: 0;
+			margin: 0;
 		}
-		.demo-toast.type-success .demo-toast-icon { background: rgba(16, 185, 129, 0.12); }
-		.demo-toast.type-error .demo-toast-icon { background: rgba(239, 68, 68, 0.12); }
-		.demo-toast.type-notice .demo-toast-icon { background: rgba(59, 130, 246, 0.12); }
 
-		.demo-toast-content { flex: 1; min-width: 0; }
-		.demo-toast-title { font-weight: 600; font-size: 13.5px; margin-bottom: 2px; }
-		.demo-toast-msg { font-size: 13px; color: #64748b; word-break: break-word; }
+		.demo-toast-icon svg {
+			width: 24px;
+			height: 24px;
+			stroke-width: 2.2px;
+			color: #ffffff;
+		}
 
+		/* Content Area */
+		.demo-toast-content {
+			flex: 1;
+			min-width: 0;
+			padding: 13px 14px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		.demo-toast-title {
+			font-weight: 700;
+			font-size: 13.5px;
+			color: #ffffff;
+			margin-bottom: 2px;
+			line-height: 1.3;
+		}
+
+		.demo-toast-msg {
+			font-size: 13px;
+			color: rgba(255, 255, 255, 0.92);
+			word-break: break-word;
+			line-height: 1.4;
+		}
+
+		/* Action button: High-contrast white pill */
 		.demo-toast-action-btn {
 			display: inline-flex;
 			align-items: center;
-			padding: 4px 10px;
-			font-size: 11.5px;
-			font-weight: 600;
+			padding: 4px 12px;
+			font-size: 12px;
+			font-weight: 700;
 			border-radius: 6px;
-			color: #ffffff !important;
-			background: var(--toast-accent);
+			color: var(--toast-bg, #10b981) !important;
+			background: #ffffff;
+			border: none !important;
 			margin-top: 8px;
 			text-decoration: none;
-			transition: opacity 0.15s ease;
+			box-shadow: 0 2px 6px rgba(0,0,0,0.16);
+			transition: background 0.15s ease, transform 0.15s ease;
 		}
-		.demo-toast-action-btn:hover { opacity: 0.9; }
+		.demo-toast-action-btn:hover {
+			background: rgba(255, 255, 255, 0.92);
+			transform: translateY(-1px);
+		}
 
+		/* Close button */
 		.demo-toast-close {
-			background: none; border: none; cursor: pointer; color: #94a3b8;
-			padding: 4px; margin: -4px -4px 0 0; border-radius: 4px;
+			flex-shrink: 0;
+			align-self: flex-start;
+			background: none;
+			border: none !important;
+			cursor: pointer;
+			color: rgba(255, 255, 255, 0.7);
+			padding: 6px;
+			margin: 8px 8px 0 0;
+			border-radius: 6px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: color 0.15s ease, background 0.15s ease;
 		}
-		.demo-toast-close:hover { color: #0f172a; background: rgba(0,0,0,0.05); }
+		.demo-toast-close:hover {
+			color: #ffffff;
+			background: rgba(255, 255, 255, 0.2);
+		}
 
+		/* Progress bar */
 		.demo-toast-progress {
-			position: absolute; bottom: 0; left: 0;
-			height: 3px; background: var(--toast-accent);
-			width: 100%; transform-origin: left;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			height: 3px;
+			background: rgba(255, 255, 255, 0.45);
+			width: 100%;
+			transform-origin: left;
 			transition: transform 4500ms linear;
 		}
 
-		/* Animations */
-		@keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-		@keyframes slideInLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
-		@keyframes slideInTop { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-		@keyframes slideInBottom { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-		@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.7); } 70% { opacity: 1; transform: scale(1.05); } 100% { transform: scale(1); } }
-		@keyframes zoomIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+		/* =================================================================
+		   Horizontal Only Animations (NO SCALE)
+		   ================================================================= */
+		@keyframes horizontalInRight {
+			from {
+				opacity: 0;
+				transform: translateX(80px);
+			}
+			to {
+				opacity: 1;
+				transform: translateX(0);
+			}
+		}
 
-		.anim-slide-in-right { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-		.anim-slide-in-left { animation: slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-		.anim-slide-in-top { animation: slideInTop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-		.anim-slide-in-bottom { animation: slideInBottom 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-		.anim-fade-in { animation: fadeIn 0.25s ease-out forwards; }
-		.anim-bounce-in { animation: bounceIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-		.anim-zoom-in { animation: zoomIn 0.28s ease-out forwards; }
+		@keyframes horizontalInLeft {
+			from {
+				opacity: 0;
+				transform: translateX(-80px);
+			}
+			to {
+				opacity: 1;
+				transform: translateX(0);
+			}
+		}
+
+		@keyframes horizontalOutRight {
+			from {
+				opacity: 1;
+				transform: translateX(0);
+			}
+			to {
+				opacity: 0;
+				transform: translateX(80px);
+			}
+		}
+
+		@keyframes horizontalOutLeft {
+			from {
+				opacity: 1;
+				transform: translateX(0);
+			}
+			to {
+				opacity: 0;
+				transform: translateX(-80px);
+			}
+		}
+
+		.anim-horizontal-in-right {
+			animation: horizontalInRight 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		}
+
+		.anim-horizontal-in-left {
+			animation: horizontalInLeft 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		}
+
+		.anim-horizontal-out-right {
+			animation: horizontalOutRight 0.24s ease-in forwards;
+		}
+
+		.anim-horizontal-out-left {
+			animation: horizontalOutLeft 0.24s ease-in forwards;
+		}
 	</style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
@@ -182,10 +261,10 @@
 				<div>
 					<div class="flex items-center gap-2">
 						<h1 class="text-base font-bold text-slate-900 leading-tight">WooCommerce Dynamic Notice Toasts</h1>
-						<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 border border-purple-200">v1.0.0</span>
+						<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 border border-purple-200">v1.1.0 Solid UI</span>
 						<span class="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Developer Presentation</span>
 					</div>
-					<p class="text-xs text-slate-500">Interactive Architectural Overview, Test Sandbox & Code Review</p>
+					<p class="text-xs text-slate-500">Solid State Color Design &bull; Zero Borders &bull; Full-Height Square Icon &bull; Pure Horizontal Motion</p>
 				</div>
 			</div>
 
@@ -222,8 +301,8 @@
 				<div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100">
 					<div>
 						<h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-							<span>Live Sandbox Controls</span>
-							<span class="text-xs font-normal text-slate-500">— Test visual presets, positions, audio synthesizer, and raw WC alerts</span>
+							<span>Redesigned Solid Toast Sandbox</span>
+							<span class="text-xs font-normal text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-medium">No Borders &bull; Solid State Colors &bull; Horizontal Animation</span>
 						</h2>
 					</div>
 					<div class="flex items-center gap-2">
@@ -237,28 +316,16 @@
 					</div>
 				</div>
 
-				<div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 text-xs">
-					<!-- Theme Picker -->
-					<div>
-						<label class="block font-semibold text-slate-700 mb-1">Visual Theme</label>
-						<select id="ctrl-theme" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs text-slate-800">
-							<option value="modern-light">Modern Light (Clean White)</option>
-							<option value="glassmorphism">Frosted Glass (Glassmorphism)</option>
-							<option value="dark-slate">Dark Slate (Obsidian Mode)</option>
-							<option value="minimal">Minimalist Clean (Flat Border)</option>
-							<option value="woocommerce-purple">WooCommerce Brand Purple</option>
-						</select>
-					</div>
-
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 text-xs">
 					<!-- Position Picker -->
 					<div>
-						<label class="block font-semibold text-slate-700 mb-1">Screen Position</label>
+						<label class="block font-semibold text-slate-700 mb-1">Screen Position (Horizontal Slide Direction)</label>
 						<select id="ctrl-position" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs text-slate-800">
-							<option value="top-right" selected>Top Right (Standard)</option>
-							<option value="top-left">Top Left</option>
+							<option value="top-right" selected>Top Right (Slides from Right)</option>
+							<option value="top-left">Top Left (Slides from Left)</option>
 							<option value="top-center">Top Center</option>
-							<option value="bottom-right">Bottom Right</option>
-							<option value="bottom-left">Bottom Left</option>
+							<option value="bottom-right">Bottom Right (Slides from Right)</option>
+							<option value="bottom-left">Bottom Left (Slides from Left)</option>
 							<option value="bottom-center">Bottom Center</option>
 						</select>
 					</div>
@@ -275,15 +342,12 @@
 						</select>
 					</div>
 
-					<!-- Animation In -->
+					<!-- Animation In/Out Summary -->
 					<div>
-						<label class="block font-semibold text-slate-700 mb-1">Entrance Animation</label>
-						<select id="ctrl-anim" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs text-slate-800">
-							<option value="slide-in">Slide In (Directional)</option>
-							<option value="fade-in">Fade In</option>
-							<option value="bounce-in">Bounce Pop</option>
-							<option value="zoom-in">Zoom In</option>
-						</select>
+						<label class="block font-semibold text-slate-700 mb-1">Motion Specification</label>
+						<div class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 text-xs">
+							<span class="font-bold text-purple-700">Strictly Horizontal Translation</span> + Opacity Fade (0 scale)
+						</div>
 					</div>
 				</div>
 			</div>
@@ -295,61 +359,61 @@
 				<div class="lg:col-span-5 space-y-5">
 					<!-- Standard Cases Box -->
 					<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
-						<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Standard WC Scenarios</h3>
+						<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Solid State Notifications</h3>
 						<div class="grid grid-cols-1 gap-2">
-							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-emerald-100 bg-emerald-50/60 hover:bg-emerald-100/70 text-left transition" data-case="cart_added">
-								<div class="flex items-center gap-2.5">
-									<span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">🛒</span>
+							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-emerald-200 bg-emerald-500 text-white hover:bg-emerald-600 transition shadow-sm" data-case="cart_added">
+								<div class="flex items-center gap-3">
+									<span class="w-7 h-7 rounded bg-emerald-700/60 flex items-center justify-center font-bold text-xs">🛒</span>
 									<div>
-										<div class="text-xs font-semibold text-emerald-950">Add to Cart with "View Cart"</div>
-										<div class="text-[11px] text-emerald-700">Tests action button parser and item title</div>
+										<div class="text-xs font-bold">Solid Success: Add to Cart</div>
+										<div class="text-[11px] text-emerald-100">Full-height square icon + White Action Button</div>
 									</div>
 								</div>
-								<span class="text-xs font-bold text-emerald-600">Trigger &rarr;</span>
+								<span class="text-xs font-bold">Trigger &rarr;</span>
 							</button>
 
-							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-purple-100 bg-purple-50/60 hover:bg-purple-100/70 text-left transition" data-case="coupon_applied">
-								<div class="flex items-center gap-2.5">
-									<span class="w-7 h-7 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">🎟️</span>
+							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-red-200 bg-red-500 text-white hover:bg-red-600 transition shadow-sm" data-case="checkout_error">
+								<div class="flex items-center gap-3">
+									<span class="w-7 h-7 rounded bg-red-700/60 flex items-center justify-center font-bold text-xs">⚠️</span>
 									<div>
-										<div class="text-xs font-semibold text-purple-950">Coupon Applied ("FALL25")</div>
-										<div class="text-[11px] text-purple-700">Tests coupon domain metadata</div>
+										<div class="text-xs font-bold">Solid Error: Checkout Missing Field</div>
+										<div class="text-[11px] text-red-100">Deep solid red state alert</div>
 									</div>
 								</div>
-								<span class="text-xs font-bold text-purple-600">Trigger &rarr;</span>
+								<span class="text-xs font-bold">Trigger &rarr;</span>
 							</button>
 
-							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-red-100 bg-red-50/60 hover:bg-red-100/70 text-left transition" data-case="checkout_error">
-								<div class="flex items-center gap-2.5">
-									<span class="w-7 h-7 rounded-full bg-red-100 text-red-700 flex items-center justify-center font-bold text-xs">⚠️</span>
+							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-blue-200 bg-blue-500 text-white hover:bg-blue-600 transition shadow-sm" data-case="cart_undo">
+								<div class="flex items-center gap-3">
+									<span class="w-7 h-7 rounded bg-blue-700/60 flex items-center justify-center font-bold text-xs">🗑️</span>
 									<div>
-										<div class="text-xs font-semibold text-red-950">Checkout Missing Required Field</div>
-										<div class="text-[11px] text-red-700">Billing Postcode / ZIP error</div>
+										<div class="text-xs font-bold">Solid Notice: Item Removed with Undo</div>
+										<div class="text-[11px] text-blue-100">Solid blue state + Undo action button</div>
 									</div>
 								</div>
-								<span class="text-xs font-bold text-red-600">Trigger &rarr;</span>
+								<span class="text-xs font-bold">Trigger &rarr;</span>
 							</button>
 
-							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-amber-100 bg-amber-50/60 hover:bg-amber-100/70 text-left transition" data-case="stock_low">
-								<div class="flex items-center gap-2.5">
-									<span class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">📦</span>
+							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-amber-200 bg-amber-500 text-white hover:bg-amber-600 transition shadow-sm" data-case="stock_low">
+								<div class="flex items-center gap-3">
+									<span class="w-7 h-7 rounded bg-amber-700/60 flex items-center justify-center font-bold text-xs">📦</span>
 									<div>
-										<div class="text-xs font-semibold text-amber-950">Insufficient Inventory</div>
-										<div class="text-[11px] text-amber-700">Stock quantity limit exceeded</div>
+										<div class="text-xs font-bold">Solid Warning: Stock Limit Exceeded</div>
+										<div class="text-[11px] text-amber-100">Solid amber/orange inventory alert</div>
 									</div>
 								</div>
-								<span class="text-xs font-bold text-amber-600">Trigger &rarr;</span>
+								<span class="text-xs font-bold">Trigger &rarr;</span>
 							</button>
 
-							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-blue-100 bg-blue-50/60 hover:bg-blue-100/70 text-left transition" data-case="cart_undo">
-								<div class="flex items-center gap-2.5">
-									<span class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">🗑️</span>
+							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-emerald-200 bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm" data-case="coupon_applied">
+								<div class="flex items-center gap-3">
+									<span class="w-7 h-7 rounded bg-emerald-800/60 flex items-center justify-center font-bold text-xs">🎟️</span>
 									<div>
-										<div class="text-xs font-semibold text-blue-950">Item Removed with "Undo?" Link</div>
-										<div class="text-[11px] text-blue-700">Tests inline undo restoration parsing</div>
+										<div class="text-xs font-bold">Solid Success: Coupon Applied ("FALL25")</div>
+										<div class="text-[11px] text-emerald-100">25% discount activated notice</div>
 									</div>
 								</div>
-								<span class="text-xs font-bold text-blue-600">Trigger &rarr;</span>
+								<span class="text-xs font-bold">Trigger &rarr;</span>
 							</button>
 						</div>
 					</div>
@@ -361,7 +425,7 @@
 							<span class="text-[11px] text-purple-600 font-medium">Tests Parser & Hijacker</span>
 						</div>
 						<p class="text-xs text-slate-600 leading-relaxed">
-							Type or paste any legacy WooCommerce markup (like themes output). The parser will strip the default container, isolate links, extract actions, and pop the toast!
+							Type or paste any legacy WooCommerce markup. Notice how the parser renders solid color, strips borders, stretches the icon, and uses horizontal-only translation.
 						</p>
 						<textarea id="raw-wc-markup" rows="3" class="w-full text-xs code-font bg-slate-900 text-emerald-400 p-2.5 rounded-lg border border-slate-700 focus:outline-none focus:ring-1 focus:ring-purple-500"><div class="woocommerce-message" role="alert"><a href="/cart/" class="button wc-forward">View cart</a> &ldquo;Audio Technica M50x&rdquo; has been added to your cart.</div></textarea>
 						<div class="flex items-center justify-between">
@@ -389,14 +453,14 @@
 							</div>
 							<div class="text-[11px] text-slate-500 font-medium flex items-center gap-1.5">
 								<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-								Toast Engine Active
+								Redesigned Toast Engine Active
 							</div>
 						</div>
 
 						<!-- Simulated Store Content Stage -->
 						<div id="sandbox-stage" class="relative flex-1 bg-slate-100/50 p-6 overflow-hidden select-none">
 							<!-- Toast Container (Absolute within Stage) -->
-							<div id="demo-container" class="demo-toast-container pos-top-right theme-modern-light"></div>
+							<div id="demo-container" class="demo-toast-container pos-top-right"></div>
 
 							<!-- Mock Store Background Elements -->
 							<div class="space-y-6 max-w-lg opacity-40">
@@ -445,7 +509,6 @@
 					<p class="text-xs text-slate-500 mt-1">How WooCommerce Dynamic Notice Toasts eliminates layout shifts and intercepts every alert vector</p>
 				</div>
 
-				<!-- 3 Pillars Grid -->
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 					<div class="p-4 rounded-xl border border-purple-100 bg-purple-50/40 space-y-2.5">
 						<div class="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-xs">1</div>
@@ -601,7 +664,7 @@
 						</div>
 						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
 							<span>🎨 <strong>assets/css/wc-toasts-frontend.css</strong></span>
-							<span class="text-[11px] text-slate-400">Themes, animations, dock</span>
+							<span class="text-[11px] text-slate-400">Solid themes & horizontal motion</span>
 						</div>
 						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
 							<span>⚡ <strong>assets/js/wc-toasts-frontend.js</strong></span>
@@ -864,13 +927,13 @@
 		// SVG Icons Dictionary
 		// =================================================================
 		var Icons = {
-			check: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>',
-			cart_check: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/><path d="m9 11 2 2 4-4"/></svg>',
-			trash: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
-			ticket_check: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="m9 12 2 2 4-4"/></svg>',
-			alert_triangle: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-			archive_alert: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect width="22" height="5" x="1" y="3" rx="1"/><line x1="12" y1="11" x2="12" y2="15"/></svg>',
-			info: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>'
+			check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>',
+			cart_check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/><path d="m9 11 2 2 4-4"/></svg>',
+			trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+			ticket_check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="m9 12 2 2 4-4"/></svg>',
+			alert_triangle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+			archive_alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect width="22" height="5" x="1" y="3" rx="1"/><line x1="12" y1="11" x2="12" y2="15"/></svg>',
+			info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>'
 		};
 
 		// =================================================================
@@ -917,26 +980,29 @@
 		];
 
 		// =================================================================
-		// Toast Dispatcher inside Sandbox
+		// Toast Dispatcher inside Sandbox (Solid State & Horizontal Only)
 		// =================================================================
 		var activeToasts = [];
 
 		function showToast(payload) {
 			var container = document.getElementById('demo-container');
-			var animIn = document.getElementById('ctrl-anim').value || 'slide-in';
 			var position = document.getElementById('ctrl-position').value || 'top-right';
 
 			var toast = document.createElement('div');
-			toast.className = 'demo-toast type-' + (payload.type || 'notice') + ' anim-' + animIn;
+			toast.className = 'demo-toast type-' + (payload.type || 'notice');
 
-			// Icon
+			// Strictly horizontal animation based on position:
+			var animInClass = (position.indexOf('left') !== -1) ? 'anim-horizontal-in-left' : 'anim-horizontal-in-right';
+			toast.classList.add(animInClass);
+
+			// Full height, square icon container
 			var iconWrap = document.createElement('div');
 			iconWrap.className = 'demo-toast-icon';
 			var iconSvg = Icons[payload.icon] || Icons.info;
 			iconWrap.innerHTML = iconSvg;
 			toast.appendChild(iconWrap);
 
-			// Content
+			// Content area
 			var content = document.createElement('div');
 			content.className = 'demo-toast-content';
 
@@ -950,7 +1016,7 @@
 			msg.textContent = payload.message || '';
 			content.appendChild(msg);
 
-			// Action button
+			// Action button (White pill)
 			if (payload.action && payload.action.text) {
 				var actionBtn = document.createElement('a');
 				actionBtn.className = 'demo-toast-action-btn';
@@ -967,7 +1033,7 @@
 			closeBtn.className = 'demo-toast-close';
 			closeBtn.innerHTML = '&times;';
 			closeBtn.onclick = function() {
-				dismissToast(toast);
+				dismissToast(toast, position);
 			};
 			toast.appendChild(closeBtn);
 
@@ -987,7 +1053,7 @@
 
 			// Auto dismiss in 4.5s
 			var timer = setTimeout(function() {
-				dismissToast(toast);
+				dismissToast(toast, position);
 			}, 4500);
 
 			toast.addEventListener('mouseenter', function() {
@@ -995,22 +1061,26 @@
 				progress.style.transition = 'none';
 			});
 
-			// Audio play
+			// Audio chime play
 			AudioEngine.play(payload.type);
 
 			updateClearButton();
 		}
 
-		function dismissToast(toast) {
-			toast.style.opacity = '0';
-			toast.style.transform = 'scale(0.9)';
+		function dismissToast(toast, position) {
+			position = position || document.getElementById('ctrl-position').value || 'top-right';
+			var exitClass = (position.indexOf('left') !== -1) ? 'anim-horizontal-out-left' : 'anim-horizontal-out-right';
+
+			toast.classList.remove('anim-horizontal-in-right', 'anim-horizontal-in-left');
+			toast.classList.add(exitClass);
+
 			setTimeout(function() {
 				if (toast.parentNode) {
 					toast.parentNode.removeChild(toast);
 				}
 				activeToasts = activeToasts.filter(function(t) { return t !== toast; });
 				updateClearButton();
-			}, 200);
+			}, 240);
 		}
 
 		function updateClearButton() {
@@ -1037,16 +1107,10 @@
 				});
 			});
 
-			// Theme change
-			document.getElementById('ctrl-theme').addEventListener('change', function() {
-				var container = document.getElementById('demo-container');
-				container.className = 'demo-toast-container pos-' + document.getElementById('ctrl-position').value + ' theme-' + this.value;
-			});
-
 			// Position change
 			document.getElementById('ctrl-position').addEventListener('change', function() {
 				var container = document.getElementById('demo-container');
-				container.className = 'demo-toast-container pos-' + this.value + ' theme-' + document.getElementById('ctrl-theme').value;
+				container.className = 'demo-toast-container pos-' + this.value;
 			});
 
 			// Play Sound preview button
@@ -1056,7 +1120,9 @@
 
 			// Clear all
 			document.getElementById('btn-clear-all').addEventListener('click', function() {
-				activeToasts.slice().forEach(dismissToast);
+				activeToasts.slice().forEach(function(t) {
+					dismissToast(t);
+				});
 			});
 
 			// Predefined case trigger buttons
@@ -1087,7 +1153,7 @@
 						});
 					} else if (caseKey === 'stock_low') {
 						showToast({
-							type: 'error',
+							type: 'warning',
 							icon: 'archive_alert',
 							title: 'Insufficient Inventory',
 							message: 'You cannot add that amount to cart — we have 2 in stock and you have 2 in your cart.'
@@ -1209,11 +1275,11 @@
 				showToast({
 					type: 'success',
 					icon: 'cart_check',
-					title: 'Sandbox Ready',
-					message: 'WooCommerce Dynamic Notice Toasts developer sandbox initialized. Try triggering notices on the left!',
+					title: 'Redesigned Toast System',
+					message: 'Solid state colors, zero borders, full-height square icon, and horizontal movement.',
 					action: { text: 'View cart →', url: '#' }
 				});
-			}, 400);
+			}, 350);
 		});
 	</script>
 </body>
