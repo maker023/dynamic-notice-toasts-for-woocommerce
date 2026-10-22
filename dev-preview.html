@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>WooCommerce Dynamic Notice Toasts — Developer Presentation & Interactive Sandbox</title>
+	<script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+	<style>
+		/* Custom scrollbars */
+		::-webkit-scrollbar { width: 6px; height: 6px; }
+		::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); }
+		::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 999px; }
+		::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.28); }
+
+		/* Code block highlights */
+		.code-font { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+
+		/* Toast Styles in Sandbox */
+		.demo-toast-container {
+			position: absolute;
+			z-index: 1000;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			pointer-events: none;
+			width: calc(100% - 32px);
+			max-width: 380px;
+			box-sizing: border-box;
+			transition: all 0.25s ease;
+		}
+
+		.demo-toast-container.pos-top-right { top: 20px; right: 20px; align-items: flex-end; }
+		.demo-toast-container.pos-top-left { top: 20px; left: 20px; align-items: flex-start; }
+		.demo-toast-container.pos-top-center { top: 20px; left: 50%; transform: translateX(-50%); align-items: center; }
+		.demo-toast-container.pos-bottom-right { bottom: 20px; right: 20px; align-items: flex-end; }
+		.demo-toast-container.pos-bottom-left { bottom: 20px; left: 20px; align-items: flex-start; }
+		.demo-toast-container.pos-bottom-center { bottom: 20px; left: 50%; transform: translateX(-50%); align-items: center; }
+
+		.demo-toast {
+			position: relative;
+			pointer-events: auto;
+			width: 100%;
+			background: #ffffff;
+			color: #0f172a;
+			border: 1px solid rgba(15, 23, 42, 0.08);
+			border-radius: 12px;
+			box-shadow: 0 14px 34px -6px rgba(0, 0, 0, 0.12), 0 8px 14px -4px rgba(0, 0, 0, 0.06);
+			padding: 14px 16px;
+			box-sizing: border-box;
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			overflow: hidden;
+			font-size: 13.5px;
+			line-height: 1.45;
+			transition: transform 0.2s ease, opacity 0.2s ease;
+		}
+
+		.demo-toast::before {
+			content: "";
+			position: absolute;
+			top: 0; bottom: 0; left: 0;
+			width: 4px;
+			background: var(--toast-accent, #3b82f6);
+			border-radius: 12px 0 0 12px;
+		}
+
+		.demo-toast.type-success { --toast-accent: #10b981; }
+		.demo-toast.type-error { --toast-accent: #ef4444; }
+		.demo-toast.type-notice, .demo-toast.type-info { --toast-accent: #3b82f6; }
+		.demo-toast.type-warning { --toast-accent: #f59e0b; }
+
+		/* Theme variants */
+		.theme-glassmorphism .demo-toast {
+			background: rgba(255, 255, 255, 0.82);
+			backdrop-filter: blur(14px) saturate(180%);
+			border-color: rgba(255, 255, 255, 0.7);
+			box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.14);
+		}
+
+		.theme-dark-slate .demo-toast {
+			background: #0f172a;
+			color: #f8fafc;
+			border-color: rgba(255, 255, 255, 0.12);
+			box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.5);
+		}
+		.theme-dark-slate .demo-toast-title { color: #f8fafc !important; }
+		.theme-dark-slate .demo-toast-msg { color: #94a3b8 !important; }
+		.theme-dark-slate .demo-toast-close { color: #94a3b8 !important; }
+
+		.theme-minimal .demo-toast {
+			border-radius: 4px !important;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+			border: 1px solid #e2e8f0;
+		}
+
+		.theme-woocommerce-purple .demo-toast {
+			border-color: rgba(127, 84, 179, 0.25);
+		}
+		.theme-woocommerce-purple .demo-toast.type-success {
+			--toast-accent: #7f54b3;
+		}
+
+		.demo-toast-icon {
+			flex-shrink: 0;
+			width: 28px;
+			height: 28px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--toast-accent);
+			background: rgba(15, 23, 42, 0.05);
+			margin-top: 1px;
+		}
+		.demo-toast.type-success .demo-toast-icon { background: rgba(16, 185, 129, 0.12); }
+		.demo-toast.type-error .demo-toast-icon { background: rgba(239, 68, 68, 0.12); }
+		.demo-toast.type-notice .demo-toast-icon { background: rgba(59, 130, 246, 0.12); }
+
+		.demo-toast-content { flex: 1; min-width: 0; }
+		.demo-toast-title { font-weight: 600; font-size: 13.5px; margin-bottom: 2px; }
+		.demo-toast-msg { font-size: 13px; color: #64748b; word-break: break-word; }
+
+		.demo-toast-action-btn {
+			display: inline-flex;
+			align-items: center;
+			padding: 4px 10px;
+			font-size: 11.5px;
+			font-weight: 600;
+			border-radius: 6px;
+			color: #ffffff !important;
+			background: var(--toast-accent);
+			margin-top: 8px;
+			text-decoration: none;
+			transition: opacity 0.15s ease;
+		}
+		.demo-toast-action-btn:hover { opacity: 0.9; }
+
+		.demo-toast-close {
+			background: none; border: none; cursor: pointer; color: #94a3b8;
+			padding: 4px; margin: -4px -4px 0 0; border-radius: 4px;
+		}
+		.demo-toast-close:hover { color: #0f172a; background: rgba(0,0,0,0.05); }
+
+		.demo-toast-progress {
+			position: absolute; bottom: 0; left: 0;
+			height: 3px; background: var(--toast-accent);
+			width: 100%; transform-origin: left;
+			transition: transform 4500ms linear;
+		}
+
+		/* Animations */
+		@keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+		@keyframes slideInLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
+		@keyframes slideInTop { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+		@keyframes slideInBottom { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+		@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.7); } 70% { opacity: 1; transform: scale(1.05); } 100% { transform: scale(1); } }
+		@keyframes zoomIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+
+		.anim-slide-in-right { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+		.anim-slide-in-left { animation: slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+		.anim-slide-in-top { animation: slideInTop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+		.anim-slide-in-bottom { animation: slideInBottom 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+		.anim-fade-in { animation: fadeIn 0.25s ease-out forwards; }
+		.anim-bounce-in { animation: bounceIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+		.anim-zoom-in { animation: zoomIn 0.28s ease-out forwards; }
+	</style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+
+	<!-- Top Navigation Bar -->
+	<header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+		<div class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-700 to-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-purple-500/20">
+					<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+						<path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+					</svg>
+				</div>
+				<div>
+					<div class="flex items-center gap-2">
+						<h1 class="text-base font-bold text-slate-900 leading-tight">WooCommerce Dynamic Notice Toasts</h1>
+						<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 border border-purple-200">v1.0.0</span>
+						<span class="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Developer Presentation</span>
+					</div>
+					<p class="text-xs text-slate-500">Interactive Architectural Overview, Test Sandbox & Code Review</p>
+				</div>
+			</div>
+
+			<!-- Tab Links -->
+			<nav class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg text-xs font-medium text-slate-600">
+				<button class="nav-tab px-3 py-1.5 rounded-md bg-white text-purple-700 font-semibold shadow-sm" data-tab="sandbox">
+					🎮 Interactive Sandbox
+				</button>
+				<button class="nav-tab px-3 py-1.5 rounded-md hover:text-slate-900" data-tab="architecture">
+					🏛️ Interception Architecture
+				</button>
+				<button class="nav-tab px-3 py-1.5 rounded-md hover:text-slate-900" data-tab="catalog">
+					📋 WC Notice Catalog (~30 Cases)
+				</button>
+				<button class="nav-tab px-3 py-1.5 rounded-md hover:text-slate-900" data-tab="codebase">
+					📁 Codebase & Standards
+				</button>
+				<button class="nav-tab px-3 py-1.5 rounded-md hover:text-slate-900" data-tab="pro-bridge">
+					💎 Pro Bridge & Roadmap
+				</button>
+			</nav>
+		</div>
+	</header>
+
+	<!-- Main Content Area -->
+	<main class="max-w-7xl mx-auto px-6 py-6">
+
+		<!-- ============================================================== -->
+		<!-- TAB 1: INTERACTIVE SANDBOX                                    -->
+		<!-- ============================================================== -->
+		<section id="tab-sandbox" class="tab-panel block space-y-6">
+			<!-- Developer Controls Top Bar -->
+			<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+				<div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100">
+					<div>
+						<h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+							<span>Live Sandbox Controls</span>
+							<span class="text-xs font-normal text-slate-500">— Test visual presets, positions, audio synthesizer, and raw WC alerts</span>
+						</h2>
+					</div>
+					<div class="flex items-center gap-2">
+						<button id="btn-clear-all" class="text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">
+							Clear Toasts (0)
+						</button>
+						<button id="btn-sound-preview" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 flex items-center gap-1.5">
+							<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+							Play Audio Chime
+						</button>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 text-xs">
+					<!-- Theme Picker -->
+					<div>
+						<label class="block font-semibold text-slate-700 mb-1">Visual Theme</label>
+						<select id="ctrl-theme" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs text-slate-800">
+							<option value="modern-light">Modern Light (Clean White)</option>
+							<option value="glassmorphism">Frosted Glass (Glassmorphism)</option>
+							<option value="dark-slate">Dark Slate (Obsidian Mode)</option>
+							<option value="minimal">Minimalist Clean (Flat Border)</option>
+							<option value="woocommerce-purple">WooCommerce Brand Purple</option>
+						</select>
+					</div>
+
+					<!-- Position Picker -->
+					<div>
+						<label class="block font-semibold text-slate-700 mb-1">Screen Position</label>
+						<select id="ctrl-position" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs text-slate-800">
+							<option value="top-right" selected>Top Right (Standard)</option>
+							<option value="top-left">Top Left</option>
+							<option value="top-center">Top Center</option>
+							<option value="bottom-right">Bottom Right</option>
+							<option value="bottom-left">Bottom Left</option>
+							<option value="bottom-center">Bottom Center</option>
+						</select>
+					</div>
+
+					<!-- Audio Theme -->
+					<div>
+						<label class="block font-semibold text-slate-700 mb-1">Web Audio Chime</label>
+						<select id="ctrl-sound" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs text-slate-800">
+							<option value="gentle_chime">Gentle Chime (E5-A5-C6 Sine)</option>
+							<option value="modern_ping">Modern Ping (Pitch Sweep)</option>
+							<option value="crisp_pop">Crisp Pop (450Hz->120Hz)</option>
+							<option value="bell_ding">Bell Ding (Harmonic Overtone)</option>
+							<option value="subtle_click">Subtle Haptic Click (35ms)</option>
+						</select>
+					</div>
+
+					<!-- Animation In -->
+					<div>
+						<label class="block font-semibold text-slate-700 mb-1">Entrance Animation</label>
+						<select id="ctrl-anim" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs text-slate-800">
+							<option value="slide-in">Slide In (Directional)</option>
+							<option value="fade-in">Fade In</option>
+							<option value="bounce-in">Bounce Pop</option>
+							<option value="zoom-in">Zoom In</option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<!-- Split Stage: Test Buttons + Live Screen Simulator -->
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+				<!-- Left Column: Notice Trigger Buttons & Raw HTML Interceptor -->
+				<div class="lg:col-span-5 space-y-5">
+					<!-- Standard Cases Box -->
+					<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+						<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Standard WC Scenarios</h3>
+						<div class="grid grid-cols-1 gap-2">
+							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-emerald-100 bg-emerald-50/60 hover:bg-emerald-100/70 text-left transition" data-case="cart_added">
+								<div class="flex items-center gap-2.5">
+									<span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">🛒</span>
+									<div>
+										<div class="text-xs font-semibold text-emerald-950">Add to Cart with "View Cart"</div>
+										<div class="text-[11px] text-emerald-700">Tests action button parser and item title</div>
+									</div>
+								</div>
+								<span class="text-xs font-bold text-emerald-600">Trigger &rarr;</span>
+							</button>
+
+							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-purple-100 bg-purple-50/60 hover:bg-purple-100/70 text-left transition" data-case="coupon_applied">
+								<div class="flex items-center gap-2.5">
+									<span class="w-7 h-7 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">🎟️</span>
+									<div>
+										<div class="text-xs font-semibold text-purple-950">Coupon Applied ("FALL25")</div>
+										<div class="text-[11px] text-purple-700">Tests coupon domain metadata</div>
+									</div>
+								</div>
+								<span class="text-xs font-bold text-purple-600">Trigger &rarr;</span>
+							</button>
+
+							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-red-100 bg-red-50/60 hover:bg-red-100/70 text-left transition" data-case="checkout_error">
+								<div class="flex items-center gap-2.5">
+									<span class="w-7 h-7 rounded-full bg-red-100 text-red-700 flex items-center justify-center font-bold text-xs">⚠️</span>
+									<div>
+										<div class="text-xs font-semibold text-red-950">Checkout Missing Required Field</div>
+										<div class="text-[11px] text-red-700">Billing Postcode / ZIP error</div>
+									</div>
+								</div>
+								<span class="text-xs font-bold text-red-600">Trigger &rarr;</span>
+							</button>
+
+							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-amber-100 bg-amber-50/60 hover:bg-amber-100/70 text-left transition" data-case="stock_low">
+								<div class="flex items-center gap-2.5">
+									<span class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">📦</span>
+									<div>
+										<div class="text-xs font-semibold text-amber-950">Insufficient Inventory</div>
+										<div class="text-[11px] text-amber-700">Stock quantity limit exceeded</div>
+									</div>
+								</div>
+								<span class="text-xs font-bold text-amber-600">Trigger &rarr;</span>
+							</button>
+
+							<button class="trigger-case flex items-center justify-between p-3 rounded-lg border border-blue-100 bg-blue-50/60 hover:bg-blue-100/70 text-left transition" data-case="cart_undo">
+								<div class="flex items-center gap-2.5">
+									<span class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">🗑️</span>
+									<div>
+										<div class="text-xs font-semibold text-blue-950">Item Removed with "Undo?" Link</div>
+										<div class="text-[11px] text-blue-700">Tests inline undo restoration parsing</div>
+									</div>
+								</div>
+								<span class="text-xs font-bold text-blue-600">Trigger &rarr;</span>
+							</button>
+						</div>
+					</div>
+
+					<!-- Raw WooCommerce Notice Simulator & Parser -->
+					<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+						<div class="flex items-center justify-between">
+							<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Raw WC Alert Simulator</h3>
+							<span class="text-[11px] text-purple-600 font-medium">Tests Parser & Hijacker</span>
+						</div>
+						<p class="text-xs text-slate-600 leading-relaxed">
+							Type or paste any legacy WooCommerce markup (like themes output). The parser will strip the default container, isolate links, extract actions, and pop the toast!
+						</p>
+						<textarea id="raw-wc-markup" rows="3" class="w-full text-xs code-font bg-slate-900 text-emerald-400 p-2.5 rounded-lg border border-slate-700 focus:outline-none focus:ring-1 focus:ring-purple-500"><div class="woocommerce-message" role="alert"><a href="/cart/" class="button wc-forward">View cart</a> &ldquo;Audio Technica M50x&rdquo; has been added to your cart.</div></textarea>
+						<div class="flex items-center justify-between">
+							<div class="flex gap-2">
+								<button id="btn-quick-error" class="text-[11px] px-2 py-1 rounded bg-slate-100 text-slate-600 hover:bg-slate-200">Load Error Sample</button>
+								<button id="btn-quick-info" class="text-[11px] px-2 py-1 rounded bg-slate-100 text-slate-600 hover:bg-slate-200">Load Info Sample</button>
+							</div>
+							<button id="btn-parse-hijack" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-purple-600 text-white hover:bg-purple-700 shadow-sm">
+								Simulate Hijack &rarr;
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Right Column: Simulated Store Page Viewport -->
+				<div class="lg:col-span-7">
+					<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[580px]">
+						<!-- Mock Browser Window Header -->
+						<div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+							<div class="flex items-center gap-2">
+								<span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+								<span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+								<span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+								<span class="text-xs font-mono text-slate-400 ml-2">https://mystore.local/shop/</span>
+							</div>
+							<div class="text-[11px] text-slate-500 font-medium flex items-center gap-1.5">
+								<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+								Toast Engine Active
+							</div>
+						</div>
+
+						<!-- Simulated Store Content Stage -->
+						<div id="sandbox-stage" class="relative flex-1 bg-slate-100/50 p-6 overflow-hidden select-none">
+							<!-- Toast Container (Absolute within Stage) -->
+							<div id="demo-container" class="demo-toast-container pos-top-right theme-modern-light"></div>
+
+							<!-- Mock Store Background Elements -->
+							<div class="space-y-6 max-w-lg opacity-40">
+								<div class="flex items-center justify-between border-b border-slate-300 pb-3">
+									<div class="h-5 bg-slate-400 rounded w-32"></div>
+									<div class="flex gap-2">
+										<div class="h-4 bg-slate-300 rounded w-12"></div>
+										<div class="h-4 bg-slate-300 rounded w-12"></div>
+									</div>
+								</div>
+
+								<div class="grid grid-cols-2 gap-4">
+									<div class="bg-white p-3 rounded-lg border border-slate-200 space-y-2">
+										<div class="h-24 bg-slate-200 rounded"></div>
+										<div class="h-4 bg-slate-300 rounded w-3/4"></div>
+										<div class="h-3 bg-slate-200 rounded w-1/2"></div>
+										<div class="h-6 bg-purple-300 rounded mt-2"></div>
+									</div>
+									<div class="bg-white p-3 rounded-lg border border-slate-200 space-y-2">
+										<div class="h-24 bg-slate-200 rounded"></div>
+										<div class="h-4 bg-slate-300 rounded w-3/4"></div>
+										<div class="h-3 bg-slate-200 rounded w-1/2"></div>
+										<div class="h-6 bg-purple-300 rounded mt-2"></div>
+									</div>
+								</div>
+
+								<!-- Suppressed Alert Placeholder Box -->
+								<div class="p-3 bg-amber-50 border border-dashed border-amber-300 rounded-lg text-amber-800 text-xs">
+									<span class="font-bold">Notice Suppression Active:</span> Default WooCommerce banner area <code>.woocommerce-notices-wrapper</code> is hidden. No content shift occurs!
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</section>
+
+		<!-- ============================================================== -->
+		<!-- TAB 2: ARCHITECTURE & INTERCEPTION DEEP DIVE                  -->
+		<!-- ============================================================== -->
+		<section id="tab-architecture" class="tab-panel hidden space-y-6">
+			<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+				<div>
+					<h2 class="text-base font-bold text-slate-900">Notice Interception Architecture</h2>
+					<p class="text-xs text-slate-500 mt-1">How WooCommerce Dynamic Notice Toasts eliminates layout shifts and intercepts every alert vector</p>
+				</div>
+
+				<!-- 3 Pillars Grid -->
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+					<div class="p-4 rounded-xl border border-purple-100 bg-purple-50/40 space-y-2.5">
+						<div class="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-xs">1</div>
+						<h3 class="text-xs font-bold text-slate-900">Server-Side Interception (PHP)</h3>
+						<p class="text-xs text-slate-600 leading-relaxed">
+							In <code class="code-font bg-white px-1 py-0.5 rounded border border-purple-200">class-wc-toasts-interceptor.php</code>, hooks into <code class="code-font bg-white px-1 py-0.5 rounded">template_redirect</code> and <code class="code-font bg-white px-1 py-0.5 rounded">woocommerce_output_all_notices</code> at priority 1.
+						</p>
+						<ul class="text-[11px] text-slate-600 space-y-1 list-disc pl-4">
+							<li>Extracts notices via <code class="code-font">wc_get_notices()</code></li>
+							<li>Calls <code class="code-font">wc_clear_notices()</code> so templates omit static markup</li>
+							<li>Injects suppression CSS in <code class="code-font">wp_head</code></li>
+							<li>Serializes notices into frontend JS payload</li>
+						</ul>
+					</div>
+
+					<div class="p-4 rounded-xl border border-blue-100 bg-blue-50/40 space-y-2.5">
+						<div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs">2</div>
+						<h3 class="text-xs font-bold text-slate-900">AJAX Event Interception (JS)</h3>
+						<p class="text-xs text-slate-600 leading-relaxed">
+							In <code class="code-font bg-white px-1 py-0.5 rounded border border-blue-200">wc-toasts-frontend.js</code>, hooks directly into WooCommerce jQuery triggers and native response pipelines.
+						</p>
+						<ul class="text-[11px] text-slate-600 space-y-1 list-disc pl-4">
+							<li><code class="code-font">$(document.body).on('added_to_cart')</code></li>
+							<li><code class="code-font">$(document.body).on('checkout_error')</code></li>
+							<li><code class="code-font">$(document.body).on('applied_coupon')</code></li>
+							<li>Global <code class="code-font">ajaxSuccess</code> inspects failure fragments</li>
+						</ul>
+					</div>
+
+					<div class="p-4 rounded-xl border border-emerald-100 bg-emerald-50/40 space-y-2.5">
+						<div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">3</div>
+						<h3 class="text-xs font-bold text-slate-900">MutationObserver Fallback</h3>
+						<p class="text-xs text-slate-600 leading-relaxed">
+							Catches rogue notices appended directly to the DOM by 3rd-party plugins, checkout gateways, or custom themes.
+						</p>
+						<ul class="text-[11px] text-slate-600 space-y-1 list-disc pl-4">
+							<li>Observes <code class="code-font">.woocommerce-notices-wrapper</code> and body</li>
+							<li>Instantly sets <code class="code-font">display: none !important</code></li>
+							<li>Parses inner text and action links</li>
+							<li>Converts dynamically into toast with zero delay</li>
+						</ul>
+					</div>
+				</div>
+
+				<!-- Action Parser Breakdown -->
+				<div class="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
+					<h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">The Intelligent Action Link Parser</h3>
+					<p class="text-xs text-slate-600 leading-relaxed">
+						WooCommerce frequently packs HTML links inside notices, like <code class="code-font">&lt;a href="/cart/" class="button wc-forward"&gt;View cart&lt;/a&gt;</code> or <code class="code-font">&lt;a class="restore-item"&gt;Undo?&lt;/a&gt;</code>.
+						Rather than leaving messy unstyled anchor tags inside text, the engine:
+					</p>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+						<div class="bg-white p-3 rounded-lg border border-slate-200 space-y-1.5">
+							<div class="font-bold text-red-600">Before (Default WooCommerce Markup):</div>
+							<code class="code-font text-[11px] block bg-slate-900 text-slate-200 p-2 rounded overflow-x-auto">
+								&lt;div class="woocommerce-message"&gt;&lt;a href="/cart/" class="button"&gt;View cart&lt;/a&gt; &ldquo;Shirt&rdquo; has been added to your cart.&lt;/div&gt;
+							</code>
+						</div>
+						<div class="bg-white p-3 rounded-lg border border-slate-200 space-y-1.5">
+							<div class="font-bold text-emerald-600">After (Toast Engine Transformation):</div>
+							<div class="text-[11px] bg-white border border-slate-200 p-2 rounded space-y-1">
+								<div><strong>Clean Message:</strong> &ldquo;Shirt&rdquo; has been added to your cart.</div>
+								<div><strong>Action Button:</strong> <span class="bg-emerald-500 text-white px-2 py-0.5 rounded text-[10px] font-bold">View cart &rarr;</span></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ============================================================== -->
+		<!-- TAB 3: WC NOTICE CATALOG EXPLORER                             -->
+		<!-- ============================================================== -->
+		<section id="tab-catalog" class="tab-panel hidden space-y-6">
+			<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+				<div class="flex flex-wrap items-center justify-between gap-4">
+					<div>
+						<h2 class="text-base font-bold text-slate-900">WooCommerce Notification Catalog</h2>
+						<p class="text-xs text-slate-500 mt-1">Complete taxonomy of core WooCommerce alerts classified into 6 semantic domains</p>
+					</div>
+					<!-- Category Filter Badges -->
+					<div class="flex items-center gap-1.5 text-xs" id="cat-filter-buttons">
+						<button class="cat-filter active px-2.5 py-1 rounded-md bg-purple-600 text-white font-medium" data-cat="all">All (30)</button>
+						<button class="cat-filter px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="cart">Cart (8)</button>
+						<button class="cat-filter px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="coupon">Coupons (9)</button>
+						<button class="cat-filter px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="checkout">Checkout (7)</button>
+						<button class="cat-filter px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="stock">Stock (5)</button>
+						<button class="cat-filter px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="account">Account (6)</button>
+					</div>
+				</div>
+
+				<div class="overflow-x-auto border border-slate-200 rounded-lg">
+					<table class="w-full text-left text-xs text-slate-700">
+						<thead class="bg-slate-50 border-b border-slate-200 font-semibold text-slate-900 uppercase tracking-wider text-[11px]">
+							<tr>
+								<th class="p-3">Category</th>
+								<th class="p-3">Case Identifier</th>
+								<th class="p-3">Type</th>
+								<th class="p-3">Notification Title</th>
+								<th class="p-3">Regex / Match Pattern</th>
+								<th class="p-3 text-right">Quick Test</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-slate-100" id="catalog-table-body">
+							<!-- Filled dynamically in JS -->
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- ============================================================== -->
+		<!-- TAB 4: CODEBASE & STANDARDS                                   -->
+		<!-- ============================================================== -->
+		<section id="tab-codebase" class="tab-panel hidden space-y-6">
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+				<!-- Left: File Architecture Map -->
+				<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+					<h2 class="text-sm font-bold text-slate-900">Project File Architecture</h2>
+					<div class="space-y-2 text-xs code-font">
+						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
+							<span>📄 <strong>woocommerce-toasts.php</strong></span>
+							<span class="text-[11px] text-slate-400">Bootstrap & HPOS declaration</span>
+						</div>
+						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
+							<span>📄 <strong>uninstall.php</strong></span>
+							<span class="text-[11px] text-slate-400">Database cleanup handler</span>
+						</div>
+						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
+							<span>📁 <strong>includes/class-wc-toasts.php</strong></span>
+							<span class="text-[11px] text-slate-400">Singleton & Admin UI</span>
+						</div>
+						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
+							<span>📁 <strong>includes/class-wc-toasts-catalog.php</strong></span>
+							<span class="text-[11px] text-slate-400">Catalog, Classifier, SVGs</span>
+						</div>
+						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
+							<span>📁 <strong>includes/class-wc-toasts-interceptor.php</strong></span>
+							<span class="text-[11px] text-slate-400">Server Notice Hijacker</span>
+						</div>
+						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
+							<span>📁 <strong>includes/class-wc-toasts-settings.php</strong></span>
+							<span class="text-[11px] text-slate-400">Options Schema & Sanitization</span>
+						</div>
+						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
+							<span>📁 <strong>includes/class-wc-toasts-ajax.php</strong></span>
+							<span class="text-[11px] text-slate-400">Admin Live Test & Resets</span>
+						</div>
+						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
+							<span>📁 <strong>includes/class-wc-toasts-pro-bridge.php</strong></span>
+							<span class="text-[11px] text-slate-400">Pro Extension Hooks</span>
+						</div>
+						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
+							<span>🎨 <strong>assets/css/wc-toasts-frontend.css</strong></span>
+							<span class="text-[11px] text-slate-400">Themes, animations, dock</span>
+						</div>
+						<div class="p-2 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
+							<span>⚡ <strong>assets/js/wc-toasts-frontend.js</strong></span>
+							<span class="text-[11px] text-slate-400">Audio Synth & Event Engine</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Right: WordPress Coding Standards Checklist -->
+				<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+					<h2 class="text-sm font-bold text-slate-900">WordPress.org Standards Checklist</h2>
+					<div class="space-y-3 text-xs">
+						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
+							<span class="text-emerald-600 font-bold">✔</span>
+							<div>
+								<div class="font-bold text-emerald-900">HPOS & Cart/Checkout Blocks Compatible</div>
+								<div class="text-[11px] text-emerald-700">Declared via <code class="code-font">FeaturesUtil::declare_compatibility()</code></div>
+							</div>
+						</div>
+
+						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
+							<span class="text-emerald-600 font-bold">✔</span>
+							<div>
+								<div class="font-bold text-emerald-900">Direct Script Access Blocked</div>
+								<div class="text-[11px] text-emerald-700">Every PHP file initiates with <code class="code-font">defined( 'ABSPATH' ) || exit;</code></div>
+							</div>
+						</div>
+
+						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
+							<span class="text-emerald-600 font-bold">✔</span>
+							<div>
+								<div class="font-bold text-emerald-900">Strict Nonce & Capability Verification</div>
+								<div class="text-[11px] text-emerald-700">All forms & AJAX check <code class="code-font">current_user_can('manage_woocommerce')</code> & nonces</div>
+							</div>
+						</div>
+
+						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
+							<span class="text-emerald-600 font-bold">✔</span>
+							<div>
+								<div class="font-bold text-emerald-900">Data Sanitization & Late Escaping</div>
+								<div class="text-[11px] text-emerald-700">Uses <code class="code-font">sanitize_hex_color()</code>, <code class="code-font">esc_html()</code>, <code class="code-font">esc_attr()</code>, <code class="code-font">esc_url()</code></div>
+							</div>
+						</div>
+
+						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
+							<span class="text-emerald-600 font-bold">✔</span>
+							<div>
+								<div class="font-bold text-emerald-900">Internationalization & Translation Ready</div>
+								<div class="text-[11px] text-emerald-700">Text domain <code class="code-font">woocommerce-toasts</code> with complete <code class="code-font">.pot</code> template</div>
+							</div>
+						</div>
+
+						<div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
+							<span class="text-emerald-600 font-bold">✔</span>
+							<div>
+								<div class="font-bold text-emerald-900">PHP 7.4 to 8.3 Syntax Compatibility</div>
+								<div class="text-[11px] text-emerald-700">Verified via CLI linter across all classes with 0 parse errors</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</section>
+
+		<!-- ============================================================== -->
+		<!-- TAB 5: PRO BRIDGE & ROADMAP                                   -->
+		<!-- ============================================================== -->
+		<section id="tab-pro-bridge" class="tab-panel hidden space-y-6">
+			<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+				<div>
+					<h2 class="text-base font-bold text-slate-900">Pro Extensibility Bridge & Commercial Architecture</h2>
+					<p class="text-xs text-slate-500 mt-1">Designed so extra premium features hook cleanly without breaking WordPress.org store guidelines</p>
+				</div>
+
+				<!-- Available Hooks Table -->
+				<div class="border border-slate-200 rounded-lg overflow-hidden">
+					<table class="w-full text-left text-xs text-slate-700">
+						<thead class="bg-slate-50 border-b border-slate-200 font-semibold text-slate-900 text-[11px]">
+							<tr>
+								<th class="p-3">Hook Name</th>
+								<th class="p-3">Type</th>
+								<th class="p-3">Purpose</th>
+								<th class="p-3">Pro Application</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-slate-100 code-font text-[11.5px]">
+							<tr>
+								<td class="p-3 font-bold text-purple-700">wc_toasts_is_pro_active</td>
+								<td class="p-3 text-slate-500">Filter</td>
+								<td class="p-3 text-slate-700 font-sans">Returns true when Pro license / addon is installed</td>
+								<td class="p-3 text-slate-700 font-sans">Unlocks pro settings & presets</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-bold text-purple-700">wc_toasts_categories</td>
+								<td class="p-3 text-slate-500">Filter</td>
+								<td class="p-3 text-slate-700 font-sans">Registers new notification category domains</td>
+								<td class="p-3 text-slate-700 font-sans">Adds Wishlist, Subscriptions, Bookings</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-bold text-purple-700">wc_toasts_cases</td>
+								<td class="p-3 text-slate-500">Filter</td>
+								<td class="p-3 text-slate-700 font-sans">Appends custom regex match patterns</td>
+								<td class="p-3 text-slate-700 font-sans">Custom plugin compatibility cases</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-bold text-purple-700">wc_toasts_classified_notice</td>
+								<td class="p-3 text-slate-500">Filter</td>
+								<td class="p-3 text-slate-700 font-sans">Intercepts payload before serialization</td>
+								<td class="p-3 text-slate-700 font-sans">Injects In-Toast Cross-Sells & Upsells</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-bold text-purple-700">wc_toasts_themes</td>
+								<td class="p-3 text-slate-500">Filter</td>
+								<td class="p-3 text-slate-700 font-sans">Registers extra CSS visual themes</td>
+								<td class="p-3 text-slate-700 font-sans">Neon Glow, Luxury Obsidian & Gold</td>
+							</tr>
+							<tr>
+								<td class="p-3 font-bold text-purple-700">wc_toasts_sounds</td>
+								<td class="p-3 text-slate-500">Filter</td>
+								<td class="p-3 text-slate-700 font-sans">Extends audio synthesizer presets</td>
+								<td class="p-3 text-slate-700 font-sans">Custom MP3 / WAV audio file uploads</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Proposed Pro Features Discussion Cards -->
+				<div class="space-y-3">
+					<h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Candidate Features for Next Development Iteration</h3>
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+						<div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+							<span class="text-purple-600 font-bold text-xs">🚀 High AOV Booster</span>
+							<h4 class="text-xs font-bold text-slate-900">Dynamic Free Shipping Progress</h4>
+							<p class="text-[11.5px] text-slate-600 leading-relaxed">
+								When user adds an item to cart, calculate remaining spend to unlock Free Shipping and display a live animated meter right inside the toast!
+							</p>
+						</div>
+
+						<div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+							<span class="text-purple-600 font-bold text-xs">💰 Revenue Generator</span>
+							<h4 class="text-xs font-bold text-slate-900">In-Toast 1-Click Cross-Sell</h4>
+							<p class="text-[11.5px] text-slate-600 leading-relaxed">
+								Display a compact "Frequently Bought Together" thumbnail item with an instant "Add for $12" button directly inside the add-to-cart toast.
+							</p>
+						</div>
+
+						<div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+							<span class="text-purple-600 font-bold text-xs">📊 Conversion Analytics</span>
+							<h4 class="text-xs font-bold text-slate-900">Toast Click-Through Metrics</h4>
+							<p class="text-[11.5px] text-slate-600 leading-relaxed">
+								Track how many shoppers click "View Cart", how many dismiss, and notice recovery rates for checkout field errors.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+	</main>
+
+	<!-- Interactive Sandbox Logic Script -->
+	<script>
+		// =================================================================
+		// Web Audio API Synthesizer
+		// =================================================================
+		var AudioEngine = (function() {
+			var audioCtx = null;
+			function getContext() {
+				if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+					var Cls = window.AudioContext || window.webkitAudioContext;
+					audioCtx = new Cls();
+				}
+				if (audioCtx && audioCtx.state === 'suspended') {
+					audioCtx.resume();
+				}
+				return audioCtx;
+			}
+
+			function play(type, theme) {
+				var ctx = getContext();
+				if (!ctx) return;
+				theme = theme || document.getElementById('ctrl-sound').value || 'gentle_chime';
+
+				var masterGain = ctx.createGain();
+				masterGain.gain.setValueAtTime(0.3, ctx.currentTime);
+				masterGain.connect(ctx.destination);
+
+				if (theme === 'crisp_pop') {
+					var osc = ctx.createOscillator();
+					var gain = ctx.createGain();
+					osc.type = 'sine';
+					osc.frequency.setValueAtTime(450, ctx.currentTime);
+					osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.08);
+					gain.gain.setValueAtTime(0.35, ctx.currentTime);
+					gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
+					osc.connect(gain);
+					gain.connect(masterGain);
+					osc.start(ctx.currentTime);
+					osc.stop(ctx.currentTime + 0.09);
+				} else if (theme === 'modern_ping') {
+					var pOsc = ctx.createOscillator();
+					var pGain = ctx.createGain();
+					pOsc.type = 'sine';
+					var freq = (type === 'error') ? 380 : 880;
+					pOsc.frequency.setValueAtTime(freq, ctx.currentTime);
+					pOsc.frequency.exponentialRampToValueAtTime(freq * 0.7, ctx.currentTime + 0.28);
+					pGain.gain.setValueAtTime(0.32, ctx.currentTime);
+					pGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+					pOsc.connect(pGain);
+					pGain.connect(masterGain);
+					pOsc.start(ctx.currentTime);
+					pOsc.stop(ctx.currentTime + 0.3);
+				} else if (theme === 'bell_ding') {
+					[880, 1760, 2640].forEach(function(f, i) {
+						var bOsc = ctx.createOscillator();
+						var bGain = ctx.createGain();
+						bOsc.type = 'sine';
+						bOsc.frequency.setValueAtTime(f, ctx.currentTime);
+						bGain.gain.setValueAtTime(0.25 / (i + 1.5), ctx.currentTime);
+						bGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.8);
+						bOsc.connect(bGain);
+						bGain.connect(masterGain);
+						bOsc.start(ctx.currentTime);
+						bOsc.stop(ctx.currentTime + 0.8);
+					});
+				} else if (theme === 'subtle_click') {
+					var cOsc = ctx.createOscillator();
+					var cGain = ctx.createGain();
+					cOsc.type = 'triangle';
+					cOsc.frequency.setValueAtTime(1400, ctx.currentTime);
+					cGain.gain.setValueAtTime(0.2, ctx.currentTime);
+					cGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.035);
+					cOsc.connect(cGain);
+					cGain.connect(masterGain);
+					cOsc.start(ctx.currentTime);
+					cOsc.stop(ctx.currentTime + 0.035);
+				} else {
+					var notes = (type === 'error') ? [349.23, 311.13] : [659.25, 880, 1046.5];
+					notes.forEach(function(freq, index) {
+						var osc = ctx.createOscillator();
+						var gain = ctx.createGain();
+						var startTime = ctx.currentTime + (index * 0.07);
+						osc.type = (type === 'error') ? 'triangle' : 'sine';
+						osc.frequency.setValueAtTime(freq, startTime);
+						gain.gain.setValueAtTime(0, startTime);
+						gain.gain.linearRampToValueAtTime(0.28, startTime + 0.015);
+						gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.55);
+						osc.connect(gain);
+						gain.connect(masterGain);
+						osc.start(startTime);
+						osc.stop(startTime + 0.55);
+					});
+				}
+			}
+			return { play: play };
+		})();
+
+		// =================================================================
+		// SVG Icons Dictionary
+		// =================================================================
+		var Icons = {
+			check: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>',
+			cart_check: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/><path d="m9 11 2 2 4-4"/></svg>',
+			trash: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+			ticket_check: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="m9 12 2 2 4-4"/></svg>',
+			alert_triangle: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+			archive_alert: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect width="22" height="5" x="1" y="3" rx="1"/><line x1="12" y1="11" x2="12" y2="15"/></svg>',
+			info: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>'
+		};
+
+		// =================================================================
+		// Catalog Data (~30 Cases)
+		// =================================================================
+		var CatalogCases = [
+			{ cat: 'cart', id: 'cart_item_added', type: 'success', title: 'Product Added to Cart', pattern: '/has been added to your cart/i', icon: 'cart_check', msg: '“Audio Technica M50x” has been added to your cart.', action: { text: 'View cart →', url: '#' } },
+			{ cat: 'cart', id: 'cart_item_removed', type: 'notice', title: 'Item Removed from Cart', pattern: '/removed\.\s*(Undo\?)?/i', icon: 'trash', msg: '“Audio Technica M50x” removed.', action: { text: 'Undo? ↺', url: '#' } },
+			{ cat: 'cart', id: 'cart_item_restored', type: 'success', title: 'Item Restored to Cart', pattern: '/restored to cart/i', icon: 'check', msg: '“Audio Technica M50x” restored to cart.' },
+			{ cat: 'cart', id: 'cart_updated', type: 'success', title: 'Cart Updated', pattern: '/cart updated/i', icon: 'check', msg: 'Cart updated successfully.' },
+			{ cat: 'cart', id: 'cart_empty', type: 'notice', title: 'Cart is Empty', pattern: '/cart is currently empty/i', icon: 'info', msg: 'Your cart is currently empty.' },
+			{ cat: 'cart', id: 'cart_minimum_order', type: 'error', title: 'Minimum Order Required', pattern: '/minimum of.*to place your order/i', icon: 'alert_triangle', msg: 'You must have an order with a minimum of $50.00 to place your order.' },
+			{ cat: 'cart', id: 'cart_maximum_order', type: 'error', title: 'Maximum Order Exceeded', pattern: '/exceeds the maximum allowed/i', icon: 'alert_triangle', msg: 'Your order exceeds the maximum allowed amount of $1,000.00.' },
+			{ cat: 'cart', id: 'cart_quantity_invalid', type: 'error', title: 'Invalid Quantity', pattern: '/minimum quantity for/i', icon: 'alert_triangle', msg: 'The minimum purchase quantity for this item is 2.' },
+
+			{ cat: 'coupon', id: 'coupon_applied', type: 'success', title: 'Coupon Code Applied', pattern: '/coupon code applied successfully/i', icon: 'ticket_check', msg: 'Coupon code "FALL25" applied successfully! 25% off activated.' },
+			{ cat: 'coupon', id: 'coupon_removed', type: 'notice', title: 'Coupon Removed', pattern: '/coupon code has been removed/i', icon: 'info', msg: 'Coupon code "FALL25" has been removed.' },
+			{ cat: 'coupon', id: 'coupon_not_exist', type: 'error', title: 'Coupon Does Not Exist', pattern: '/coupon.*does not exist/i', icon: 'alert_triangle', msg: 'Coupon "WINTER50" does not exist!' },
+			{ cat: 'coupon', id: 'coupon_already_applied', type: 'error', title: 'Coupon Already Applied', pattern: '/coupon code already applied/i', icon: 'alert_triangle', msg: 'Coupon code "FALL25" is already applied.' },
+			{ cat: 'coupon', id: 'coupon_expired', type: 'error', title: 'Coupon Expired', pattern: '/this coupon has expired/i', icon: 'alert_triangle', msg: 'This coupon has expired.' },
+			{ cat: 'coupon', id: 'coupon_usage_limit', type: 'error', title: 'Usage Limit Reached', pattern: '/coupon usage limit has been reached/i', icon: 'alert_triangle', msg: 'Coupon usage limit has been reached.' },
+			{ cat: 'coupon', id: 'coupon_min_spend', type: 'error', title: 'Minimum Spend Not Met', pattern: '/minimum spend for this coupon is/i', icon: 'alert_triangle', msg: 'The minimum spend for this coupon is $100.00.' },
+			{ cat: 'coupon', id: 'coupon_individual_use', type: 'error', title: 'Cannot Combine Coupons', pattern: '/cannot be used in conjunction/i', icon: 'alert_triangle', msg: 'Sorry, this coupon cannot be used in conjunction with other coupons.' },
+			{ cat: 'coupon', id: 'coupon_excluded_items', type: 'error', title: 'Coupon Excluded From Items', pattern: '/not applicable to selected/i', icon: 'alert_triangle', msg: 'Sorry, this coupon is not applicable to sale items.' },
+
+			{ cat: 'checkout', id: 'checkout_field_required', type: 'error', title: 'Required Field Missing', pattern: '/is a required field/i', icon: 'alert_triangle', msg: 'Billing Postcode / ZIP is a required field.' },
+			{ cat: 'checkout', id: 'checkout_invalid_email', type: 'error', title: 'Invalid Email Address', pattern: '/valid email address/i', icon: 'alert_triangle', msg: 'Please provide a valid email address.' },
+			{ cat: 'checkout', id: 'checkout_invalid_phone', type: 'error', title: 'Invalid Phone Number', pattern: '/valid phone number/i', icon: 'alert_triangle', msg: 'Please enter a valid phone number.' },
+			{ cat: 'checkout', id: 'checkout_terms_required', type: 'error', title: 'Terms Acceptance Required', pattern: '/read and accept the terms/i', icon: 'alert_triangle', msg: 'Please read and accept the terms and conditions to proceed.' },
+			{ cat: 'checkout', id: 'checkout_no_shipping', type: 'error', title: 'Shipping Method Required', pattern: '/no shipping method has been selected/i', icon: 'alert_triangle', msg: 'No shipping method has been selected. Please choose a method.' },
+			{ cat: 'checkout', id: 'checkout_payment_failed', type: 'error', title: 'Payment Processing Failed', pattern: '/payment failed/i', icon: 'alert_triangle', msg: 'Payment failed: The card number is incorrect. Please try again.' },
+			{ cat: 'checkout', id: 'checkout_shipping_updated', type: 'success', title: 'Shipping Calculated', pattern: '/shipping costs updated/i', icon: 'check', msg: 'Shipping costs updated based on destination address.' },
+
+			{ cat: 'stock', id: 'stock_out_of_stock', type: 'error', title: 'Product Out of Stock', pattern: '/product is out of stock/i', icon: 'archive_alert', msg: 'You cannot add “Wireless Earbuds” to cart because the product is out of stock.' },
+			{ cat: 'stock', id: 'stock_insufficient', type: 'error', title: 'Insufficient Stock', pattern: '/cannot add that amount.*in stock/i', icon: 'archive_alert', msg: 'You cannot add that amount to cart — we have 2 in stock and you have 2 in your cart.' },
+			{ cat: 'stock', id: 'stock_sold_individually', type: 'error', title: 'Item Sold Individually', pattern: '/cannot add another.*to your cart/i', icon: 'archive_alert', msg: 'You cannot add another “Lifetime VIP Access” to your cart.' },
+			{ cat: 'stock', id: 'stock_not_purchasable', type: 'error', title: 'Product Not Purchasable', pattern: '/cannot be purchased/i', icon: 'archive_alert', msg: 'Sorry, this product cannot be purchased.' },
+			{ cat: 'stock', id: 'stock_backordered', type: 'notice', title: 'Item on Backorder', pattern: '/item is on backorder/i', icon: 'info', msg: 'This item is on backorder and will be dispatched once restocked.' },
+
+			{ cat: 'account', id: 'account_login_failed', type: 'error', title: 'Login Error', pattern: '/password you entered.*is incorrect/i', icon: 'alert_triangle', msg: 'Error: The password you entered for username demo is incorrect.' },
+			{ cat: 'account', id: 'account_registration_success', type: 'success', title: 'Registration Complete', pattern: '/account was created successfully/i', icon: 'check', msg: 'Your account was created successfully. Login details sent.' },
+			{ cat: 'account', id: 'account_password_reset_sent', type: 'success', title: 'Password Reset Sent', pattern: '/password reset email has been sent/i', icon: 'check', msg: 'A password reset email has been sent to your inbox.' },
+			{ cat: 'account', id: 'account_details_saved', type: 'success', title: 'Profile Updated', pattern: '/account details changed successfully/i', icon: 'check', msg: 'Account details changed successfully.' }
+		];
+
+		// =================================================================
+		// Toast Dispatcher inside Sandbox
+		// =================================================================
+		var activeToasts = [];
+
+		function showToast(payload) {
+			var container = document.getElementById('demo-container');
+			var animIn = document.getElementById('ctrl-anim').value || 'slide-in';
+			var position = document.getElementById('ctrl-position').value || 'top-right';
+
+			var toast = document.createElement('div');
+			toast.className = 'demo-toast type-' + (payload.type || 'notice') + ' anim-' + animIn;
+
+			// Icon
+			var iconWrap = document.createElement('div');
+			iconWrap.className = 'demo-toast-icon';
+			var iconSvg = Icons[payload.icon] || Icons.info;
+			iconWrap.innerHTML = iconSvg;
+			toast.appendChild(iconWrap);
+
+			// Content
+			var content = document.createElement('div');
+			content.className = 'demo-toast-content';
+
+			var title = document.createElement('div');
+			title.className = 'demo-toast-title';
+			title.textContent = payload.title || 'Store Notice';
+			content.appendChild(title);
+
+			var msg = document.createElement('div');
+			msg.className = 'demo-toast-msg';
+			msg.textContent = payload.message || '';
+			content.appendChild(msg);
+
+			// Action button
+			if (payload.action && payload.action.text) {
+				var actionBtn = document.createElement('a');
+				actionBtn.className = 'demo-toast-action-btn';
+				actionBtn.href = payload.action.url || '#';
+				actionBtn.textContent = payload.action.text;
+				actionBtn.onclick = function(e) { e.preventDefault(); };
+				content.appendChild(actionBtn);
+			}
+
+			toast.appendChild(content);
+
+			// Close button
+			var closeBtn = document.createElement('button');
+			closeBtn.className = 'demo-toast-close';
+			closeBtn.innerHTML = '&times;';
+			closeBtn.onclick = function() {
+				dismissToast(toast);
+			};
+			toast.appendChild(closeBtn);
+
+			// Progress bar
+			var progress = document.createElement('div');
+			progress.className = 'demo-toast-progress';
+			toast.appendChild(progress);
+
+			requestAnimationFrame(function() {
+				requestAnimationFrame(function() {
+					progress.style.transform = 'scaleX(0)';
+				});
+			});
+
+			container.insertBefore(toast, container.firstChild);
+			activeToasts.push(toast);
+
+			// Auto dismiss in 4.5s
+			var timer = setTimeout(function() {
+				dismissToast(toast);
+			}, 4500);
+
+			toast.addEventListener('mouseenter', function() {
+				clearTimeout(timer);
+				progress.style.transition = 'none';
+			});
+
+			// Audio play
+			AudioEngine.play(payload.type);
+
+			updateClearButton();
+		}
+
+		function dismissToast(toast) {
+			toast.style.opacity = '0';
+			toast.style.transform = 'scale(0.9)';
+			setTimeout(function() {
+				if (toast.parentNode) {
+					toast.parentNode.removeChild(toast);
+				}
+				activeToasts = activeToasts.filter(function(t) { return t !== toast; });
+				updateClearButton();
+			}, 200);
+		}
+
+		function updateClearButton() {
+			document.getElementById('btn-clear-all').textContent = 'Clear Toasts (' + activeToasts.length + ')';
+		}
+
+		// =================================================================
+		// DOM Event Handlers
+		// =================================================================
+		document.addEventListener('DOMContentLoaded', function() {
+			// Tab switching
+			document.querySelectorAll('.nav-tab').forEach(function(btn) {
+				btn.addEventListener('click', function() {
+					document.querySelectorAll('.nav-tab').forEach(function(b) {
+						b.classList.remove('bg-white', 'text-purple-700', 'font-semibold', 'shadow-sm');
+					});
+					this.classList.add('bg-white', 'text-purple-700', 'font-semibold', 'shadow-sm');
+
+					var targetTab = this.getAttribute('data-tab');
+					document.querySelectorAll('.tab-panel').forEach(function(panel) {
+						panel.classList.add('hidden');
+					});
+					document.getElementById('tab-' + targetTab).classList.remove('hidden');
+				});
+			});
+
+			// Theme change
+			document.getElementById('ctrl-theme').addEventListener('change', function() {
+				var container = document.getElementById('demo-container');
+				container.className = 'demo-toast-container pos-' + document.getElementById('ctrl-position').value + ' theme-' + this.value;
+			});
+
+			// Position change
+			document.getElementById('ctrl-position').addEventListener('change', function() {
+				var container = document.getElementById('demo-container');
+				container.className = 'demo-toast-container pos-' + this.value + ' theme-' + document.getElementById('ctrl-theme').value;
+			});
+
+			// Play Sound preview button
+			document.getElementById('btn-sound-preview').addEventListener('click', function() {
+				AudioEngine.play('success');
+			});
+
+			// Clear all
+			document.getElementById('btn-clear-all').addEventListener('click', function() {
+				activeToasts.slice().forEach(dismissToast);
+			});
+
+			// Predefined case trigger buttons
+			document.querySelectorAll('.trigger-case').forEach(function(btn) {
+				btn.addEventListener('click', function() {
+					var caseKey = this.getAttribute('data-case');
+					if (caseKey === 'cart_added') {
+						showToast({
+							type: 'success',
+							icon: 'cart_check',
+							title: 'Product Added to Cart',
+							message: '“Audio Technica ATH-M50x” has been added to your cart.',
+							action: { text: 'View cart →', url: '#' }
+						});
+					} else if (caseKey === 'coupon_applied') {
+						showToast({
+							type: 'success',
+							icon: 'ticket_check',
+							title: 'Coupon Applied',
+							message: 'Coupon code "FALL25" applied successfully! 25% discount activated.'
+						});
+					} else if (caseKey === 'checkout_error') {
+						showToast({
+							type: 'error',
+							icon: 'alert_triangle',
+							title: 'Required Field Missing',
+							message: 'Billing Postcode / ZIP is a required field. Please enter a valid postcode.'
+						});
+					} else if (caseKey === 'stock_low') {
+						showToast({
+							type: 'error',
+							icon: 'archive_alert',
+							title: 'Insufficient Inventory',
+							message: 'You cannot add that amount to cart — we have 2 in stock and you have 2 in your cart.'
+						});
+					} else if (caseKey === 'cart_undo') {
+						showToast({
+							type: 'notice',
+							icon: 'trash',
+							title: 'Item Removed',
+							message: '“Audio Technica ATH-M50x” removed.',
+							action: { text: 'Undo? ↺', url: '#' }
+						});
+					}
+				});
+			});
+
+			// Parse & Hijack Raw HTML Simulator
+			document.getElementById('btn-parse-hijack').addEventListener('click', function() {
+				var rawHtml = document.getElementById('raw-wc-markup').value;
+				var temp = document.createElement('div');
+				temp.innerHTML = rawHtml;
+
+				var type = 'notice';
+				var icon = 'info';
+				if (rawHtml.indexOf('woocommerce-error') !== -1) {
+					type = 'error';
+					icon = 'alert_triangle';
+				} else if (rawHtml.indexOf('woocommerce-message') !== -1) {
+					type = 'success';
+					icon = 'check';
+				}
+
+				var action = null;
+				var anchor = temp.querySelector('a');
+				if (anchor) {
+					action = {
+						text: anchor.textContent.trim(),
+						url: anchor.getAttribute('href') || '#'
+					};
+					anchor.parentNode.removeChild(anchor);
+				}
+
+				var cleanText = temp.textContent.trim();
+
+				showToast({
+					type: type,
+					icon: icon,
+					title: type === 'success' ? 'Store Notice' : (type === 'error' ? 'Validation Error' : 'Information'),
+					message: cleanText || 'Notice intercepted from DOM',
+					action: action
+				});
+			});
+
+			document.getElementById('btn-quick-error').addEventListener('click', function() {
+				document.getElementById('raw-wc-markup').value = '<ul class="woocommerce-error" role="alert"><li>Billing State / County is a required field.</li><li>Please provide a valid phone number.</li></ul>';
+			});
+
+			document.getElementById('btn-quick-info').addEventListener('click', function() {
+				document.getElementById('raw-wc-markup').value = '<div class="woocommerce-info">Free shipping is automatically unlocked for orders above $75.00!</div>';
+			});
+
+			// Populate Catalog Table
+			var tableBody = document.getElementById('catalog-table-body');
+			function renderCatalogTable(filterCat) {
+				tableBody.innerHTML = '';
+				CatalogCases.forEach(function(item) {
+					if (filterCat !== 'all' && item.cat !== filterCat) return;
+
+					var tr = document.createElement('tr');
+					tr.className = 'hover:bg-slate-50 transition';
+
+					var catBadgeColor = item.cat === 'cart' ? 'bg-emerald-50 text-emerald-700' :
+										(item.cat === 'coupon' ? 'bg-purple-50 text-purple-700' :
+										(item.cat === 'checkout' ? 'bg-red-50 text-red-700' :
+										(item.cat === 'stock' ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700')));
+
+					var typeBadgeColor = item.type === 'success' ? 'bg-emerald-100 text-emerald-800' :
+										 (item.type === 'error' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800');
+
+					tr.innerHTML = '<td class="p-3"><span class="px-2 py-0.5 rounded text-[10.5px] font-bold uppercase ' + catBadgeColor + '">' + item.cat + '</span></td>' +
+								   '<td class="p-3 code-font text-[11px] font-medium">' + item.id + '</td>' +
+								   '<td class="p-3"><span class="px-2 py-0.5 rounded text-[10.5px] font-bold uppercase ' + typeBadgeColor + '">' + item.type + '</span></td>' +
+								   '<td class="p-3 font-semibold text-slate-800">' + item.title + '</td>' +
+								   '<td class="p-3 code-font text-[11px] text-slate-500">' + item.pattern + '</td>' +
+								   '<td class="p-3 text-right"><button class="btn-table-test px-2.5 py-1 rounded bg-slate-100 hover:bg-purple-100 hover:text-purple-700 font-medium text-[11px] transition">Test Case ⚡</button></td>';
+
+					tr.querySelector('.btn-table-test').addEventListener('click', function() {
+						document.querySelector('.nav-tab[data-tab="sandbox"]').click();
+						showToast({
+							type: item.type,
+							icon: item.icon,
+							title: item.title,
+							message: item.msg,
+							action: item.action
+						});
+					});
+
+					tableBody.appendChild(tr);
+				});
+			}
+
+			renderCatalogTable('all');
+
+			// Catalog Category Filter Buttons
+			document.querySelectorAll('.cat-filter').forEach(function(btn) {
+				btn.addEventListener('click', function() {
+					document.querySelectorAll('.cat-filter').forEach(function(b) {
+						b.classList.remove('bg-purple-600', 'text-white');
+						b.classList.add('bg-slate-100', 'text-slate-600');
+					});
+					this.classList.remove('bg-slate-100', 'text-slate-600');
+					this.classList.add('bg-purple-600', 'text-white');
+					renderCatalogTable(this.getAttribute('data-cat'));
+				});
+			});
+
+			// Initial welcome toast
+			setTimeout(function() {
+				showToast({
+					type: 'success',
+					icon: 'cart_check',
+					title: 'Sandbox Ready',
+					message: 'WooCommerce Dynamic Notice Toasts developer sandbox initialized. Try triggering notices on the left!',
+					action: { text: 'View cart →', url: '#' }
+				});
+			}, 400);
+		});
+	</script>
+</body>
+</html>
