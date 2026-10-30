@@ -1,19 +1,18 @@
 <?php
 /**
- * Plugin Name:       WooCommerce Dynamic Notice Toasts
- * Plugin URI:        https://github.com/thanos/woocommerce-toasts
- * Description:       Replaces clunky WooCommerce notice banners with modern, dynamic, customizable toasts with audio chimes, progress bars, and action buttons.
- * Version:           1.0.0
- * Author:            Thanos
- * Author URI:        https://github.com/thanos
+ * Plugin Name:       Dynamic Notice Toasts for WooCommerce
+ * Description:       Replaces WooCommerce notice banners with readable, customizable toasts, progress bars, and action links.
+ * Version:           1.2.0
+ * Author:            Thanos Leftheriotis
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       woocommerce-toasts
+ * Text Domain:       dynamic-notice-toasts-for-woocommerce
  * Domain Path:       /languages
- * Requires at least: 5.8
+ * Requires at least: 6.5
+ * Requires Plugins:  woocommerce
  * Requires PHP:      7.4
  * WC requires at least: 5.0
- * WC tested up to:   9.3
+ * WC tested up to:   11.2
  *
  * @package WooCommerce_Toasts
  */
@@ -22,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 
 // Plugin constants.
 if ( ! defined( 'WC_TOASTS_VERSION' ) ) {
-	define( 'WC_TOASTS_VERSION', '1.0.0' );
+	define( 'WC_TOASTS_VERSION', '1.2.0' );
 }
 if ( ! defined( 'WC_TOASTS_PLUGIN_FILE' ) ) {
 	define( 'WC_TOASTS_PLUGIN_FILE', __FILE__ );
@@ -38,14 +37,13 @@ if ( ! defined( 'WC_TOASTS_PLUGIN_BASENAME' ) ) {
 }
 
 /**
- * Declare High-Performance Order Storage (HPOS) and Blocks compatibility.
+ * Declare High-Performance Order Storage (HPOS) compatibility.
  */
 add_action(
 	'before_woocommerce_init',
 	function () {
 		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
 			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', __FILE__, true );
 		}
 	}
 );
@@ -54,11 +52,9 @@ add_action(
  * Check if WooCommerce is active before loading the plugin.
  */
 function wc_toasts_check_woocommerce_active() {
-	if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins', array() ) ), true ) ) {
-		if ( ! is_multisite() || ! array_key_exists( 'woocommerce/woocommerce.php', apply_filters( 'active_sitewide_plugins', get_site_option( 'active_sitewide_plugins', array() ) ) ) ) {
-			add_action( 'admin_notices', 'wc_toasts_missing_woocommerce_notice' );
-			return false;
-		}
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		add_action( 'admin_notices', 'wc_toasts_missing_woocommerce_notice' );
+		return false;
 	}
 	return true;
 }
@@ -73,8 +69,8 @@ function wc_toasts_missing_woocommerce_notice() {
 	?>
 	<div class="notice notice-error is-dismissible">
 		<p>
-			<strong><?php esc_html_e( 'WooCommerce Dynamic Notice Toasts', 'woocommerce-toasts' ); ?>:</strong>
-			<?php esc_html_e( 'This plugin requires WooCommerce to be installed and active.', 'woocommerce-toasts' ); ?>
+			<strong><?php esc_html_e( 'WooCommerce Dynamic Notice Toasts', 'dynamic-notice-toasts-for-woocommerce' ); ?>:</strong>
+			<?php esc_html_e( 'This plugin requires WooCommerce to be installed and active.', 'dynamic-notice-toasts-for-woocommerce' ); ?>
 		</p>
 	</div>
 	<?php

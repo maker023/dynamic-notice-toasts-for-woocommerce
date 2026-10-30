@@ -2,7 +2,7 @@
 /**
  * Empty Notice Template Override
  *
- * Used by WooCommerce Dynamic Notice Toasts to suppress default notice banner rendering.
+ * Used by Dynamic Notice Toasts for WooCommerce to suppress default notice banner rendering.
  *
  * @package WooCommerce_Toasts
  */

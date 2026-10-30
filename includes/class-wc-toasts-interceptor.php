@@ -30,6 +30,13 @@ class WC_Toasts_Interceptor {
 	private $notices_captured = false;
 
 	/**
+	 * Number of notices already handed to the browser.
+	 *
+	 * @var int
+	 */
+	private $delivered_notice_count = 0;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -37,8 +44,8 @@ class WC_Toasts_Interceptor {
 			return;
 		}
 
-		// Inject hide-default CSS early into wp_head to prevent layout shifts.
-		add_action( 'wp_head', array( $this, 'inject_suppression_styles' ), 1 );
+		// Enqueue hide-default CSS so it prints in the head and prevents layout shifts.
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_suppression_styles' ) );
 
 		// Capture server notices at multiple hook points to ensure none are missed.
 		add_action( 'template_redirect', array( $this, 'capture_server_notices' ), 99 );
@@ -51,38 +58,24 @@ class WC_Toasts_Interceptor {
 		// Enqueue scripts & styles and localize captured notices.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ), 20 );
 
-		// Late footer fallback for notices generated during footer rendering.
-		add_action( 'wp_footer', array( $this, 'output_late_footer_notices' ), 99 );
+		// Late fallback for notices generated during footer rendering; runs before footer scripts print at priority 20.
+		add_action( 'wp_footer', array( $this, 'output_late_footer_notices' ), 19 );
 	}
 
 	/**
-	 * Output early CSS styles to prevent default WooCommerce notices from flashing or shifting layout.
+	 * Enqueue the stylesheet that hides default WooCommerce notices before they can flash or shift layout.
 	 */
-	public function inject_suppression_styles() {
-		if ( ! WC_Toasts_Settings::get( 'hide_default_notices', 1 ) ) {
+	public function enqueue_suppression_styles() {
+		if ( is_admin() || ! WC_Toasts_Settings::get( 'hide_default_notices', 1 ) ) {
 			return;
 		}
 
-		// Clean, scoped CSS hiding standard notice containers.
-		echo '<style id="wc-toasts-suppress-default">' . "\n";
-		echo '.woocommerce-notices-wrapper .woocommerce-message,' . "\n";
-		echo '.woocommerce-notices-wrapper .woocommerce-error,' . "\n";
-		echo '.woocommerce-notices-wrapper .woocommerce-info,' . "\n";
-		echo '.woocommerce-NoticeGroup .woocommerce-error,' . "\n";
-		echo '.woocommerce-NoticeGroup .woocommerce-message,' . "\n";
-		echo 'div.woocommerce-message,' . "\n";
-		echo 'ul.woocommerce-error,' . "\n";
-		echo 'div.woocommerce-info {' . "\n";
-		echo '    display: none !important;' . "\n";
-		echo '}' . "\n";
-
-		// Custom CSS if set by store owner.
-		$custom_css = WC_Toasts_Settings::get( 'custom_css', '' );
-		if ( ! empty( $custom_css ) ) {
-			echo wp_strip_all_tags( $custom_css ) . "\n";
-		}
-
-		echo '</style>' . "\n";
+		wp_enqueue_style(
+			'wc-toasts-suppress-default',
+			WC_TOASTS_PLUGIN_URL . 'assets/css/wc-toasts-suppress.css',
+			array(),
+			WC_TOASTS_VERSION
+		);
 	}
 
 	/**
@@ -186,10 +179,11 @@ class WC_Toasts_Interceptor {
 		);
 
 		// Frontend script.
+		wp_enqueue_script( 'wc-toasts-styling', WC_TOASTS_PLUGIN_URL . 'assets/js/wc-toasts-styling.js', array(), WC_TOASTS_VERSION, true );
 		wp_enqueue_script(
 			'wc-toasts-frontend',
 			WC_TOASTS_PLUGIN_URL . 'assets/js/wc-toasts-frontend.js',
-			array( 'jquery' ),
+			array( 'jquery', 'wc-toasts-styling' ),
 			WC_TOASTS_VERSION,
 			true
 		);
@@ -199,52 +193,66 @@ class WC_Toasts_Interceptor {
 
 		// Add icons dictionary for frontend rendering.
 		$icons_map = array();
-		foreach ( array( 'check', 'cart', 'cart_check', 'cart_empty', 'trash', 'refresh', 'ticket', 'ticket_check', 'ticket_cross', 'ticket_alert', 'credit-card', 'card_error', 'archive', 'archive_alert', 'user', 'user_check', 'lock_alert', 'lock_check', 'bell', 'alert_triangle', 'alert_circle', 'info', 'truck', 'truck_alert', 'mail_check', 'mail_alert', 'phone_alert', 'edit_alert', 'map_pin', 'clock', 'shield_alert', 'close' ) as $icon_name ) {
+		foreach ( array( 'check', 'cart', 'cart_check', 'cart_empty', 'trash', 'refresh', 'ticket', 'ticket_check', 'ticket_cross', 'ticket_alert', 'credit-card', 'card_error', 'archive', 'archive_alert', 'user', 'user_check', 'lock_alert', 'lock_check', 'bell', 'alert_triangle', 'alert_circle', 'info', 'truck', 'truck_alert', 'mail_check', 'mail_alert', 'phone_alert', 'edit_alert', 'map_pin', 'clock', 'shield_alert', 'download_alert' ) as $icon_name ) {
 			$icons_map[ $icon_name ] = WC_Toasts_Catalog::get_svg_icon( $icon_name );
 		}
 
 		$params = array(
-			'settings'         => $settings,
-			'icons'            => $icons_map,
-			'initial_notices'  => $this->captured_notices,
-			'ajax_url'         => admin_url( 'admin-ajax.php' ),
-			'cart_url'         => function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : '',
-			'checkout_url'     => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '',
-			'i18n'             => array(
-				'close'        => __( 'Close notice', 'woocommerce-toasts' ),
-				'view_cart'    => __( 'View cart', 'woocommerce-toasts' ),
-				'checkout'     => __( 'Checkout', 'woocommerce-toasts' ),
-				'undo'         => __( 'Undo', 'woocommerce-toasts' ),
-				'added_notice' => __( 'has been added to your cart.', 'woocommerce-toasts' ),
+			'styling'         => WC_Toasts_Styling::get_config(),
+			'categories'      => WC_Toasts_Catalog::get_categories(),
+			'settings'        => $settings,
+			'icons'           => $icons_map,
+			'initial_notices' => $this->captured_notices,
+			'ajax_url'        => admin_url( 'admin-ajax.php' ),
+			'cart_url'        => function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : '',
+			'checkout_url'    => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '',
+			'i18n'            => array(
+				'success'                => __( 'Success', 'dynamic-notice-toasts-for-woocommerce' ),
+				'error'                  => __( 'Error', 'dynamic-notice-toasts-for-woocommerce' ),
+				'notice'                 => __( 'Notice', 'dynamic-notice-toasts-for-woocommerce' ),
+				'store_notice'           => __( 'Store Notice', 'dynamic-notice-toasts-for-woocommerce' ),
+				'notice_alert'           => __( 'Notice Alert', 'dynamic-notice-toasts-for-woocommerce' ),
+				'information'            => __( 'Information', 'dynamic-notice-toasts-for-woocommerce' ),
+				'checkout_alert'         => __( 'Checkout Alert', 'dynamic-notice-toasts-for-woocommerce' ),
+				'alert'                  => __( 'Alert', 'dynamic-notice-toasts-for-woocommerce' ),
+				'added_to_cart'          => __( 'Added to Cart', 'dynamic-notice-toasts-for-woocommerce' ),
+				'coupon_applied'         => __( 'Coupon Applied', 'dynamic-notice-toasts-for-woocommerce' ),
+				'coupon_removed'         => __( 'Coupon Removed', 'dynamic-notice-toasts-for-woocommerce' ),
+				/* translators: %s: Coupon code. */
+				'coupon_applied_message' => __( 'Coupon code "%s" applied successfully.', 'dynamic-notice-toasts-for-woocommerce' ),
+				/* translators: %s: Coupon code. */
+				'coupon_removed_message' => __( 'Coupon code "%s" has been removed.', 'dynamic-notice-toasts-for-woocommerce' ),
+				'close'                  => __( 'Close notice', 'dynamic-notice-toasts-for-woocommerce' ),
+				'view_cart'              => __( 'View cart', 'dynamic-notice-toasts-for-woocommerce' ),
+				'checkout'               => __( 'Checkout', 'dynamic-notice-toasts-for-woocommerce' ),
+				'undo'                   => __( 'Undo', 'dynamic-notice-toasts-for-woocommerce' ),
+				'added_notice'           => __( 'has been added to your cart.', 'dynamic-notice-toasts-for-woocommerce' ),
 			),
 		);
 
-		wp_localize_script( 'wc-toasts-frontend', 'wc_toasts_frontend_params', $params );
+		wp_localize_script( 'wc-toasts-frontend', 'wc_toasts_frontend_params', apply_filters( 'wc_toasts_frontend_params', $params ) );
+		$this->delivered_notice_count = count( $this->captured_notices );
 	}
 
 	/**
-	 * Late footer fallback to print any notices that were queued late during page rendering.
+	 * Late fallback that hands notices queued during page rendering to the frontend script.
 	 */
 	public function output_late_footer_notices() {
 		// Run a late capture in case something queued a notice during template execution.
 		$this->capture_server_notices();
 
-		if ( empty( $this->captured_notices ) ) {
+		$late_notices = array_slice( $this->captured_notices, $this->delivered_notice_count );
+		if ( empty( $late_notices ) ) {
 			return;
 		}
 
-		// If wp_localize_script already fired before late notices, output inline JSON push.
-		?>
-		<script id="wc-toasts-late-notices">
-		(function() {
-			if (window.WCToasts && typeof window.WCToasts.pushNotices === 'function') {
-				window.WCToasts.pushNotices(<?php echo wp_json_encode( $this->captured_notices ); ?>);
-			} else {
-				window.__wc_toasts_pending_notices = (window.__wc_toasts_pending_notices || []).concat(<?php echo wp_json_encode( $this->captured_notices ); ?>);
-			}
-		})();
-		</script>
-		<?php
+		// wp_localize_script already ran, so queue late notices for the frontend script to read on init.
+		wp_add_inline_script(
+			'wc-toasts-frontend',
+			'window.__wc_toasts_pending_notices = (window.__wc_toasts_pending_notices || []).concat(' . wp_json_encode( $late_notices ) . ');',
+			'before'
+		);
+		$this->delivered_notice_count = count( $this->captured_notices );
 	}
 
 	/**

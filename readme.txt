@@ -1,78 +1,81 @@
-=== WooCommerce Dynamic Notice Toasts ===
-Contributors: thanos
-Tags: woocommerce, toasts, notices, notifications, cart, checkout, alert
-Requires at least: 5.8
-Tested up to: 6.7
+=== Dynamic Notice Toasts for WooCommerce ===
+Contributors: thanosleftheriotis
+Tags: woocommerce, notices, notifications, toasts, accessibility
+Requires at least: 6.5
+Tested up to: 7.1
 Requires PHP: 7.4
-WC requires at least: 5.0
-WC tested up to: 9.3
-Stable tag: 1.0.0
+Requires Plugins: woocommerce
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Modernize WooCommerce notifications. Intercepts and replaces default alert banners with dynamic toasts, audio chimes, and action buttons.
+Replace WooCommerce notices with customizable toast layouts, four color palettes, a live token editor, and developer hooks.
 
 == Description ==
 
-Tired of WooCommerce's clunky, static alert banners that jump your page layout and push content down?
+Dynamic Notice Toasts for WooCommerce presents store notices as dismissible notifications with useful action links.
 
-**WooCommerce Dynamic Notice Toasts** intercepts all default WooCommerce notices across your entire store and replaces them with sleek, modern, interactive toast notifications with smooth animations, synthesized Web Audio chimes, countdown progress bars, and dedicated action buttons (e.g., "View Cart", "Undo").
+* Four layouts: Margin Note, System Capsule, Retro Outline, and Status Canvas.
+* Four palettes: Sky Blue & Dark Aubergine, Lime Chartreuse & Charcoal, Default Light, and Default Dark.
+* Edit background, text, accent, icons, borders, focus rings, controls, status colors, and shadows beside a live preview.
+* Choose where notifications appear, how long they remain, and whether to pause on hover.
+* Supports standard WooCommerce notices, classic AJAX cart events, coupon notices, and checkout errors exposed through WooCommerce notice markup.
+* Includes category controls, duplicate prevention, and optional suppression of standard notice banners.
+* Provides CSS variables, WordPress filters, browser events, and a JavaScript API for extensions.
+* Respects reduced-motion preferences and keeps notice actions keyboard accessible.
 
-### 🚀 Key Features
-
-* **Complete Notice Hijacking:** Automatically suppresses default static WooCommerce banners (`.woocommerce-message`, `.woocommerce-error`, `.woocommerce-info`) to eliminate layout shifts.
-* **Full WooCommerce Event Coverage:** Intercepts server-side page reloads, AJAX add-to-cart clicks, cart updates, coupon actions, and checkout errors.
-* **Intelligent Notice Catalog & Classification:** Identifies and classifies every possible WooCommerce notification across 6 categories:
-  * **Cart & Basket:** Item additions, removals with "Undo" button, quantity limits, empty cart.
-  * **Coupons & Discounts:** Coupon applied, expired coupons, spend requirements, restrictions.
-  * **Checkout & Validation:** Missing required fields, invalid postcode/email, terms acceptance, gateway errors.
-  * **Stock & Inventory:** Out-of-stock items, purchase limits, backorders.
-  * **Customer & Account:** Login failures, password resets, account updates.
-  * **System & Store Notices:** General announcements, digital download limits.
-* **Action Button Parser:** Extracts inline links from notices (such as "View Cart" or "Undo") and transforms them into clean, high-converting action buttons.
-* **Zero External Audio Assets:** Built-in Web Audio API synthesizer generates crystal-clear notification chimes directly in the browser without loading audio files.
-* **Live Interactive Admin Customizer:** Test any toast notification and hear audio chimes directly inside the WordPress dashboard simulator with real-time feedback.
-* **6 Design Presets:** Modern Light, Frosted Glass (Glassmorphism), Dark Slate, Minimalist Clean, WooCommerce Purple, and Custom Colors.
-* **Granular Display Settings:** Customize positions (6 screen locations), pause on hover, auto-dismiss durations per type, deduplication spam protection, and max visible toasts.
-* **Mobile Docking:** Automatically docks toasts at the bottom of the screen on mobile devices for easy one-thumb dismissal.
-* **Developer Extensibility & HPOS Ready:** 100% compatible with WooCommerce High-Performance Order Storage (HPOS) and WordPress Coding Standards (WPCS).
+The plugin does not send analytics, load remote fonts, or call external services at runtime. Its font and icons are bundled locally. It does not read or write order storage directly. HPOS compatibility is declared. WooCommerce Blocks can use different notice interfaces; test your checkout before enabling notice suppression on a live store.
 
 == Installation ==
 
-1. Upload the `woocommerceToasts` folder to the `/wp-content/plugins/` directory, or install the ZIP file via WordPress Plugins screen.
-2. Activate the plugin through the **Plugins** screen in WordPress.
-3. Navigate to **WooCommerce > Notice Toasts** to configure positions, themes, and sound effects.
+1. Install and activate WooCommerce.
+2. In Plugins > Add New, search for "Dynamic Notice Toasts" and click Install Now, or upload the plugin ZIP through Upload Plugin.
+3. Activate Dynamic Notice Toasts for WooCommerce.
+4. Open WooCommerce > Notice Toasts. In Appearance, choose a layout and palette, customize colors, then save.
+5. Test cart, coupon, and checkout notices on a staging store before deploying your configuration.
 
 == Frequently Asked Questions ==
 
-= Does this plugin work with AJAX Add-to-Cart? =
-Yes! It intercepts WooCommerce's native `added_to_cart` jQuery event and extracts product names directly from the button or markup, rendering a modern toast immediately.
+= Can I use my own colors? =
+Yes. Each color role has an optional override and a live toast preview. Blank fields use the selected palette or an automatic value. Reset color overrides to return to the palette.
 
-= Does it handle checkout validation errors? =
-Yes. When checkout validation fails or a payment gateway throws an error, each error is parsed and presented as a high-visibility toast alert.
+= Can developers extend the plugin? =
+Yes. The wc_toasts_palettes, wc_toasts_layouts, wc_toasts_color_tokens, wc_toasts_settings, wc_toasts_frontend_params, wc_toasts_categories, wc_toasts_cases, and wc_toasts_classified_notice filters provide extension points. The WCToasts JavaScript API and wc-toasts:before-show, wc-toasts:render, and wc-toasts:dismiss browser events allow further customization.
 
-= Do I need external audio files for notification sounds? =
-No. The audio engine uses the HTML5 Web Audio API to synthesize smooth sine/triangle harmonic chimes in real-time. This guarantees zero broken audio links, zero asset load times, and instant playback.
+= Will this change my orders? =
+No. This plugin changes notification presentation and does not modify order records.
 
-= Can I customize the colors to match my brand? =
-Yes. Set the Design Theme to "Custom Color Palette" in **WooCommerce > Notice Toasts > Appearance** to choose custom background, accent, and text colors.
-
-= Is High-Performance Order Storage (HPOS) supported? =
-Yes, WooCommerce Dynamic Notice Toasts is fully tested and declares full compatibility with HPOS and WooCommerce Blocks.
+= What happens when I uninstall? =
+Settings are retained unless you enable the option to delete them on uninstall.
 
 == Screenshots ==
 
-1. Admin Settings Dashboard with real-time interactive preview simulator.
-2. Dynamic "Added to Cart" toast with quick "View Cart" action button.
-3. Frosted Glassmorphism theme toast on product archive page.
-4. Checkout validation error toasts with distinct error styling.
-5. Notification Catalog displaying all 6 categorized notice domains.
+1. Token color editor beside a live preview in WordPress.
+2. Retro Outline with Default Dark in the standalone design lab.
 
 == Changelog ==
 
-= 1.0.0 =
-* Initial public release.
-* Complete WooCommerce core notification catalog (Cart, Coupon, Checkout, Stock, Account, System).
-* Interactive live preview admin panel with Web Audio synthesizer.
-* Native AJAX and DOM MutationObserver notice interception.
-* HPOS and Cart/Checkout Blocks compatibility.
+= 1.2.0 =
+* Added four storefront layouts and the four new palettes.
+* Added a token color editor with a live preview and reset controls.
+* Shared styling definitions between the settings preview and the storefront.
+* Added palette, token, layout, settings, and browser extension points.
+* Removed the Custom CSS field. Move any saved rules to Appearance > Customize > Additional CSS or your theme stylesheet.
+* All plugin styles and scripts now load through the WordPress enqueue system.
+* Hardened notice HTML and URL handling, settings validation, and dependency checks.
+* Added coding standards, compatibility checks, release tooling, and submission documentation.
+
+= 1.1.0 =
+* Refined typography, icons, positions, transitions, and reduced-motion behavior.
+
+== Upgrade Notice ==
+
+= 1.2.0 =
+Adds a new palette and layout system and removes the Custom CSS field. Copy any custom CSS to Additional CSS before updating, then review your appearance settings and checkout notices on a staging site.
+
+== Credits ==
+
+Author: Thanos Leftheriotis.
+TikTok Sans by TikTok: https://github.com/tiktok/TikTokSans (SIL Open Font License 1.1; bundled license in assets/fonts).
+Iconoir: https://iconoir.com/ (MIT license; bundled license in assets/icons).
+WooCommerce is a trademark of its respective owner. This independent plugin is not an official WooCommerce product.

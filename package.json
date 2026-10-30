@@ -1,0 +1,24 @@
+{
+  "name": "woocommerce-toasts-dev",
+  "private": true,
+  "scripts": {
+    "test:browser": "node tools/browser-review.mjs",
+    "test:unit": "node --test tests/styling.test.cjs",
+    "review": "node tools/native-review.mjs",
+    "review:setup": "node tools/native-review-setup.mjs",
+    "review:native": "node tools/native-review.mjs",
+    "build:data": "node tools/generate-style-data.mjs",
+    "build:directory-assets": "node tools/directory-assets.mjs",
+    "preview": "wp-playground-cli server --blueprint=tools/blueprint.json --mount=.:/wordpress/wp-content/plugins/woocommerce-toasts",
+    "check:js": "node --check assets/js/wc-toasts-frontend.js && node --check assets/js/wc-toasts-admin.js && node --check assets/js/wc-toasts-styling.js",
+    "build": "node tools/build-release.mjs",
+    "verify:release": "node tools/verify-release.mjs",
+    "deploy:svn": "node tools/deploy-svn.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@wp-playground/cli": "latest",
+    "fflate": "^0.8.3"
+  },
+  "overrides": { "qs": "^6.16.0" }
+}

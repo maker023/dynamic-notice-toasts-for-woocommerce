@@ -1,0 +1,10 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": { "php": "8.3", "wp": "latest" },
+  "login": true,
+  "landingPage": "/wp-admin/admin.php?page=wc-toasts-settings&tab=appearance",
+  "steps": [
+    { "step": "installPlugin", "pluginData": { "resource": "wordpress.org/plugins", "slug": "woocommerce" }, "options": { "activate": true } },
+    { "step": "installPlugin", "pluginData": { "resource": "wordpress.org/plugins", "slug": "dynamic-notice-toasts-for-woocommerce" }, "options": { "activate": true } }
+  ]
+}

@@ -1,0 +1,1112 @@
+# Copyright (C) 2026 Thanos Leftheriotis
+# This file is distributed under the GPL-2.0+.
+msgid ""
+msgstr ""
+"Project-Id-Version: Dynamic Notice Toasts for WooCommerce 1.2.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wc-dynamic-notice-toasts\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-27T19:24:43+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: dynamic-notice-toasts-for-woocommerce\n"
+
+#. Plugin Name of the plugin
+#: woocommerce-toasts.php
+#: includes/class-wc-toasts.php:269
+msgid "Dynamic Notice Toasts for WooCommerce"
+msgstr ""
+
+#. Description of the plugin
+#: woocommerce-toasts.php
+msgid "Replaces WooCommerce notice banners with readable, customizable toasts, progress bars, and action links."
+msgstr ""
+
+#. Author of the plugin
+#: woocommerce-toasts.php
+msgid "Thanos Leftheriotis"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:34
+#: includes/class-wc-toasts-ajax.php:159
+msgid "Permission denied."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:44
+msgid "“Classic Hoodie” has been added to your cart."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:45
+#: includes/class-wc-toasts-catalog.php:109
+msgid "Product Added to Cart"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:47
+#: includes/class-wc-toasts-interceptor.php:226
+msgid "View cart"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:54
+msgid "You must have an order with a minimum of $50.00 to place your order."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:55
+#: includes/class-wc-toasts-catalog.php:160
+msgid "Minimum Order Amount Required"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:59
+msgid "“Classic Hoodie” removed."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:60
+#: includes/class-wc-toasts-catalog.php:120
+msgid "Item Removed from Cart"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:62
+msgid "Undo?"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:71
+msgid "Coupon code \"FALL25\" applied successfully! 25% discount activated."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:72
+#: includes/class-wc-toasts-interceptor.php:219
+msgid "Coupon Applied"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:76
+msgid "Coupon \"SUMMERSALE\" has expired."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:77
+msgid "Coupon Expired"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:81
+msgid "Coupon \"FALL25\" has been removed from your basket."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:82
+#: includes/class-wc-toasts-interceptor.php:220
+msgid "Coupon Removed"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:88
+msgid "Billing Postcode / ZIP is a required field. Please enter a valid postcode to continue."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:89
+#: includes/class-wc-toasts-catalog.php:298
+msgid "Required Field Missing"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:93
+msgid "Shipping costs updated based on your selected address."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:94
+msgid "Shipping Calculated"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:100
+msgid "You cannot add that amount to the cart — we have 2 in stock and you already have 2 in your cart."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:101
+#: includes/class-wc-toasts-catalog.php:403
+msgid "Insufficient Stock"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:107
+msgid "Account details changed successfully."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:108
+msgid "Profile Updated"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:112
+msgid "Error: The password you entered for the username admin is incorrect."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:113
+#: includes/class-wc-toasts-catalog.php:447
+msgid "Login Error"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:119
+msgid "Free worldwide shipping is available for all orders over $75 today!"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:120
+msgid "Store Announcement"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:139
+msgid "Notification Alert"
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:140
+msgid "This is a test notification toast."
+msgstr ""
+
+#: includes/class-wc-toasts-ajax.php:165
+msgid "Settings successfully reset to factory defaults."
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:45
+msgid "Cart & Basket"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:46
+msgid "Item additions, removals, quantity updates, and cart notices."
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:53
+msgid "Coupons & Discounts"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:54
+msgid "Coupon application, removal, restrictions, and expiration alerts."
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:61
+msgid "Checkout & Orders"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:62
+msgid "Field validation, terms acceptance, shipping selection, and payment errors."
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:69
+msgid "Stock & Inventory"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:70
+msgid "Out-of-stock items, purchase limits, and backorder notifications."
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:77
+msgid "Customer & Account"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:78
+msgid "Login errors, registration, password resets, and profile updates."
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:85
+msgid "System & Store Notices"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:86
+msgid "General alerts, store maintenance, downloads, and uncategorized notices."
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:130
+msgid "Item Restored to Cart"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:140
+msgid "Cart Updated"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:150
+msgid "Cart is Empty"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:170
+msgid "Maximum Order Amount Exceeded"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:180
+msgid "Invalid Item Quantity"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:195
+msgid "Coupon Code Applied"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:205
+msgid "Coupon Code Removed"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:215
+msgid "Coupon Does Not Exist"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:225
+msgid "Coupon Already Applied"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:235
+msgid "Coupon Has Expired"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:245
+msgid "Coupon Usage Limit Reached"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:255
+msgid "Minimum Spend Not Met"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:264
+msgid "Maximum Spend Exceeded"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:273
+msgid "Cannot Combine Coupons"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:283
+msgid "Coupon Excluded From Items"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:308
+msgid "Invalid Email Address"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:318
+msgid "Invalid Postcode / ZIP"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:328
+msgid "Invalid Phone Number"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:338
+msgid "Terms Acceptance Required"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:348
+msgid "Shipping Method Required"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:358
+msgid "No Shipping Options Available"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:368
+msgid "Payment Failed"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:379
+msgid "Shipping Costs Updated"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:393
+msgid "Out of Stock"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:413
+msgid "Item Sold Individually"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:423
+msgid "Product Not Purchasable"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:433
+msgid "Item on Backorder"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:459
+msgid "Registration Successful"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:469
+msgid "Password Reset Email Sent"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:479
+msgid "Password Reset Complete"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:488
+msgid "Account Details Updated"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:498
+msgid "Address Updated"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:511
+msgid "Download Limit Reached"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:520
+msgid "Order Cancelled"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:529
+msgid "Action Completed"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:536
+msgid "Action Failed"
+msgstr ""
+
+#: includes/class-wc-toasts-catalog.php:543
+#: includes/class-wc-toasts-interceptor.php:213
+msgid "Store Notice"
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:210
+msgid "Success"
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:211
+msgid "Error"
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:212
+msgid "Notice"
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:214
+msgid "Notice Alert"
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:215
+msgid "Information"
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:216
+msgid "Checkout Alert"
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:217
+msgid "Alert"
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:218
+msgid "Added to Cart"
+msgstr ""
+
+#. translators: %s: Coupon code.
+#: includes/class-wc-toasts-interceptor.php:222
+#, php-format
+msgid "Coupon code \"%s\" applied successfully."
+msgstr ""
+
+#. translators: %s: Coupon code.
+#: includes/class-wc-toasts-interceptor.php:224
+#, php-format
+msgid "Coupon code \"%s\" has been removed."
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:225
+msgid "Close notice"
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:227
+msgid "Checkout"
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:228
+msgid "Undo"
+msgstr ""
+
+#: includes/class-wc-toasts-interceptor.php:229
+msgid "has been added to your cart."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:35
+msgid "Warm Paper"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:36
+msgid "Warm white surface, dark text, and a restrained status color."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:40
+msgid "Ink"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:41
+msgid "Deep charcoal surface with clear, soft white typography."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:45
+msgid "Gallery White"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:46
+msgid "Cool white surface and quiet blue-gray text."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:50
+msgid "Modern Light"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:51
+msgid "Simple white surface with the shared notice layout."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:55
+msgid "Soft Gray"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:56
+msgid "Muted gray surface with restrained contrast."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:60
+msgid "Dark"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:61
+msgid "Charcoal surface with accessible text and status colors."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:65
+msgid "Minimal"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:66
+msgid "White surface and a lighter shadow."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:70
+msgid "Plum"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:71
+msgid "A subtle purple tint inspired by WooCommerce."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:75
+msgid "Custom Color Palette"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:76
+msgid "Full control over background, text, accent, and border colors."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:92
+msgid "In-Toast Cross-Sells & Recommendations"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:93
+msgid "Display a \"Frequently Bought Together\" mini item right inside the \"Added to Cart\" toast!"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:94
+msgid "Revenue Booster"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:97
+msgid "Toast Analytics & Conversion Tracking"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:98
+msgid "Track toast impressions, action button click-through rates, and checkout recovery metrics."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:99
+msgid "Analytics"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:102
+msgid "Free Shipping Progress Meter"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:103
+msgid "Show a live bar in the toast: \"Add $15 more to unlock Free Shipping!\" on every add-to-cart."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:104
+msgid "High AOV"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:107
+msgid "Per-Category & Per-Role Display Rules"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:108
+msgid "Trigger exclusive toast styles for Wholesale / B2B buyers or VIP customer roles."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:109
+msgid "Targeting"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:112
+msgid "Polylang & WPML Multilingual Mapping"
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:113
+msgid "Translate custom toast button texts and titles automatically across multi-currency and multi-language stores."
+msgstr ""
+
+#: includes/class-wc-toasts-pro-bridge.php:114
+msgid "Global"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:39
+msgid "Sky Blue & Dark Aubergine"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:40
+msgid "Lime Chartreuse & Charcoal"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:41
+msgid "Default Light"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:42
+msgid "Default Dark"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:58
+#: includes/class-wc-toasts.php:483
+#: includes/class-wc-toasts.php:490
+#: includes/class-wc-toasts.php:497
+msgid "Background"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:59
+msgid "Text"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:60
+msgid "Accent"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:61
+msgid "Text on accent"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:62
+msgid "Secondary text"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:63
+msgid "Border"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:64
+msgid "Icon"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:65
+msgid "Focus ring"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:66
+msgid "Control highlight"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:67
+msgid "Shadow"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:68
+msgid "Action background"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:69
+msgid "Action text"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:70
+msgid "Action hover background"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:71
+msgid "Action hover text"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:72
+msgid "Close background"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:73
+msgid "Close icon"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:74
+msgid "Close hover background"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:75
+msgid "Close hover icon"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:76
+msgid "Status icon background"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:77
+msgid "Status icon color"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:78
+msgid "Success indicator"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:79
+msgid "Error indicator"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:80
+msgid "Info indicator"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:81
+msgid "Warning indicator"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:96
+msgid "Margin Note"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:97
+msgid "System Capsule"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:98
+msgid "Retro Outline"
+msgstr ""
+
+#: includes/class-wc-toasts-styling.php:99
+msgid "Status Canvas"
+msgstr ""
+
+#: includes/class-wc-toasts.php:91
+#: includes/class-wc-toasts.php:92
+msgid "Notice Toasts"
+msgstr ""
+
+#: includes/class-wc-toasts.php:107
+msgid "Settings"
+msgstr ""
+
+#: includes/class-wc-toasts.php:169
+msgid "Dismiss preview notice"
+msgstr ""
+
+#: includes/class-wc-toasts.php:170
+msgid "Error resetting settings."
+msgstr ""
+
+#: includes/class-wc-toasts.php:171
+msgid "Connection error occurred."
+msgstr ""
+
+#: includes/class-wc-toasts.php:172
+msgid "Settings saved successfully!"
+msgstr ""
+
+#: includes/class-wc-toasts.php:173
+msgid "Are you sure you want to reset all toast settings to factory defaults?"
+msgstr ""
+
+#: includes/class-wc-toasts.php:174
+msgid "Settings have been reset to default values."
+msgstr ""
+
+#: includes/class-wc-toasts.php:175
+msgid "Triggering test toast..."
+msgstr ""
+
+#: includes/class-wc-toasts.php:192
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: includes/class-wc-toasts.php:239
+msgid "General Settings"
+msgstr ""
+
+#: includes/class-wc-toasts.php:243
+msgid "Appearance & Styling"
+msgstr ""
+
+#: includes/class-wc-toasts.php:247
+msgid "Behavior"
+msgstr ""
+
+#. translators: %d: Number of classified notification cases.
+#: includes/class-wc-toasts.php:252
+#, php-format
+msgid "Notice Catalog (%d Cases)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:256
+msgid "Advanced"
+msgstr ""
+
+#: includes/class-wc-toasts.php:271
+msgid "Clear storefront notices with useful actions and considered typography."
+msgstr ""
+
+#: includes/class-wc-toasts.php:279
+msgid "Test Toast"
+msgstr ""
+
+#: includes/class-wc-toasts.php:287
+msgid "Success:"
+msgstr ""
+
+#: includes/class-wc-toasts.php:287
+msgid "Settings saved successfully."
+msgstr ""
+
+#: includes/class-wc-toasts.php:316
+msgid "Core Engine Settings"
+msgstr ""
+
+#: includes/class-wc-toasts.php:317
+msgid "Control how WooCommerce notifications are intercepted and replaced."
+msgstr ""
+
+#: includes/class-wc-toasts.php:321
+msgid "Enable Toast System"
+msgstr ""
+
+#: includes/class-wc-toasts.php:327
+msgid "Turn dynamic notice toasts on or off across your store."
+msgstr ""
+
+#: includes/class-wc-toasts.php:331
+msgid "Hide Default WooCommerce Banners"
+msgstr ""
+
+#: includes/class-wc-toasts.php:337
+msgid "Suppresses the default static alert boxes (.woocommerce-message, .woocommerce-error, .woocommerce-info) to eliminate duplicate notices and layout jumps."
+msgstr ""
+
+#: includes/class-wc-toasts.php:341
+msgid "Screen Position"
+msgstr ""
+
+#: includes/class-wc-toasts.php:346
+msgid "Top Left"
+msgstr ""
+
+#: includes/class-wc-toasts.php:347
+msgid "Top Center"
+msgstr ""
+
+#: includes/class-wc-toasts.php:348
+msgid "Top Right"
+msgstr ""
+
+#: includes/class-wc-toasts.php:349
+msgid "Bottom Left (Default)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:350
+msgid "Bottom Center"
+msgstr ""
+
+#: includes/class-wc-toasts.php:351
+msgid "Bottom Right"
+msgstr ""
+
+#: includes/class-wc-toasts.php:365
+msgid "Design Theme / Preset"
+msgstr ""
+
+#: includes/class-wc-toasts.php:374
+msgid "Select a pre-designed modern aesthetic or choose Custom for your own store branding."
+msgstr ""
+
+#: includes/class-wc-toasts.php:378
+msgid "Max Visible Toasts"
+msgstr ""
+
+#: includes/class-wc-toasts.php:381
+msgid "Limits the number of simultaneous toasts on screen before older ones are pushed off."
+msgstr ""
+
+#: includes/class-wc-toasts.php:385
+msgid "Newest on Top"
+msgstr ""
+
+#: includes/class-wc-toasts.php:389
+msgid "Insert new toasts at the top of the stack instead of appending to the bottom"
+msgstr ""
+
+#: includes/class-wc-toasts.php:394
+msgid "Prevent Duplicate Spam"
+msgstr ""
+
+#: includes/class-wc-toasts.php:398
+msgid "Prevents rapid repeated clicks on \"Add to Cart\" from flooding the screen with duplicate toasts"
+msgstr ""
+
+#: includes/class-wc-toasts.php:409
+msgid "Styling & Dimensions"
+msgstr ""
+
+#: includes/class-wc-toasts.php:412
+msgid "Toast style"
+msgstr ""
+
+#: includes/class-wc-toasts.php:418
+msgid "Color palette"
+msgstr ""
+
+#: includes/class-wc-toasts.php:424
+msgid "Customize any color below. Leave a field empty to use its palette or automatic value."
+msgstr ""
+
+#: includes/class-wc-toasts.php:428
+msgid "Automatic"
+msgstr ""
+
+#: includes/class-wc-toasts.php:432
+msgid "Reset color overrides"
+msgstr ""
+
+#: includes/class-wc-toasts.php:434
+msgid "Your toast preview"
+msgstr ""
+
+#: includes/class-wc-toasts.php:434
+msgid "Changes appear here immediately. Save settings to apply them to your store."
+msgstr ""
+
+#: includes/class-wc-toasts.php:439
+msgid "Corner Radius (px)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:446
+msgid "Drop Shadow"
+msgstr ""
+
+#: includes/class-wc-toasts.php:449
+msgid "None (Flat)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:450
+msgid "Subtle & Soft"
+msgstr ""
+
+#: includes/class-wc-toasts.php:451
+msgid "Medium Modern (Default)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:452
+msgid "Elevated Float"
+msgstr ""
+
+#: includes/class-wc-toasts.php:453
+msgid "Ambient Colored Glow"
+msgstr ""
+
+#: includes/class-wc-toasts.php:458
+msgid "Toast Width (px)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:464
+msgid "Show Status & Category Icons"
+msgstr ""
+
+#: includes/class-wc-toasts.php:468
+msgid "Display clean SVG vector icons inside toasts"
+msgstr ""
+
+#: includes/class-wc-toasts.php:475
+msgid "Custom Color Accents"
+msgstr ""
+
+#: includes/class-wc-toasts.php:476
+msgid "Active when Theme is set to \"Custom Color Palette\" or for accent highlights."
+msgstr ""
+
+#: includes/class-wc-toasts.php:480
+msgid "Success Notices"
+msgstr ""
+
+#: includes/class-wc-toasts.php:481
+#: includes/class-wc-toasts.php:488
+#: includes/class-wc-toasts.php:495
+msgid "Accent Color"
+msgstr ""
+
+#: includes/class-wc-toasts.php:487
+msgid "Error Notices"
+msgstr ""
+
+#: includes/class-wc-toasts.php:494
+msgid "Info / Store Notices"
+msgstr ""
+
+#: includes/class-wc-toasts.php:508
+msgid "Timing & Interactions"
+msgstr ""
+
+#: includes/class-wc-toasts.php:512
+msgid "Success Toast Duration (ms)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:515
+msgid "Duration in milliseconds before success toasts auto-dismiss (e.g. 4500 = 4.5 seconds)."
+msgstr ""
+
+#: includes/class-wc-toasts.php:519
+msgid "Error Toast Duration (ms)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:522
+msgid "Set to 0 if you want error notices (e.g. checkout issues) to stay persistent until user manually clicks close."
+msgstr ""
+
+#: includes/class-wc-toasts.php:526
+msgid "Info Notice Duration (ms)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:532
+msgid "Countdown Progress Bar"
+msgstr ""
+
+#: includes/class-wc-toasts.php:536
+msgid "Display animated progress line indicating remaining visible time"
+msgstr ""
+
+#: includes/class-wc-toasts.php:541
+msgid "Pause on Hover"
+msgstr ""
+
+#: includes/class-wc-toasts.php:545
+msgid "Pause the auto-dismiss timer whenever user hovers mouse over the toast"
+msgstr ""
+
+#: includes/class-wc-toasts.php:550
+msgid "Close \"X\" Button"
+msgstr ""
+
+#: includes/class-wc-toasts.php:554
+msgid "Show clickable dismiss button on every toast"
+msgstr ""
+
+#: includes/class-wc-toasts.php:559
+msgid "Mobile Bottom Dock"
+msgstr ""
+
+#: includes/class-wc-toasts.php:563
+msgid "Automatically dock toasts at the bottom on mobile screens (< 640px) for optimal thumb reachability"
+msgstr ""
+
+#: includes/class-wc-toasts.php:574
+msgid "WooCommerce Notification Catalog"
+msgstr ""
+
+#. translators: %d: number of cases
+#: includes/class-wc-toasts.php:578
+#, php-format
+msgid "Our intelligent classifier inspects incoming notices and categorizes them across %d specific WooCommerce cases."
+msgstr ""
+
+#: includes/class-wc-toasts.php:597
+msgid "Cases"
+msgstr ""
+
+#: includes/class-wc-toasts.php:610
+msgid "Catalog Cases Breakdown"
+msgstr ""
+
+#: includes/class-wc-toasts.php:615
+msgid "Category"
+msgstr ""
+
+#: includes/class-wc-toasts.php:616
+msgid "Case Identifier"
+msgstr ""
+
+#: includes/class-wc-toasts.php:617
+msgid "Type"
+msgstr ""
+
+#: includes/class-wc-toasts.php:618
+msgid "Notification Title"
+msgstr ""
+
+#: includes/class-wc-toasts.php:619
+msgid "Default Icon"
+msgstr ""
+
+#: includes/class-wc-toasts.php:650
+msgid "Advanced Integration"
+msgstr ""
+
+#: includes/class-wc-toasts.php:654
+msgid "AJAX Interception Mode"
+msgstr ""
+
+#: includes/class-wc-toasts.php:658
+msgid "Full Interception (jQuery Events + Fetch/XHR + DOM Observer) - Recommended"
+msgstr ""
+
+#: includes/class-wc-toasts.php:661
+msgid "Standard Only (WooCommerce Core Events)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:664
+msgid "Full mode also intercepts 3rd party plugins that dynamically inject notices via raw DOM insertion or custom AJAX endpoints."
+msgstr ""
+
+#: includes/class-wc-toasts.php:668
+msgid "Data Cleanup on Uninstall"
+msgstr ""
+
+#: includes/class-wc-toasts.php:672
+msgid "Delete all plugin settings from database when this plugin is deleted"
+msgstr ""
+
+#: includes/class-wc-toasts.php:684
+msgid "Save All Settings"
+msgstr ""
+
+#: includes/class-wc-toasts.php:688
+msgid "Reset to Defaults"
+msgstr ""
+
+#: includes/class-wc-toasts.php:700
+msgid "Live Toast Preview"
+msgstr ""
+
+#: includes/class-wc-toasts.php:702
+msgid "Interactive"
+msgstr ""
+
+#: includes/class-wc-toasts.php:704
+msgid "Click any button below to preview how toasts render with your current styling."
+msgstr ""
+
+#: includes/class-wc-toasts.php:709
+msgid "Add to Cart (Success)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:713
+msgid "Coupon Applied (Success)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:717
+msgid "Checkout Error (Required Field)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:721
+msgid "Stock Warning (Insufficient)"
+msgstr ""
+
+#: includes/class-wc-toasts.php:725
+msgid "Item Removed (With Undo)"
+msgstr ""
+
+#: woocommerce-toasts.php:72
+msgid "WooCommerce Dynamic Notice Toasts"
+msgstr ""
+
+#: woocommerce-toasts.php:73
+msgid "This plugin requires WooCommerce to be installed and active."
+msgstr ""

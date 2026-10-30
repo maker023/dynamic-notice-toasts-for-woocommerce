@@ -10,117 +10,15 @@
 	var adminData = window.wc_toasts_admin_params || {};
 	var i18n = adminData.i18n || {};
 	var icons = adminData.icons || {};
-
-	/**
-	 * Web Audio Synthesizer for Admin Sound Preview
-	 */
-	var AdminAudio = (function () {
-		var audioCtx = null;
-
-		function getAudioContext() {
-			if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
-				var AudioContextClass = window.AudioContext || window.webkitAudioContext;
-				audioCtx = new AudioContextClass();
-			}
-			if (audioCtx && audioCtx.state === 'suspended') {
-				audioCtx.resume();
-			}
-			return audioCtx;
-		}
-
-		function play(type) {
-			var ctx = getAudioContext();
-			if (!ctx) return;
-
-			var volInput = document.getElementById('wc-toasts-vol-range');
-			var volume = volInput ? parseInt(volInput.value, 10) : 40;
-			var themeSelect = document.getElementById('wc-toasts-sound-theme');
-			var theme = themeSelect ? themeSelect.value : 'gentle_chime';
-
-			var masterGain = ctx.createGain();
-			masterGain.gain.setValueAtTime((volume / 100) * 0.35, ctx.currentTime);
-			masterGain.connect(ctx.destination);
-
-			if (theme === 'crisp_pop') {
-				var osc = ctx.createOscillator();
-				var gain = ctx.createGain();
-				osc.type = 'sine';
-				osc.frequency.setValueAtTime(450, ctx.currentTime);
-				osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.08);
-				gain.gain.setValueAtTime(0.35, ctx.currentTime);
-				gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
-				osc.connect(gain);
-				gain.connect(masterGain);
-				osc.start(ctx.currentTime);
-				osc.stop(ctx.currentTime + 0.09);
-			} else if (theme === 'modern_ping') {
-				var pOsc = ctx.createOscillator();
-				var pGain = ctx.createGain();
-				pOsc.type = 'sine';
-				var freq = (type === 'error') ? 380 : 880;
-				pOsc.frequency.setValueAtTime(freq, ctx.currentTime);
-				pOsc.frequency.exponentialRampToValueAtTime(freq * 0.7, ctx.currentTime + 0.28);
-				pGain.gain.setValueAtTime(0.32, ctx.currentTime);
-				pGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-				pOsc.connect(pGain);
-				pGain.connect(masterGain);
-				pOsc.start(ctx.currentTime);
-				pOsc.stop(ctx.currentTime + 0.3);
-			} else if (theme === 'bell_ding') {
-				[880, 1760, 2640].forEach(function (f, i) {
-					var bOsc = ctx.createOscillator();
-					var bGain = ctx.createGain();
-					bOsc.type = 'sine';
-					bOsc.frequency.setValueAtTime(f, ctx.currentTime);
-					bGain.gain.setValueAtTime(0.25 / (i + 1.5), ctx.currentTime);
-					bGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.8);
-					bOsc.connect(bGain);
-					bGain.connect(masterGain);
-					bOsc.start(ctx.currentTime);
-					bOsc.stop(ctx.currentTime + 0.8);
-				});
-			} else if (theme === 'subtle_click') {
-				var cOsc = ctx.createOscillator();
-				var cGain = ctx.createGain();
-				cOsc.type = 'triangle';
-				cOsc.frequency.setValueAtTime(1400, ctx.currentTime);
-				cGain.gain.setValueAtTime(0.2, ctx.currentTime);
-				cGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.035);
-				cOsc.connect(cGain);
-				cGain.connect(masterGain);
-				cOsc.start(ctx.currentTime);
-				cOsc.stop(ctx.currentTime + 0.035);
-			} else {
-				// Gentle Chime.
-				var notes = (type === 'error') ? [349.23, 311.13] : [659.25, 880, 1046.5];
-				notes.forEach(function (freq, index) {
-					var osc = ctx.createOscillator();
-					var gain = ctx.createGain();
-					var startTime = ctx.currentTime + (index * 0.07);
-					osc.type = (type === 'error') ? 'triangle' : 'sine';
-					osc.frequency.setValueAtTime(freq, startTime);
-					gain.gain.setValueAtTime(0, startTime);
-					gain.gain.linearRampToValueAtTime(0.28, startTime + 0.015);
-					gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.55);
-					osc.connect(gain);
-					gain.connect(masterGain);
-					osc.start(startTime);
-					osc.stop(startTime + 0.55);
-				});
-			}
-		}
-
-		return {
-			play: play
-		};
-	})();
+	var styleData = adminData.styling || { palettes: {}, tokens: {} };
+	var lastNotice;
 
 	$(document).ready(function () {
 		// 1. Initialize Color Pickers.
 		if ($.fn.wpColorPicker) {
 			$('.wc-toasts-color-picker').wpColorPicker({
 				change: function () {
-					updateLivePreviewStyles();
+					setTimeout(updateLivePreviewStyles, 0);
 				}
 			});
 		}
@@ -169,6 +67,14 @@
 			$slot.attr('class', function (i, c) {
 				return (c || '').replace(/(^|\s)theme-\S+/g, '');
 			}).addClass('theme-' + themeVal);
+			updateLivePreviewStyles();
+		});
+		$('#wc-toasts-layout-select').on('change', function () { if (lastNotice) renderStageToast(lastNotice); });
+		$('#wc-toasts-palette-select').on('change', updateLivePreviewStyles);
+		$('.wc-toasts-token-input').on('input change', updateLivePreviewStyles);
+		$('#wc-toasts-reset-colors').on('click', function () {
+			$('.wc-toasts-token-input').each(function () { $(this).val(''); if ($.fn.wpColorPicker) $(this).wpColorPicker('color', ''); });
+			updateLivePreviewStyles();
 		});
 
 		// 4. Sliders Live Feedback.
@@ -178,21 +84,7 @@
 			updateLivePreviewStyles();
 		});
 
-		$('#wc-toasts-vol-range').on('input', function () {
-			var val = $(this).val();
-			$('#wc-toasts-vol-val').text(val + '%');
-		});
-
-		// 5. Sound Chime Test Buttons.
-		$('#wc-toasts-btn-test-chime').on('click', function () {
-			AdminAudio.play('success');
-		});
-
-		$('#wc-toasts-sound-theme').on('change', function () {
-			AdminAudio.play('success');
-		});
-
-		// 6. Preview Buttons Click Handler.
+		// 5. Preview Buttons Click Handler.
 		$('.preview-btn').on('click', function () {
 			var cat = $(this).data('cat');
 			var type = $(this).data('type');
@@ -203,7 +95,7 @@
 			triggerTestNotice('cart', 'success');
 		});
 
-		// 7. Reset Defaults AJAX handler.
+		// 6. Reset Defaults AJAX handler.
 		$('#wc-toasts-btn-reset-defaults').on('click', function () {
 			if (!confirm(i18n.reset_confirm || 'Are you sure you want to reset all toast settings to factory defaults?')) {
 				return;
@@ -224,12 +116,12 @@
 						alert(res.data.message || i18n.reset_done);
 						window.location.reload();
 					} else {
-						alert(res.data.message || 'Error resetting settings.');
+						alert(res.data.message || i18n.reset_error || 'Error resetting settings.');
 						$btn.prop('disabled', false);
 					}
 				},
 				error: function () {
-					alert('Connection error occurred.');
+					alert(i18n.connection_error || 'Connection error occurred.');
 					$btn.prop('disabled', false);
 				}
 			});
@@ -260,7 +152,6 @@
 			success: function (response) {
 				if (response.success && response.data && response.data.notice) {
 					renderStageToast(response.data.notice);
-					AdminAudio.play(type);
 				}
 			}
 		});
@@ -272,11 +163,13 @@
 	 * @param {Object} notice Notice payload.
 	 */
 	function renderStageToast(notice) {
+		lastNotice = notice;
+		var layout = $('#wc-toasts-layout-select').val() || 'retro-outline';
 		var $slot = $('#stage-toast-slot');
 		$slot.empty();
 
-		var radius = $('#wc-toasts-radius-range').val() || 10;
-		var pos = $('.wc-toasts-pos-card.selected input').val() || 'top-right';
+		var radius = $('#wc-toasts-radius-range').val() || 12;
+		var pos = $('.wc-toasts-pos-card.selected input').val() || 'bottom-left';
 		var animClass = (pos.indexOf('left') !== -1) ? 'anim-horizontal-in-left' : 'anim-horizontal-in-right';
 		var exitClass = (pos.indexOf('left') !== -1) ? 'anim-horizontal-out-left' : 'anim-horizontal-out-right';
 		var iconKey = notice.icon || 'info';
@@ -288,20 +181,21 @@
 			}
 		});
 
-		// 1. Icon pillar (fixed 52px wide, full height).
+		// 1. Status icon.
 		var $iconWrap = $('<div>', { class: 'wc-toast-icon-wrap' });
+		$iconWrap.attr('aria-hidden', 'true');
 		$iconWrap.html(icons[iconKey] || icons.info || '');
 		$toast.append($iconWrap);
 
 		// 2. Content area.
 		var $content = $('<div>', { class: 'wc-toast-content' });
 
-		// Micro eyebrow tag.
+		// Category label.
 		var eyebrowText = '';
 		if (notice.category) {
-			eyebrowText = notice.category.toUpperCase() + ' // ' + (notice.type === 'error' ? 'ALERT' : (notice.type === 'success' ? 'STATUS' : 'INFO'));
+			eyebrowText = notice.cat_name || (adminData.categories[notice.category] && adminData.categories[notice.category].name) || notice.category.replace(/[_-]/g, ' ');
 		} else if (notice.type) {
-			eyebrowText = 'SYSTEM // ' + notice.type.toUpperCase();
+			eyebrowText = notice.type === 'notice' ? 'Notice' : notice.type;
 		}
 		if (eyebrowText) {
 			$content.append($('<div>', { class: 'wc-toast-eyebrow', text: eyebrowText }));
@@ -312,21 +206,24 @@
 
 		if (notice.action && notice.action.text) {
 			var $actWrap = $('<div>', { class: 'wc-toast-action' });
-			$actWrap.append($('<a>', {
+			var $action = $('<a>', {
 				class: 'wc-toast-action-btn',
 				href: '#preview',
-				html: notice.action.text + ' <span class="arrow-icon">&rarr;</span>',
+				text: notice.action.text,
 				click: function (e) { e.preventDefault(); }
-			}));
-			$content.append($actWrap);
+			});
+			$action.append($('<span>', { class: 'arrow-icon', 'aria-hidden': 'true', text: '→' }));
+			$actWrap.append($action);
+			if (layout !== 'utility' && layout !== 'retro-outline') $content.append($actWrap);
 		}
 		$toast.append($content);
+		if ($actWrap && (layout === 'utility' || layout === 'retro-outline')) $toast.append($actWrap);
 
 		// 3. Close button.
 		var $close = $('<button>', {
 			type: 'button',
 			class: 'wc-toast-close-btn',
-			html: icons.close || '&times;',
+			'aria-label': i18n.close || 'Dismiss preview notice',
 			click: function () {
 				$toast.removeClass('anim-horizontal-in-right anim-horizontal-in-left').addClass(exitClass);
 				setTimeout(function () { $toast.remove(); }, 240);
@@ -339,6 +236,10 @@
 		$toast.append($progress);
 
 		$slot.append($toast);
+		var $editorToast = $toast.clone(false).removeClass('anim-horizontal-in-left anim-horizontal-in-right');
+		$editorToast.find('.wc-toast-close-btn').on('click', function () { $(this).closest('.wc-toast').hide(); });
+		$('#wc-toasts-editor-preview').empty().append($editorToast);
+		updateLivePreviewStyles();
 	}
 
 	/**
@@ -347,6 +248,32 @@
 	function updateLivePreviewStyles() {
 		var radius = $('#wc-toasts-radius-range').val();
 		$('#stage-toast-slot .wc-toast').css('border-radius', radius + 'px');
+		var slot = document.getElementById('stage-toast-slot');
+		if (!slot) return;
+		var colors = {
+			'color_success_bg': '--wc-toast-success-bg',
+			'color_success_text': '--wc-toast-success-text',
+			'color_success_accent': '--wc-toast-accent-success',
+			'color_error_bg': '--wc-toast-error-bg',
+			'color_error_text': '--wc-toast-error-text',
+			'color_error_accent': '--wc-toast-accent-error',
+			'color_info_bg': '--wc-toast-info-bg',
+			'color_info_text': '--wc-toast-info-text',
+			'color_info_accent': '--wc-toast-accent-info'
+		};
+		Object.keys(colors).forEach(function (key) {
+			var value = $('[name="wc_toasts[' + key + ']"]').val();
+			if (value) slot.style.setProperty(colors[key], value);
+		});
+		var overrides = {};
+		$('.wc-toasts-token-input').each(function () { overrides[this.dataset.token] = this.value; });
+		var layout = $('#wc-toasts-layout-select').val() || 'retro-outline';
+		[slot, document.getElementById('wc-toasts-editor-preview')].forEach(function (element) {
+			if (!element) return;
+			element.className = element.className.replace(/\blayout-\S+/g, '') + ' layout-' + layout;
+			window.WCToastStyling.apply(element, styleData.palettes[$('#wc-toasts-palette-select').val()], overrides, styleData.tokens, layout);
+			element.querySelectorAll('.wc-toast').forEach(function (toast) { window.WCToastStyling.apply(toast, styleData.palettes[$('#wc-toasts-palette-select').val()], overrides, styleData.tokens, layout); });
+		});
 	}
 
 })(jQuery);

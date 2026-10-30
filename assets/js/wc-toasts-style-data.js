@@ -1,0 +1,63 @@
+/** Generated from assets/config/styling.json. Run node tools/generate-style-data.mjs. */
+window.WCToastStyleData = {
+	"palettes": {
+		"sky-aubergine": {
+			"label": "Sky Blue & Dark Aubergine",
+			"surface": "#D7EBFF",
+			"ink": "#3B2350",
+			"accent": "#FAFAF7"
+		},
+		"lime-charcoal": {
+			"label": "Lime Chartreuse & Charcoal",
+			"surface": "#D9F752",
+			"ink": "#2B2B2B",
+			"accent": "#F4F1E6",
+			"layoutTokens": {
+				"utility": {
+					"action-bg": "#2B2B2B",
+					"action-ink": "#FFFFFF",
+					"action-hover-bg": "#1F1F1F",
+					"action-hover-ink": "#FFFFFF"
+				}
+			}
+		},
+		"default-light": {
+			"label": "Default Light",
+			"surface": "#F8F7F2",
+			"ink": "#1F2328",
+			"accent": "#D8DDE6"
+		},
+		"default-dark": {
+			"label": "Default Dark",
+			"surface": "#1E222A",
+			"ink": "#F4F1E8",
+			"accent": "#4B7BFF"
+		}
+	},
+	"tokens": {
+		"surface": "Background",
+		"ink": "Text",
+		"accent": "Accent",
+		"on-accent": "Text on accent",
+		"muted": "Secondary text",
+		"border": "Border",
+		"icon": "Icon",
+		"focus": "Focus ring",
+		"control-fill": "Control highlight",
+		"shadow-color": "Shadow",
+		"action-bg": "Action background",
+		"action-ink": "Action text",
+		"action-hover-bg": "Action hover background",
+		"action-hover-ink": "Action hover text",
+		"close-bg": "Close background",
+		"close-ink": "Close icon",
+		"close-hover-bg": "Close hover background",
+		"close-hover-ink": "Close hover icon",
+		"icon-bg": "Status icon background",
+		"icon-ink": "Status icon color",
+		"success": "Success indicator",
+		"error": "Error indicator",
+		"info": "Info indicator",
+		"warning": "Warning indicator"
+	}
+};

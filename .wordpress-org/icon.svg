@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Dynamic Notice Toasts">
+  <rect width="256" height="256" rx="32" fill="#D7EBFF"/>
+  <rect x="40" y="80" width="184" height="112" rx="12" fill="#3B2350" opacity=".3"/>
+  <rect x="32" y="72" width="184" height="112" rx="12" fill="#FAFAF7" stroke="#3B2350" stroke-width="6"/>
+  <rect x="48" y="94" width="40" height="40" rx="6" fill="#D7EBFF" stroke="#3B2350" stroke-width="3"/>
+  <path d="m58 114 7 7 13-15" fill="none" stroke="#3B2350" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M105 104h68m-68 17h47M48 156h105m35-58 10 10m0-10-10 10" stroke="#3B2350" stroke-width="5" stroke-linecap="round"/>
+</svg>

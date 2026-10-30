@@ -1,0 +1,11 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": { "php": "8.3", "wp": "latest" },
+  "login": true,
+  "extraLibraries": ["wp-cli"],
+  "steps": [
+    { "step": "installPlugin", "pluginData": { "resource": "wordpress.org/plugins", "slug": "woocommerce" }, "options": { "activate": true } },
+    { "step": "activatePlugin", "pluginPath": "/wordpress/wp-content/plugins/woocommerce-toasts/woocommerce-toasts.php" },
+    { "step": "installPlugin", "pluginData": { "resource": "wordpress.org/plugins", "slug": "plugin-check" }, "options": { "activate": true } }
+  ]
+}

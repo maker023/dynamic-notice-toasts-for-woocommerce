@@ -42,48 +42,48 @@ class WC_Toasts_Catalog {
 		$categories = array(
 			self::CAT_CART     => array(
 				'id'          => self::CAT_CART,
-				'name'        => __( 'Cart & Basket', 'woocommerce-toasts' ),
-				'description' => __( 'Item additions, removals, quantity updates, and cart notices.', 'woocommerce-toasts' ),
+				'name'        => __( 'Cart & Basket', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Item additions, removals, quantity updates, and cart notices.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'icon'        => 'cart',
 				'color'       => '#10b981', // Emerald green.
 				'priority'    => 10,
 			),
 			self::CAT_COUPON   => array(
 				'id'          => self::CAT_COUPON,
-				'name'        => __( 'Coupons & Discounts', 'woocommerce-toasts' ),
-				'description' => __( 'Coupon application, removal, restrictions, and expiration alerts.', 'woocommerce-toasts' ),
+				'name'        => __( 'Coupons & Discounts', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Coupon application, removal, restrictions, and expiration alerts.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'icon'        => 'ticket',
 				'color'       => '#8b5cf6', // Violet.
 				'priority'    => 20,
 			),
 			self::CAT_CHECKOUT => array(
 				'id'          => self::CAT_CHECKOUT,
-				'name'        => __( 'Checkout & Orders', 'woocommerce-toasts' ),
-				'description' => __( 'Field validation, terms acceptance, shipping selection, and payment errors.', 'woocommerce-toasts' ),
+				'name'        => __( 'Checkout & Orders', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Field validation, terms acceptance, shipping selection, and payment errors.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'icon'        => 'credit-card',
 				'color'       => '#ef4444', // Red.
 				'priority'    => 30,
 			),
 			self::CAT_STOCK    => array(
 				'id'          => self::CAT_STOCK,
-				'name'        => __( 'Stock & Inventory', 'woocommerce-toasts' ),
-				'description' => __( 'Out-of-stock items, purchase limits, and backorder notifications.', 'woocommerce-toasts' ),
+				'name'        => __( 'Stock & Inventory', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Out-of-stock items, purchase limits, and backorder notifications.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'icon'        => 'archive',
 				'color'       => '#f59e0b', // Amber.
 				'priority'    => 40,
 			),
 			self::CAT_ACCOUNT  => array(
 				'id'          => self::CAT_ACCOUNT,
-				'name'        => __( 'Customer & Account', 'woocommerce-toasts' ),
-				'description' => __( 'Login errors, registration, password resets, and profile updates.', 'woocommerce-toasts' ),
+				'name'        => __( 'Customer & Account', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Login errors, registration, password resets, and profile updates.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'icon'        => 'user',
 				'color'       => '#3b82f6', // Blue.
 				'priority'    => 50,
 			),
 			self::CAT_SYSTEM   => array(
 				'id'          => self::CAT_SYSTEM,
-				'name'        => __( 'System & Store Notices', 'woocommerce-toasts' ),
-				'description' => __( 'General alerts, store maintenance, downloads, and uncategorized notices.', 'woocommerce-toasts' ),
+				'name'        => __( 'System & Store Notices', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'General alerts, store maintenance, downloads, and uncategorized notices.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'icon'        => 'bell',
 				'color'       => '#6b7280', // Gray.
 				'priority'    => 60,
@@ -103,488 +103,445 @@ class WC_Toasts_Catalog {
 			// ==========================================
 			// 1. CART NOTIFICATIONS
 			// ==========================================
-			'cart_item_added'                  => array(
+			'cart_item_added'                => array(
 				'category' => self::CAT_CART,
 				'type'     => self::TYPE_SUCCESS,
-				'title'    => __( 'Product Added to Cart', 'woocommerce-toasts' ),
+				'title'    => __( 'Product Added to Cart', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/has been added to your cart/i',
 					'/have been added to your cart/i',
 					'/added to your cart/i',
 				),
-				'sound'    => 'success_chime',
 				'icon'     => 'cart_check',
 			),
-			'cart_item_removed'                => array(
+			'cart_item_removed'              => array(
 				'category' => self::CAT_CART,
 				'type'     => self::TYPE_INFO,
-				'title'    => __( 'Item Removed from Cart', 'woocommerce-toasts' ),
+				'title'    => __( 'Item Removed from Cart', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/removed\.\s*(Undo\?)?/i',
 					'/item removed/i',
 				),
-				'sound'    => 'pop',
 				'icon'     => 'trash',
 			),
-			'cart_item_restored'               => array(
+			'cart_item_restored'             => array(
 				'category' => self::CAT_CART,
 				'type'     => self::TYPE_SUCCESS,
-				'title'    => __( 'Item Restored to Cart', 'woocommerce-toasts' ),
+				'title'    => __( 'Item Restored to Cart', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/restored to cart/i',
 					'/item restored/i',
 				),
-				'sound'    => 'success_chime',
 				'icon'     => 'refresh',
 			),
-			'cart_updated'                     => array(
+			'cart_updated'                   => array(
 				'category' => self::CAT_CART,
 				'type'     => self::TYPE_SUCCESS,
-				'title'    => __( 'Cart Updated', 'woocommerce-toasts' ),
+				'title'    => __( 'Cart Updated', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/cart updated/i',
 					'/basket updated/i',
 				),
-				'sound'    => 'gentle_ping',
 				'icon'     => 'refresh',
 			),
-			'cart_empty'                       => array(
+			'cart_empty'                     => array(
 				'category' => self::CAT_CART,
 				'type'     => self::TYPE_INFO,
-				'title'    => __( 'Cart is Empty', 'woocommerce-toasts' ),
+				'title'    => __( 'Cart is Empty', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/cart is currently empty/i',
 					'/basket is currently empty/i',
 				),
-				'sound'    => 'warning_soft',
 				'icon'     => 'cart_empty',
 			),
-			'cart_minimum_order'               => array(
+			'cart_minimum_order'             => array(
 				'category' => self::CAT_CART,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Minimum Order Amount Required', 'woocommerce-toasts' ),
+				'title'    => __( 'Minimum Order Amount Required', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/minimum of.*to place your order/i',
 					'/minimum order amount/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'alert_triangle',
 			),
-			'cart_maximum_order'               => array(
+			'cart_maximum_order'             => array(
 				'category' => self::CAT_CART,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Maximum Order Amount Exceeded', 'woocommerce-toasts' ),
+				'title'    => __( 'Maximum Order Amount Exceeded', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/exceeds the maximum allowed amount/i',
 					'/maximum order amount/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'alert_triangle',
 			),
-			'cart_quantity_invalid'            => array(
+			'cart_quantity_invalid'          => array(
 				'category' => self::CAT_CART,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Invalid Item Quantity', 'woocommerce-toasts' ),
+				'title'    => __( 'Invalid Item Quantity', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/minimum quantity for/i',
 					'/maximum quantity for/i',
 					'/increments of/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'alert_circle',
 			),
 
 			// ==========================================
 			// 2. COUPON NOTIFICATIONS
 			// ==========================================
-			'coupon_applied'                   => array(
+			'coupon_applied'                 => array(
 				'category' => self::CAT_COUPON,
 				'type'     => self::TYPE_SUCCESS,
-				'title'    => __( 'Coupon Code Applied', 'woocommerce-toasts' ),
+				'title'    => __( 'Coupon Code Applied', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/coupon code applied successfully/i',
 					'/coupon applied/i',
 				),
-				'sound'    => 'celebration',
 				'icon'     => 'ticket_check',
 			),
-			'coupon_removed'                   => array(
+			'coupon_removed'                 => array(
 				'category' => self::CAT_COUPON,
 				'type'     => self::TYPE_INFO,
-				'title'    => __( 'Coupon Code Removed', 'woocommerce-toasts' ),
+				'title'    => __( 'Coupon Code Removed', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/coupon code has been removed/i',
 					'/coupon removed/i',
 				),
-				'sound'    => 'pop',
 				'icon'     => 'ticket_cross',
 			),
-			'coupon_not_exist'                 => array(
+			'coupon_not_exist'               => array(
 				'category' => self::CAT_COUPON,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Coupon Does Not Exist', 'woocommerce-toasts' ),
+				'title'    => __( 'Coupon Does Not Exist', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/coupon.*does not exist/i',
 					'/invalid coupon/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'ticket_alert',
 			),
-			'coupon_already_applied'           => array(
+			'coupon_already_applied'         => array(
 				'category' => self::CAT_COUPON,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Coupon Already Applied', 'woocommerce-toasts' ),
+				'title'    => __( 'Coupon Already Applied', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/coupon code already applied/i',
 					'/already been applied/i',
 				),
-				'sound'    => 'warning_soft',
 				'icon'     => 'ticket_alert',
 			),
-			'coupon_expired'                   => array(
+			'coupon_expired'                 => array(
 				'category' => self::CAT_COUPON,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Coupon Has Expired', 'woocommerce-toasts' ),
+				'title'    => __( 'Coupon Has Expired', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/this coupon has expired/i',
 					'/coupon has expired/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'clock',
 			),
-			'coupon_usage_limit_reached'       => array(
+			'coupon_usage_limit_reached'     => array(
 				'category' => self::CAT_COUPON,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Coupon Usage Limit Reached', 'woocommerce-toasts' ),
+				'title'    => __( 'Coupon Usage Limit Reached', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/coupon usage limit has been reached/i',
 					'/usage limit reached/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'shield_alert',
 			),
-			'coupon_min_spend'                 => array(
+			'coupon_min_spend'               => array(
 				'category' => self::CAT_COUPON,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Minimum Spend Not Met', 'woocommerce-toasts' ),
+				'title'    => __( 'Minimum Spend Not Met', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/minimum spend for this coupon is/i',
 				),
-				'sound'    => 'warning_soft',
 				'icon'     => 'ticket_alert',
 			),
-			'coupon_max_spend'                 => array(
+			'coupon_max_spend'               => array(
 				'category' => self::CAT_COUPON,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Maximum Spend Exceeded', 'woocommerce-toasts' ),
+				'title'    => __( 'Maximum Spend Exceeded', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/maximum spend for this coupon is/i',
 				),
-				'sound'    => 'warning_soft',
 				'icon'     => 'ticket_alert',
 			),
-			'coupon_individual_use'            => array(
+			'coupon_individual_use'          => array(
 				'category' => self::CAT_COUPON,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Cannot Combine Coupons', 'woocommerce-toasts' ),
+				'title'    => __( 'Cannot Combine Coupons', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/cannot be used in conjunction with other coupons/i',
 					'/individual use only/i',
 				),
-				'sound'    => 'warning_soft',
 				'icon'     => 'ticket_alert',
 			),
-			'coupon_excluded_items'            => array(
+			'coupon_excluded_items'          => array(
 				'category' => self::CAT_COUPON,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Coupon Excluded From Items', 'woocommerce-toasts' ),
+				'title'    => __( 'Coupon Excluded From Items', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/not applicable to selected products/i',
 					'/not applicable to selected categories/i',
 					'/not applicable to sale items/i',
 				),
-				'sound'    => 'warning_soft',
 				'icon'     => 'ticket_alert',
 			),
 
 			// ==========================================
 			// 3. CHECKOUT NOTIFICATIONS
 			// ==========================================
-			'checkout_field_required'          => array(
+			'checkout_field_required'        => array(
 				'category' => self::CAT_CHECKOUT,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Required Field Missing', 'woocommerce-toasts' ),
+				'title'    => __( 'Required Field Missing', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/is a required field/i',
 					'/please enter a.*to continue/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'edit_alert',
 			),
-			'checkout_invalid_email'           => array(
+			'checkout_invalid_email'         => array(
 				'category' => self::CAT_CHECKOUT,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Invalid Email Address', 'woocommerce-toasts' ),
+				'title'    => __( 'Invalid Email Address', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/please provide a valid email address/i',
 					'/enter a valid email/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'mail_alert',
 			),
-			'checkout_invalid_postcode'        => array(
+			'checkout_invalid_postcode'      => array(
 				'category' => self::CAT_CHECKOUT,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Invalid Postcode / ZIP', 'woocommerce-toasts' ),
+				'title'    => __( 'Invalid Postcode / ZIP', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/please enter a valid postcode/i',
 					'/valid zip/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'map_pin',
 			),
-			'checkout_invalid_phone'           => array(
+			'checkout_invalid_phone'         => array(
 				'category' => self::CAT_CHECKOUT,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Invalid Phone Number', 'woocommerce-toasts' ),
+				'title'    => __( 'Invalid Phone Number', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/please enter a valid phone number/i',
 					'/valid phone/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'phone_alert',
 			),
-			'checkout_terms_required'          => array(
+			'checkout_terms_required'        => array(
 				'category' => self::CAT_CHECKOUT,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Terms Acceptance Required', 'woocommerce-toasts' ),
+				'title'    => __( 'Terms Acceptance Required', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/read and accept the terms and conditions/i',
 					'/terms and conditions/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'shield_alert',
 			),
-			'checkout_no_shipping_method'      => array(
+			'checkout_no_shipping_method'    => array(
 				'category' => self::CAT_CHECKOUT,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Shipping Method Required', 'woocommerce-toasts' ),
+				'title'    => __( 'Shipping Method Required', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/no shipping method has been selected/i',
 					'/choose a shipping method/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'truck',
 			),
-			'checkout_no_shipping_available'   => array(
+			'checkout_no_shipping_available' => array(
 				'category' => self::CAT_CHECKOUT,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'No Shipping Options Available', 'woocommerce-toasts' ),
+				'title'    => __( 'No Shipping Options Available', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/no shipping options available/i',
 					'/cannot be delivered to/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'truck_alert',
 			),
-			'checkout_payment_failed'          => array(
+			'checkout_payment_failed'        => array(
 				'category' => self::CAT_CHECKOUT,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Payment Failed', 'woocommerce-toasts' ),
+				'title'    => __( 'Payment Failed', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/payment failed/i',
 					'/could not process your payment/i',
 					'/declined/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'card_error',
 			),
-			'checkout_shipping_updated'        => array(
+			'checkout_shipping_updated'      => array(
 				'category' => self::CAT_CHECKOUT,
 				'type'     => self::TYPE_SUCCESS,
-				'title'    => __( 'Shipping Costs Updated', 'woocommerce-toasts' ),
+				'title'    => __( 'Shipping Costs Updated', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/shipping costs updated/i',
 					'/shipping calculated/i',
 				),
-				'sound'    => 'gentle_ping',
 				'icon'     => 'truck',
 			),
 
 			// ==========================================
 			// 4. STOCK & INVENTORY NOTIFICATIONS
 			// ==========================================
-			'stock_out_of_stock'               => array(
+			'stock_out_of_stock'             => array(
 				'category' => self::CAT_STOCK,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Out of Stock', 'woocommerce-toasts' ),
+				'title'    => __( 'Out of Stock', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/product is out of stock/i',
 					'/out of stock/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'archive_alert',
 			),
-			'stock_insufficient'               => array(
+			'stock_insufficient'             => array(
 				'category' => self::CAT_STOCK,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Insufficient Stock', 'woocommerce-toasts' ),
+				'title'    => __( 'Insufficient Stock', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/cannot add that amount to the cart.*in stock/i',
 					'/not enough stock/i',
 				),
-				'sound'    => 'warning_soft',
 				'icon'     => 'archive_alert',
 			),
-			'stock_sold_individually'          => array(
+			'stock_sold_individually'        => array(
 				'category' => self::CAT_STOCK,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Item Sold Individually', 'woocommerce-toasts' ),
+				'title'    => __( 'Item Sold Individually', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/cannot add another.*to your cart/i',
 					'/sold individually/i',
 				),
-				'sound'    => 'warning_soft',
 				'icon'     => 'alert_circle',
 			),
-			'stock_not_purchasable'            => array(
+			'stock_not_purchasable'          => array(
 				'category' => self::CAT_STOCK,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Product Not Purchasable', 'woocommerce-toasts' ),
+				'title'    => __( 'Product Not Purchasable', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/cannot be purchased/i',
 					'/not currently available/i',
 				),
-				'sound'    => 'warning_soft',
 				'icon'     => 'alert_circle',
 			),
-			'stock_backordered'                => array(
+			'stock_backordered'              => array(
 				'category' => self::CAT_STOCK,
 				'type'     => self::TYPE_INFO,
-				'title'    => __( 'Item on Backorder', 'woocommerce-toasts' ),
+				'title'    => __( 'Item on Backorder', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/item is on backorder/i',
 					'/available on backorder/i',
 				),
-				'sound'    => 'gentle_ping',
 				'icon'     => 'clock',
 			),
 
 			// ==========================================
 			// 5. CUSTOMER & ACCOUNT NOTIFICATIONS
 			// ==========================================
-			'account_login_failed'             => array(
+			'account_login_failed'           => array(
 				'category' => self::CAT_ACCOUNT,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Login Error', 'woocommerce-toasts' ),
+				'title'    => __( 'Login Error', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/password you entered for the username.*is incorrect/i',
 					'/unknown username/i',
 					'/unknown email/i',
 					'/invalid username or email/i',
 				),
-				'sound'    => 'error_alert',
 				'icon'     => 'lock_alert',
 			),
-			'account_registration_success'     => array(
+			'account_registration_success'   => array(
 				'category' => self::CAT_ACCOUNT,
 				'type'     => self::TYPE_SUCCESS,
-				'title'    => __( 'Registration Successful', 'woocommerce-toasts' ),
+				'title'    => __( 'Registration Successful', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/account was created successfully/i',
 					'/registration complete/i',
 				),
-				'sound'    => 'celebration',
 				'icon'     => 'user_check',
 			),
-			'account_password_reset_sent'      => array(
+			'account_password_reset_sent'    => array(
 				'category' => self::CAT_ACCOUNT,
 				'type'     => self::TYPE_SUCCESS,
-				'title'    => __( 'Password Reset Email Sent', 'woocommerce-toasts' ),
+				'title'    => __( 'Password Reset Email Sent', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/password reset email has been sent/i',
 					'/check your email for the confirmation link/i',
 				),
-				'sound'    => 'gentle_ping',
 				'icon'     => 'mail_check',
 			),
-			'account_password_reset_success'   => array(
+			'account_password_reset_success' => array(
 				'category' => self::CAT_ACCOUNT,
 				'type'     => self::TYPE_SUCCESS,
-				'title'    => __( 'Password Reset Complete', 'woocommerce-toasts' ),
+				'title'    => __( 'Password Reset Complete', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/your password has been reset/i',
 				),
-				'sound'    => 'celebration',
 				'icon'     => 'lock_check',
 			),
-			'account_details_saved'            => array(
+			'account_details_saved'          => array(
 				'category' => self::CAT_ACCOUNT,
 				'type'     => self::TYPE_SUCCESS,
-				'title'    => __( 'Account Details Updated', 'woocommerce-toasts' ),
+				'title'    => __( 'Account Details Updated', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/account details changed successfully/i',
 					'/profile updated/i',
 				),
-				'sound'    => 'success_chime',
 				'icon'     => 'user_check',
 			),
-			'account_address_saved'            => array(
+			'account_address_saved'          => array(
 				'category' => self::CAT_ACCOUNT,
 				'type'     => self::TYPE_SUCCESS,
-				'title'    => __( 'Address Updated', 'woocommerce-toasts' ),
+				'title'    => __( 'Address Updated', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/address changed successfully/i',
 				),
-				'sound'    => 'success_chime',
 				'icon'     => 'map_pin',
 			),
 
 			// ==========================================
 			// 6. SYSTEM & STORE NOTIFICATIONS
 			// ==========================================
-			'system_download_limit'            => array(
+			'system_download_limit'          => array(
 				'category' => self::CAT_SYSTEM,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Download Limit Reached', 'woocommerce-toasts' ),
+				'title'    => __( 'Download Limit Reached', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/reached your download limit/i',
 				),
-				'sound'    => 'warning_soft',
 				'icon'     => 'download_alert',
 			),
-			'system_order_cancelled'           => array(
+			'system_order_cancelled'         => array(
 				'category' => self::CAT_SYSTEM,
 				'type'     => self::TYPE_INFO,
-				'title'    => __( 'Order Cancelled', 'woocommerce-toasts' ),
+				'title'    => __( 'Order Cancelled', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(
 					'/order has been cancelled/i',
 				),
-				'sound'    => 'pop',
 				'icon'     => 'alert_circle',
 			),
-			'system_generic_success'           => array(
+			'system_generic_success'         => array(
 				'category' => self::CAT_SYSTEM,
 				'type'     => self::TYPE_SUCCESS,
-				'title'    => __( 'Action Completed', 'woocommerce-toasts' ),
+				'title'    => __( 'Action Completed', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(),
-				'sound'    => 'success_chime',
 				'icon'     => 'check',
 			),
-			'system_generic_error'             => array(
+			'system_generic_error'           => array(
 				'category' => self::CAT_SYSTEM,
 				'type'     => self::TYPE_ERROR,
-				'title'    => __( 'Action Failed', 'woocommerce-toasts' ),
+				'title'    => __( 'Action Failed', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(),
-				'sound'    => 'error_alert',
 				'icon'     => 'alert_triangle',
 			),
-			'system_generic_notice'            => array(
+			'system_generic_notice'          => array(
 				'category' => self::CAT_SYSTEM,
 				'type'     => self::TYPE_INFO,
-				'title'    => __( 'Store Notice', 'woocommerce-toasts' ),
+				'title'    => __( 'Store Notice', 'dynamic-notice-toasts-for-woocommerce' ),
 				'patterns' => array(),
-				'sound'    => 'gentle_ping',
 				'icon'     => 'info',
 			),
 		);
@@ -637,7 +594,7 @@ class WC_Toasts_Catalog {
 
 		return array(
 			'clean_text' => $clean_text,
-			'clean_html' => $clean_html,
+			'clean_html' => wp_kses_post( $clean_html ),
 			'action'     => $action,
 		);
 	}
@@ -697,19 +654,18 @@ class WC_Toasts_Catalog {
 		$category    = isset( $categories[ $category_id ] ) ? $categories[ $category_id ] : $categories[ self::CAT_SYSTEM ];
 
 		$payload = array(
-			'id'          => uniqid( 'wct_' ),
-			'case_id'     => $matched_case_id,
-			'category'    => $category_id,
-			'cat_name'    => $category['name'],
-			'type'        => ! empty( $matched_case['type'] ) ? $matched_case['type'] : $normalized_type,
-			'title'       => $matched_case['title'],
-			'message'     => $text,
-			'raw_html'    => $parsed['clean_html'],
-			'action'      => $parsed['action'],
-			'icon'        => ! empty( $matched_case['icon'] ) ? $matched_case['icon'] : 'info',
-			'sound'       => ! empty( $matched_case['sound'] ) ? $matched_case['sound'] : 'gentle_ping',
-			'accent'      => $category['color'],
-			'timestamp'   => time(),
+			'id'        => uniqid( 'wct_' ),
+			'case_id'   => $matched_case_id,
+			'category'  => $category_id,
+			'cat_name'  => $category['name'],
+			'type'      => ! empty( $matched_case['type'] ) ? $matched_case['type'] : $normalized_type,
+			'title'     => $matched_case['title'],
+			'message'   => $text,
+			'raw_html'  => $parsed['clean_html'],
+			'action'    => $parsed['action'],
+			'icon'      => ! empty( $matched_case['icon'] ) ? $matched_case['icon'] : 'info',
+			'accent'    => $category['color'],
+			'timestamp' => time(),
 		);
 
 		return apply_filters( 'wc_toasts_classified_notice', $payload, $raw_notice, $type );
@@ -722,41 +678,49 @@ class WC_Toasts_Catalog {
 	 * @return string Safe inline SVG string.
 	 */
 	public static function get_svg_icon( $icon_name ) {
-		$icons = array(
-			'check'          => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
-			'cart'           => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
-			'cart_check'     => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/><path d="m9 11 2 2 4-4"/></svg>',
-			'cart_empty'     => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/><path d="m11 9 4 4m0-4-4 4"/></svg>',
-			'trash'          => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
-			'refresh'        => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>',
-			'ticket'         => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>',
-			'ticket_check'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="m9 12 2 2 4-4"/></svg>',
-			'ticket_cross'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="m10 10 4 4m0-4-4 4"/></svg>',
-			'ticket_alert'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>',
-			'credit-card'    => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>',
-			'card_error'     => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><line x1="16" y1="14" x2="16" y2="16"/></svg>',
-			'archive'        => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect width="22" height="5" x="1" y="3" rx="1"/><line x1="10" x2="14" y1="12" y2="12"/></svg>',
-			'archive_alert'  => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect width="22" height="5" x="1" y="3" rx="1"/><line x1="12" y1="11" x2="12" y2="15"/><circle cx="12" cy="18" r="0.5"/></svg>',
-			'user'           => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
-			'user_check'     => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>',
-			'lock_alert'     => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="17"/></svg>',
-			'lock_check'     => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/><path d="m16 19 2 2 4-4"/></svg>',
-			'bell'           => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
-			'alert_triangle' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-			'alert_circle'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
-			'info'           => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>',
-			'truck'          => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>',
-			'truck_alert'    => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/><line x1="9" y1="9" x2="9" y2="13"/><circle cx="9" cy="15" r="0.5"/></svg>',
-			'mail_check'     => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h9"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><path d="m16 19 2 2 4-4"/></svg>',
-			'mail_alert'     => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h9"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><line x1="18" y1="15" x2="18" y2="19"/><circle cx="18" cy="21" r="0.5"/></svg>',
-			'phone_alert'    => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/><line x1="18" y1="2" x2="18" y2="6"/><circle cx="18" cy="8" r="0.5"/></svg>',
-			'edit_alert'     => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
-			'map_pin'        => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
-			'clock'          => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-			'shield_alert'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
-			'close'          => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+		static $cache = array();
+		$files        = array(
+			'check'          => 'check',
+			'cart'           => 'shopping-bag',
+			'cart_check'     => 'shopping-bag-check',
+			'cart_empty'     => 'shopping-bag-minus',
+			'trash'          => 'trash',
+			'refresh'        => 'refresh-double',
+			'ticket'         => 'shopping-code',
+			'ticket_check'   => 'shopping-code-check',
+			'ticket_cross'   => 'shopping-code-xmark',
+			'ticket_alert'   => 'shopping-code-xmark',
+			'credit-card'    => 'credit-card',
+			'card_error'     => 'credit-card-slash',
+			'archive'        => 'box',
+			'archive_alert'  => 'shopping-bag-warning',
+			'user'           => 'user',
+			'user_check'     => 'user-badge-check',
+			'lock_alert'     => 'lock',
+			'lock_check'     => 'password-check',
+			'bell'           => 'bell-notification',
+			'alert_triangle' => 'warning-triangle',
+			'alert_circle'   => 'warning-circle',
+			'info'           => 'info-circle',
+			'truck'          => 'delivery-truck',
+			'truck_alert'    => 'delivery-truck',
+			'mail_check'     => 'mail-in',
+			'mail_alert'     => 'mail',
+			'phone_alert'    => 'phone-xmark',
+			'edit_alert'     => 'edit-pencil',
+			'map_pin'        => 'map-pin',
+			'clock'          => 'clock',
+			'shield_alert'   => 'shield-alert',
+			'download_alert' => 'download-circle',
+			'close'          => 'xmark',
 		);
-
-		return isset( $icons[ $icon_name ] ) ? $icons[ $icon_name ] : $icons['info'];
+		$key          = isset( $files[ $icon_name ] ) ? $icon_name : 'info';
+		if ( ! array_key_exists( $key, $cache ) ) {
+			$path = dirname( __DIR__ ) . '/assets/icons/' . $files[ $key ] . '.svg';
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Bundled local SVG from the fixed filename allowlist above.
+			$svg           = is_readable( $path ) ? file_get_contents( $path ) : false;
+			$cache[ $key ] = is_string( $svg ) ? $svg : '';
+		}
+		return $cache[ $key ];
 	}
 }

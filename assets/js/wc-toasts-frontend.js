@@ -15,190 +15,30 @@
 	var settings = config.settings || {};
 	var icons = config.icons || {};
 	var i18n = config.i18n || {};
+	var styling = config.styling || { palettes: {}, tokens: {}, layouts: {} };
+
+	function safeURL(value) {
+		if (typeof value !== 'string' || !value.trim()) return '';
+		try { var url = new URL(value, document.baseURI); return /^(https?:)$/.test(url.protocol) ? url.href : ''; } catch (error) { return ''; }
+	}
+
+	function safeNoticeHTML(value) {
+		var template = document.createElement('template');
+		template.innerHTML = String(value);
+		var allowed = ['A', 'STRONG', 'EM', 'B', 'I', 'BR', 'P', 'SPAN', 'UL', 'OL', 'LI'];
+		Array.from(template.content.querySelectorAll('*')).forEach(function (node) {
+			if (allowed.indexOf(node.tagName) === -1) { node.replaceWith(document.createTextNode(node.textContent)); return; }
+			var href = node.tagName === 'A' ? safeURL(node.getAttribute('href') || '') : '';
+			Array.from(node.attributes).forEach(function (attribute) { node.removeAttribute(attribute.name); });
+			if (href) node.setAttribute('href', href);
+		});
+		return template.content;
+	}
 
 	// If plugin is disabled, exit.
 	if (settings.enabled === 0 || settings.enabled === '0' || settings.enabled === false) {
 		return;
 	}
-
-	/**
-	 * Web Audio API Synthesizer
-	 */
-	var AudioEngine = (function () {
-		var audioCtx = null;
-
-		function getAudioContext() {
-			if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
-				var AudioContextClass = window.AudioContext || window.webkitAudioContext;
-				audioCtx = new AudioContextClass();
-			}
-			if (audioCtx && audioCtx.state === 'suspended') {
-				audioCtx.resume();
-			}
-			return audioCtx;
-		}
-
-		function playSound(type, customVolume) {
-			if (!settings.sound_enabled) {
-				return;
-			}
-
-			var ctx = getAudioContext();
-			if (!ctx) {
-				return;
-			}
-
-			var volPercent = (customVolume !== undefined ? customVolume : (settings.sound_volume || 40)) / 100;
-			var masterGain = ctx.createGain();
-			masterGain.gain.setValueAtTime(volPercent * 0.35, ctx.currentTime);
-			masterGain.connect(ctx.destination);
-
-			var theme = settings.sound_theme || 'gentle_chime';
-
-			switch (theme) {
-				case 'crisp_pop':
-					playPop(ctx, masterGain);
-					break;
-				case 'modern_ping':
-					playPing(ctx, masterGain, type === 'error' ? 380 : 880);
-					break;
-				case 'bell_ding':
-					playBell(ctx, masterGain);
-					break;
-				case 'subtle_click':
-					playClick(ctx, masterGain);
-					break;
-				case 'gentle_chime':
-				default:
-					if (type === 'error') {
-						playErrorChord(ctx, masterGain);
-					} else {
-						playChime(ctx, masterGain);
-					}
-					break;
-			}
-		}
-
-		function playChime(ctx, destination) {
-			var notes = [659.25, 880, 1046.5]; // E5, A5, C6 arpeggio.
-			notes.forEach(function (freq, index) {
-				var osc = ctx.createOscillator();
-				var gain = ctx.createGain();
-				var startTime = ctx.currentTime + (index * 0.07);
-
-				osc.type = 'sine';
-				osc.frequency.setValueAtTime(freq, startTime);
-
-				gain.gain.setValueAtTime(0, startTime);
-				gain.gain.linearRampToValueAtTime(0.28, startTime + 0.015);
-				gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.55);
-
-				osc.connect(gain);
-				gain.connect(destination);
-
-				osc.start(startTime);
-				osc.stop(startTime + 0.55);
-			});
-		}
-
-		function playErrorChord(ctx, destination) {
-			var freqs = [349.23, 311.13]; // Low dissonance.
-			freqs.forEach(function (freq) {
-				var osc = ctx.createOscillator();
-				var gain = ctx.createGain();
-
-				osc.type = 'triangle';
-				osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-				gain.gain.setValueAtTime(0.3, ctx.currentTime);
-				gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
-
-				osc.connect(gain);
-				gain.connect(destination);
-
-				osc.start(ctx.currentTime);
-				osc.stop(ctx.currentTime + 0.45);
-			});
-		}
-
-		function playPing(ctx, destination, freq) {
-			var osc = ctx.createOscillator();
-			var gain = ctx.createGain();
-
-			osc.type = 'sine';
-			osc.frequency.setValueAtTime(freq, ctx.currentTime);
-			osc.frequency.exponentialRampToValueAtTime(freq * 0.7, ctx.currentTime + 0.28);
-
-			gain.gain.setValueAtTime(0.32, ctx.currentTime);
-			gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-
-			osc.connect(gain);
-			gain.connect(destination);
-
-			osc.start(ctx.currentTime);
-			osc.stop(ctx.currentTime + 0.3);
-		}
-
-		function playPop(ctx, destination) {
-			var osc = ctx.createOscillator();
-			var gain = ctx.createGain();
-
-			osc.type = 'sine';
-			osc.frequency.setValueAtTime(450, ctx.currentTime);
-			osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.08);
-
-			gain.gain.setValueAtTime(0.35, ctx.currentTime);
-			gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
-
-			osc.connect(gain);
-			gain.connect(destination);
-
-			osc.start(ctx.currentTime);
-			osc.stop(ctx.currentTime + 0.09);
-		}
-
-		function playBell(ctx, destination) {
-			var harmonics = [880, 1760, 2640];
-			harmonics.forEach(function (freq, i) {
-				var osc = ctx.createOscillator();
-				var gain = ctx.createGain();
-				var factor = 1 / (i + 1.5);
-
-				osc.type = 'sine';
-				osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-				gain.gain.setValueAtTime(0.25 * factor, ctx.currentTime);
-				gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.8);
-
-				osc.connect(gain);
-				gain.connect(destination);
-
-				osc.start(ctx.currentTime);
-				osc.stop(ctx.currentTime + 0.8);
-			});
-		}
-
-		function playClick(ctx, destination) {
-			var osc = ctx.createOscillator();
-			var gain = ctx.createGain();
-
-			osc.type = 'triangle';
-			osc.frequency.setValueAtTime(1400, ctx.currentTime);
-
-			gain.gain.setValueAtTime(0.2, ctx.currentTime);
-			gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.035);
-
-			osc.connect(gain);
-			gain.connect(destination);
-
-			osc.start(ctx.currentTime);
-			osc.stop(ctx.currentTime + 0.035);
-		}
-
-		return {
-			play: playSound
-		};
-	})();
 
 	/**
 	 * Toast Manager Engine
@@ -227,13 +67,15 @@
 				return this.container;
 			}
 
-			var position = settings.position || 'top-right';
+			var position = settings.position || 'bottom-left';
 			var theme = settings.theme || 'modern-light';
 			var shadow = settings.box_shadow || 'medium';
 
 			var container = document.createElement('div');
 			container.id = 'wc-toasts-container';
 			container.className = 'wc-toasts-container pos-' + position + ' theme-' + theme + ' shadow-' + shadow;
+			container.classList.add('layout-' + (Object.prototype.hasOwnProperty.call(styling.layouts, settings.layout) ? settings.layout : 'editorial'));
+			if (window.WCToastStyling) window.WCToastStyling.apply(container, styling.palettes[settings.palette], settings.custom_tokens, styling.tokens, settings.layout);
 			container.setAttribute('aria-live', 'polite');
 			container.setAttribute('aria-atomic', 'true');
 
@@ -243,10 +85,14 @@
 
 			// Apply custom styling overrides if custom theme selected.
 			if (theme === 'custom') {
-				if (settings.color_success_bg) container.style.setProperty('--wc-toast-bg', settings.color_success_bg);
-				if (settings.color_success_text) container.style.setProperty('--wc-toast-text', settings.color_success_text);
+				if (settings.color_success_bg) container.style.setProperty('--wc-toast-success-bg', settings.color_success_bg);
+				if (settings.color_success_text) container.style.setProperty('--wc-toast-success-text', settings.color_success_text);
 				if (settings.color_success_accent) container.style.setProperty('--wc-toast-accent-success', settings.color_success_accent);
+				if (settings.color_error_bg) container.style.setProperty('--wc-toast-error-bg', settings.color_error_bg);
+				if (settings.color_error_text) container.style.setProperty('--wc-toast-error-text', settings.color_error_text);
 				if (settings.color_error_accent) container.style.setProperty('--wc-toast-accent-error', settings.color_error_accent);
+				if (settings.color_info_bg) container.style.setProperty('--wc-toast-info-bg', settings.color_info_bg);
+				if (settings.color_info_text) container.style.setProperty('--wc-toast-info-text', settings.color_info_text);
 				if (settings.color_info_accent) container.style.setProperty('--wc-toast-accent-info', settings.color_info_accent);
 			}
 
@@ -293,6 +139,8 @@
 			if (!notice || !notice.message) {
 				return null;
 			}
+			if (!document.dispatchEvent(new CustomEvent('wc-toasts:before-show', { cancelable: true, detail: { notice: notice } }))) return null;
+			if (notice.category && (settings['enable_cat_' + notice.category] === 0 || settings['enable_cat_' + notice.category] === '0' || settings['enable_cat_' + notice.category] === false)) return null;
 
 			// Deduplication check: prevent duplicate toasts within 2 seconds.
 			if (settings.deduplication) {
@@ -317,7 +165,7 @@
 			}
 
 			// Sanitize and determine duration.
-			var type = notice.type || 'notice';
+			var type = ['success', 'error', 'notice', 'info', 'warning'].indexOf(notice.type) !== -1 ? notice.type : 'notice';
 			var duration = 5000;
 			if (type === 'success') {
 				duration = parseInt(settings.duration_success, 10);
@@ -336,9 +184,11 @@
 			var toast = document.createElement('div');
 			toast.className = 'wc-toast type-' + type;
 			toast.id = toastId;
+			toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+			if (window.WCToastStyling) window.WCToastStyling.apply(toast, styling.palettes[settings.palette], settings.custom_tokens, styling.tokens, settings.layout);
 
 			// Entrance animation: Horizontal move + opacity fade only (no scale).
-			var pos = settings.position || 'top-right';
+			var pos = settings.position || 'bottom-left';
 			if (pos.indexOf('left') !== -1) {
 				toast.classList.add('anim-horizontal-in-left');
 			} else {
@@ -349,6 +199,7 @@
 			if (settings.show_icons) {
 				var iconWrap = document.createElement('div');
 				iconWrap.className = 'wc-toast-icon-wrap';
+				iconWrap.setAttribute('aria-hidden', 'true');
 				var iconKey = notice.icon || (type === 'success' ? 'check' : (type === 'error' ? 'alert_circle' : 'info'));
 				iconWrap.innerHTML = icons[iconKey] || icons.info || '';
 				toast.appendChild(iconWrap);
@@ -358,12 +209,12 @@
 			var content = document.createElement('div');
 			content.className = 'wc-toast-content';
 
-			// Micro eyebrow category tag.
+			// Quiet category label; keep the notice itself as the focal point.
 			var eyebrowText = '';
 			if (notice.category) {
-				eyebrowText = notice.category.toUpperCase() + ' // ' + (type === 'error' ? 'ALERT' : (type === 'success' ? 'STATUS' : 'INFO'));
+				eyebrowText = notice.cat_name || (config.categories && config.categories[notice.category] && config.categories[notice.category].name) || notice.category.replace(/[_-]/g, ' ');
 			} else if (notice.type) {
-				eyebrowText = 'SYSTEM // ' + notice.type.toUpperCase();
+				eyebrowText = notice.type === 'notice' ? 'Notice' : notice.type;
 			}
 			if (eyebrowText) {
 				var eyebrow = document.createElement('div');
@@ -383,28 +234,35 @@
 			message.className = 'wc-toast-message';
 			// Safe HTML or text.
 			if (notice.raw_html && notice.raw_html !== notice.message) {
-				message.innerHTML = notice.raw_html;
+				message.appendChild(safeNoticeHTML(notice.raw_html));
 			} else {
 				message.textContent = notice.message;
 			}
 			content.appendChild(message);
 
-			// Action button (e.g. View Cart, Undo, Checkout) with kinetic traveling arrow.
-			if (notice.action && notice.action.url && notice.action.text) {
+			// Action link (e.g. View Cart, Undo, Checkout).
+			if (notice.action && safeURL(notice.action.url) && notice.action.text) {
 				var actionWrap = document.createElement('div');
 				actionWrap.className = 'wc-toast-action';
 
 				var actionBtn = document.createElement('a');
 				actionBtn.className = 'wc-toast-action-btn';
-				actionBtn.href = notice.action.url;
-				actionBtn.target = notice.action.target || '_self';
-				actionBtn.innerHTML = notice.action.text + ' <span class="arrow-icon">&rarr;</span>';
+				actionBtn.href = safeURL(notice.action.url);
+				actionBtn.target = notice.action.target === '_blank' ? '_blank' : '_self';
+				if (actionBtn.target === '_blank') actionBtn.rel = 'noopener noreferrer';
+				actionBtn.textContent = notice.action.text;
+				var actionArrow = document.createElement('span');
+				actionArrow.className = 'arrow-icon';
+				actionArrow.setAttribute('aria-hidden', 'true');
+				actionArrow.textContent = '→';
+				actionBtn.appendChild(actionArrow);
 
 				actionWrap.appendChild(actionBtn);
-				content.appendChild(actionWrap);
+				if (settings.layout !== 'utility' && settings.layout !== 'retro-outline') content.appendChild(actionWrap);
 			}
 
 			toast.appendChild(content);
+			if (actionWrap && (settings.layout === 'utility' || settings.layout === 'retro-outline')) toast.appendChild(actionWrap);
 
 			// 3. Close button.
 			if (settings.show_close_button) {
@@ -412,7 +270,6 @@
 				closeBtn.type = 'button';
 				closeBtn.className = 'wc-toast-close-btn';
 				closeBtn.setAttribute('aria-label', (i18n.close || 'Close notice'));
-				closeBtn.innerHTML = icons.close || '&times;';
 				closeBtn.addEventListener('click', function (e) {
 					e.stopPropagation();
 					self.dismiss(toast, toastId);
@@ -465,7 +322,7 @@
 				};
 
 				var resumeTimer = function () {
-					if (!isPaused || remainingTime <= 0) return;
+					if (!isPaused || remainingTime <= 0 || toast.contains(document.activeElement) || (settings.pause_on_hover && toast.matches(':hover'))) return;
 					isPaused = false;
 					if (progressBar) {
 						progressBar.style.transition = 'transform ' + remainingTime + 'ms linear';
@@ -478,6 +335,9 @@
 					toast.addEventListener('mouseenter', pauseTimer);
 					toast.addEventListener('mouseleave', resumeTimer);
 				}
+				toast.addEventListener('focusin', pauseTimer);
+				toast.addEventListener('focusout', function (event) { if (!toast.contains(event.relatedTarget)) resumeTimer(); });
+				toast.__wcToastCancelTimer = function () { clearTimeout(timerId); };
 
 				startTimer();
 			}
@@ -496,9 +356,7 @@
 				timerId: timerId
 			};
 			this.activeToasts.push(toastRecord);
-
-			// Play Audio chime.
-			AudioEngine.play(type);
+			document.dispatchEvent(new CustomEvent('wc-toasts:render', { detail: { notice: notice, element: toast } }));
 
 			return toastRecord;
 		},
@@ -514,10 +372,12 @@
 				return;
 			}
 			toast.classList.add('is-dismissing');
+			if (toast.__wcToastCancelTimer) toast.__wcToastCancelTimer();
+			document.dispatchEvent(new CustomEvent('wc-toasts:dismiss', { detail: { id: id, element: toast } }));
 
 			var self = this;
 			// Exit animation: Horizontal move + opacity fade only (no scale).
-			var pos = settings.position || 'top-right';
+			var pos = settings.position || 'bottom-left';
 			if (pos.indexOf('left') !== -1) {
 				toast.classList.add('anim-horizontal-out-left');
 			} else {
@@ -532,7 +392,7 @@
 				self.activeToasts = self.activeToasts.filter(function (item) {
 					return item.id !== id;
 				});
-			}, 260);
+			}, 240);
 		},
 
 		/**
@@ -580,7 +440,7 @@
 					case_id: 'cart_item_added',
 					category: 'cart',
 					type: 'success',
-					title: i18n.view_cart ? 'Cart Updated' : 'Added to Cart',
+					title: i18n.added_to_cart || 'Added to Cart',
 					message: messageText,
 					icon: 'cart_check',
 					action: cartUrl ? {
@@ -604,8 +464,8 @@
 					case_id: 'coupon_applied',
 					category: 'coupon',
 					type: 'success',
-					title: 'Coupon Applied',
-					message: 'Coupon code "' + couponCode + '" applied successfully.',
+					title: i18n.coupon_applied || 'Coupon Applied',
+					message: (i18n.coupon_applied_message || 'Coupon code "%s" applied successfully.').replace('%s', function () { return couponCode; }),
 					icon: 'ticket_check'
 				});
 			});
@@ -616,8 +476,8 @@
 					case_id: 'coupon_removed',
 					category: 'coupon',
 					type: 'notice',
-					title: 'Coupon Removed',
-					message: 'Coupon code "' + couponCode + '" has been removed.',
+					title: i18n.coupon_removed || 'Coupon Removed',
+					message: (i18n.coupon_removed_message || 'Coupon code "%s" has been removed.').replace('%s', function () { return couponCode; }),
 					icon: 'ticket_cross'
 				});
 			});
@@ -632,8 +492,9 @@
 		extractAndShowNoticesFromHtml: function (html, fallbackType) {
 			if (!html || typeof html !== 'string') return;
 
-			var temp = document.createElement('div');
+			var temp = document.createElement('template');
 			temp.innerHTML = html;
+			temp = temp.content;
 
 			var items = temp.querySelectorAll('.woocommerce-error li, .woocommerce-message, .woocommerce-info');
 
@@ -664,7 +525,7 @@
 						this.show({
 							type: type,
 							category: 'checkout',
-							title: type === 'error' ? 'Checkout Alert' : 'Store Notice',
+							title: type === 'error' ? (i18n.checkout_alert || 'Checkout Alert') : (i18n.store_notice || 'Store Notice'),
 							message: text,
 							action: action,
 							icon: type === 'error' ? 'alert_triangle' : 'check'
@@ -678,7 +539,7 @@
 					this.show({
 						type: fallbackType || 'error',
 						category: 'checkout',
-						title: 'Alert',
+						title: i18n.alert || 'Alert',
 						message: cleanText
 					});
 				}
@@ -757,7 +618,7 @@
 			node.setAttribute('data-wct-processed', 'true');
 
 			// Hide immediately to eliminate layout shift.
-			node.style.setProperty('display', 'none', 'important');
+			if (settings.hide_default_notices) node.style.setProperty('display', 'none', 'important');
 
 			var type = 'notice';
 			if (node.classList.contains('woocommerce-error') || node.querySelector('.woocommerce-error')) {
@@ -782,7 +643,7 @@
 				this.show({
 					type: type,
 					category: 'system',
-					title: type === 'success' ? 'Store Notice' : (type === 'error' ? 'Notice Alert' : 'Information'),
+					title: type === 'success' ? (i18n.store_notice || 'Store Notice') : (type === 'error' ? (i18n.notice_alert || 'Notice Alert') : (i18n.information || 'Information')),
 					message: text,
 					action: action,
 					icon: type === 'success' ? 'check' : (type === 'error' ? 'alert_triangle' : 'info')
@@ -797,15 +658,15 @@
 			return ToastManager.show(notice);
 		},
 		success: function (message, options) {
-			var payload = Object.assign({ type: 'success', message: message, title: 'Success' }, options || {});
+			var payload = Object.assign({ type: 'success', message: message, title: i18n.success || 'Success' }, options || {});
 			return ToastManager.show(payload);
 		},
 		error: function (message, options) {
-			var payload = Object.assign({ type: 'error', message: message, title: 'Error' }, options || {});
+			var payload = Object.assign({ type: 'error', message: message, title: i18n.error || 'Error' }, options || {});
 			return ToastManager.show(payload);
 		},
 		info: function (message, options) {
-			var payload = Object.assign({ type: 'notice', message: message, title: 'Notice' }, options || {});
+			var payload = Object.assign({ type: 'notice', message: message, title: i18n.notice || 'Notice' }, options || {});
 			return ToastManager.show(payload);
 		},
 		dismiss: function (id) {
@@ -823,9 +684,6 @@
 					ToastManager.show(n);
 				});
 			}
-		},
-		playSound: function (type, vol) {
-			AudioEngine.play(type, vol);
 		}
 	};
 

@@ -1,0 +1,11 @@
+/** Hides default WooCommerce notice banners while toasts replace them. */
+.woocommerce-notices-wrapper .woocommerce-message,
+.woocommerce-notices-wrapper .woocommerce-error,
+.woocommerce-notices-wrapper .woocommerce-info,
+.woocommerce-NoticeGroup .woocommerce-error,
+.woocommerce-NoticeGroup .woocommerce-message,
+div.woocommerce-message,
+ul.woocommerce-error,
+div.woocommerce-info {
+	display: none !important;
+}

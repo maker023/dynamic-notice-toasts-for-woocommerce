@@ -1,6 +1,6 @@
 <?php
 /**
- * Settings and Configuration Management for WooCommerce Dynamic Notice Toasts.
+ * Settings and Configuration Management for Dynamic Notice Toasts for WooCommerce.
  *
  * @package WooCommerce_Toasts
  */
@@ -30,58 +30,56 @@ class WC_Toasts_Settings {
 	 * @return array
 	 */
 	public static function get_defaults() {
-		return array(
+		$defaults = array(
 			// General.
-			'enabled'                   => 1,
-			'hide_default_notices'      => 1,
-			'position'                  => 'top-right',
-			'theme'                     => 'editorial-monolith',
-			'max_toasts'                => 4,
-			'newest_on_top'             => 1,
-			'deduplication'             => 1,
+			'enabled'                  => 1,
+			'hide_default_notices'     => 1,
+			'position'                 => 'bottom-left',
+			'theme'                    => 'editorial-monolith',
+			'layout'                   => 'retro-outline',
+			'palette'                  => 'default-light',
+			'custom_tokens'            => array(),
+			'max_toasts'               => 4,
+			'newest_on_top'            => 1,
+			'deduplication'            => 1,
 
 			// Appearance.
-			'border_radius'             => 10,
-			'box_shadow'                => 'medium',
-			'toast_width'               => 380,
-			'animation_in'              => 'slide-in',
-			'animation_out'             => 'fade-out',
-			'show_icons'                => 1,
-			'color_success_bg'          => '#ffffff',
-			'color_success_accent'      => '#10b981',
-			'color_success_text'        => '#0f172a',
-			'color_error_bg'            => '#ffffff',
-			'color_error_accent'        => '#ef4444',
-			'color_error_text'          => '#0f172a',
-			'color_info_bg'             => '#ffffff',
-			'color_info_accent'         => '#3b82f6',
-			'color_info_text'           => '#0f172a',
+			'border_radius'            => 12,
+			'box_shadow'               => 'medium',
+			'toast_width'              => 400,
+			'show_icons'               => 1,
+			'color_success_bg'         => '#ffffff',
+			'color_success_accent'     => '#26715a',
+			'color_success_text'       => '#242823',
+			'color_error_bg'           => '#ffffff',
+			'color_error_accent'       => '#ae4d45',
+			'color_error_text'         => '#242823',
+			'color_info_bg'            => '#ffffff',
+			'color_info_accent'        => '#466c91',
+			'color_info_text'          => '#242823',
 
-			// Behavior & Audio.
-			'duration_success'          => 4500,
-			'duration_error'            => 7000,
-			'duration_info'             => 5000,
-			'show_progress_bar'         => 1,
-			'pause_on_hover'            => 1,
-			'show_close_button'         => 1,
-			'sound_enabled'             => 1,
-			'sound_theme'               => 'gentle_chime',
-			'sound_volume'              => 40,
-			'mobile_bottom'             => 1,
+			// Behavior.
+			'duration_success'         => 4500,
+			'duration_error'           => 7000,
+			'duration_info'            => 5000,
+			'show_progress_bar'        => 1,
+			'pause_on_hover'           => 1,
+			'show_close_button'        => 1,
+			'mobile_bottom'            => 1,
 
 			// Category Toggles.
-			'enable_cat_cart'           => 1,
-			'enable_cat_coupon'         => 1,
-			'enable_cat_checkout'       => 1,
-			'enable_cat_stock'          => 1,
-			'enable_cat_account'        => 1,
-			'enable_cat_system'         => 1,
+			'enable_cat_cart'          => 1,
+			'enable_cat_coupon'        => 1,
+			'enable_cat_checkout'      => 1,
+			'enable_cat_stock'         => 1,
+			'enable_cat_account'       => 1,
+			'enable_cat_system'        => 1,
 
 			// Advanced.
-			'custom_css'                => '',
-			'ajax_interception'         => 'full',
-			'delete_data_on_uninstall'  => 0,
+			'ajax_interception'        => 'full',
+			'delete_data_on_uninstall' => 0,
 		);
+		return apply_filters( 'wc_toasts_default_settings', $defaults );
 	}
 
 	/**
@@ -91,7 +89,7 @@ class WC_Toasts_Settings {
 	 */
 	public static function get_all() {
 		if ( null !== self::$cached_settings ) {
-			return self::$cached_settings;
+			return apply_filters( 'wc_toasts_settings', self::$cached_settings );
 		}
 
 		$options  = get_option( self::OPTION_KEY, array() );
@@ -100,25 +98,26 @@ class WC_Toasts_Settings {
 		if ( ! is_array( $options ) ) {
 			$options = array();
 		}
+		unset( $options['sound_enabled'], $options['sound_theme'], $options['sound_volume'], $options['animation_in'], $options['animation_out'], $options['custom_css'] );
 
 		self::$cached_settings = wp_parse_args( $options, $defaults );
-		return self::$cached_settings;
+		return apply_filters( 'wc_toasts_settings', self::$cached_settings );
 	}
 
 	/**
 	 * Get a specific setting value.
 	 *
 	 * @param string $key     Setting key.
-	 * @param mixed  $default Fallback value if setting not found.
+	 * @param mixed  $fallback Fallback value if setting not found.
 	 * @return mixed
 	 */
-	public static function get( $key, $default = null ) {
+	public static function get( $key, $fallback = null ) {
 		$settings = self::get_all();
 		if ( array_key_exists( $key, $settings ) ) {
 			return $settings[ $key ];
 		}
-		if ( null !== $default ) {
-			return $default;
+		if ( null !== $fallback ) {
+			return $fallback;
 		}
 		$defaults = self::get_defaults();
 		return isset( $defaults[ $key ] ) ? $defaults[ $key ] : null;
@@ -141,6 +140,12 @@ class WC_Toasts_Settings {
 	 * @return array Sanitized settings.
 	 */
 	public static function sanitize_settings( $input ) {
+		$input = is_array( $input ) ? $input : array();
+		foreach ( $input as $key => $value ) {
+			if ( 'custom_tokens' !== $key && ! is_scalar( $value ) ) {
+				unset( $input[ $key ] );
+			}
+		}
 		$defaults = self::get_defaults();
 		$output   = array();
 
@@ -148,11 +153,16 @@ class WC_Toasts_Settings {
 		$output['enabled']              = ! empty( $input['enabled'] ) ? 1 : 0;
 		$output['hide_default_notices'] = ! empty( $input['hide_default_notices'] ) ? 1 : 0;
 
-		$allowed_positions = array( 'top-right', 'top-left', 'top-center', 'bottom-right', 'bottom-left', 'bottom-center' );
+		$allowed_positions  = array( 'top-right', 'top-left', 'top-center', 'bottom-right', 'bottom-left', 'bottom-center' );
 		$output['position'] = ( isset( $input['position'] ) && in_array( $input['position'], $allowed_positions, true ) ) ? $input['position'] : $defaults['position'];
 
-		$allowed_themes  = array( 'editorial-monolith', 'swiss-basalt', 'nordic-gallery', 'modern-light', 'glassmorphism', 'dark-slate', 'minimal', 'woocommerce-purple', 'custom' );
-		$output['theme'] = ( isset( $input['theme'] ) && in_array( $input['theme'], $allowed_themes, true ) ) ? $input['theme'] : $defaults['theme'];
+		$allowed_themes          = array_keys( WC_Toasts_Pro_Bridge::get_themes() );
+		$output['theme']         = ( isset( $input['theme'] ) && in_array( $input['theme'], $allowed_themes, true ) ) ? $input['theme'] : $defaults['theme'];
+		$layouts                 = WC_Toasts_Styling::get_layouts();
+		$palettes                = WC_Toasts_Styling::get_palettes();
+		$output['layout']        = isset( $input['layout'] ) && is_string( $input['layout'] ) && isset( $layouts[ $input['layout'] ] ) ? sanitize_key( $input['layout'] ) : $defaults['layout'];
+		$output['palette']       = isset( $input['palette'] ) && is_string( $input['palette'] ) && isset( $palettes[ $input['palette'] ] ) ? sanitize_key( $input['palette'] ) : $defaults['palette'];
+		$output['custom_tokens'] = WC_Toasts_Styling::sanitize_tokens( isset( $input['custom_tokens'] ) ? $input['custom_tokens'] : array() );
 
 		$output['max_toasts']    = isset( $input['max_toasts'] ) ? max( 1, min( 10, absint( $input['max_toasts'] ) ) ) : $defaults['max_toasts'];
 		$output['newest_on_top'] = ! empty( $input['newest_on_top'] ) ? 1 : 0;
@@ -165,12 +175,6 @@ class WC_Toasts_Settings {
 		$output['box_shadow'] = ( isset( $input['box_shadow'] ) && in_array( $input['box_shadow'], $allowed_shadows, true ) ) ? $input['box_shadow'] : $defaults['box_shadow'];
 
 		$output['toast_width'] = isset( $input['toast_width'] ) ? max( 260, min( 600, absint( $input['toast_width'] ) ) ) : $defaults['toast_width'];
-
-		$allowed_anim_in        = array( 'slide-in', 'fade-in', 'bounce-in', 'flip-in', 'zoom-in' );
-		$output['animation_in'] = ( isset( $input['animation_in'] ) && in_array( $input['animation_in'], $allowed_anim_in, true ) ) ? $input['animation_in'] : $defaults['animation_in'];
-
-		$allowed_anim_out        = array( 'fade-out', 'slide-out', 'zoom-out' );
-		$output['animation_out'] = ( isset( $input['animation_out'] ) && in_array( $input['animation_out'], $allowed_anim_out, true ) ) ? $input['animation_out'] : $defaults['animation_out'];
 
 		$output['show_icons'] = ! empty( $input['show_icons'] ) ? 1 : 0;
 
@@ -194,7 +198,7 @@ class WC_Toasts_Settings {
 			}
 		}
 
-		// Behavior & Audio.
+		// Behavior.
 		$output['duration_success'] = isset( $input['duration_success'] ) ? absint( $input['duration_success'] ) : $defaults['duration_success'];
 		$output['duration_error']   = isset( $input['duration_error'] ) ? absint( $input['duration_error'] ) : $defaults['duration_error'];
 		$output['duration_info']    = isset( $input['duration_info'] ) ? absint( $input['duration_info'] ) : $defaults['duration_info'];
@@ -202,13 +206,7 @@ class WC_Toasts_Settings {
 		$output['show_progress_bar'] = ! empty( $input['show_progress_bar'] ) ? 1 : 0;
 		$output['pause_on_hover']    = ! empty( $input['pause_on_hover'] ) ? 1 : 0;
 		$output['show_close_button'] = ! empty( $input['show_close_button'] ) ? 1 : 0;
-		$output['sound_enabled']     = ! empty( $input['sound_enabled'] ) ? 1 : 0;
-
-		$allowed_sounds        = array( 'gentle_chime', 'modern_ping', 'crisp_pop', 'bell_ding', 'subtle_click' );
-		$output['sound_theme'] = ( isset( $input['sound_theme'] ) && in_array( $input['sound_theme'], $allowed_sounds, true ) ) ? $input['sound_theme'] : $defaults['sound_theme'];
-
-		$output['sound_volume']  = isset( $input['sound_volume'] ) ? max( 5, min( 100, absint( $input['sound_volume'] ) ) ) : $defaults['sound_volume'];
-		$output['mobile_bottom'] = ! empty( $input['mobile_bottom'] ) ? 1 : 0;
+		$output['mobile_bottom']     = ! empty( $input['mobile_bottom'] ) ? 1 : 0;
 
 		// Category Toggles.
 		$output['enable_cat_cart']     = ! empty( $input['enable_cat_cart'] ) ? 1 : 0;
@@ -217,16 +215,18 @@ class WC_Toasts_Settings {
 		$output['enable_cat_stock']    = ! empty( $input['enable_cat_stock'] ) ? 1 : 0;
 		$output['enable_cat_account']  = ! empty( $input['enable_cat_account'] ) ? 1 : 0;
 		$output['enable_cat_system']   = ! empty( $input['enable_cat_system'] ) ? 1 : 0;
+		foreach ( WC_Toasts_Catalog::get_categories() as $category_key => $category_info ) {
+			$option_key            = 'enable_cat_' . sanitize_key( $category_key );
+			$output[ $option_key ] = ! empty( $input[ $option_key ] ) ? 1 : 0;
+		}
 
 		// Advanced.
-		$output['custom_css'] = isset( $input['custom_css'] ) ? wp_strip_all_tags( $input['custom_css'] ) : '';
-
 		$allowed_interception        = array( 'full', 'standard' );
 		$output['ajax_interception'] = ( isset( $input['ajax_interception'] ) && in_array( $input['ajax_interception'], $allowed_interception, true ) ) ? $input['ajax_interception'] : $defaults['ajax_interception'];
 
 		$output['delete_data_on_uninstall'] = ! empty( $input['delete_data_on_uninstall'] ) ? 1 : 0;
 
 		self::$cached_settings = $output;
-		return $output;
+		return apply_filters( 'wc_toasts_sanitized_settings', $output, $input );
 	}
 }

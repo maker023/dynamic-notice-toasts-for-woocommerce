@@ -1,0 +1,89 @@
+Dynamic Notice Toasts for WooCommerce 1.2.0
+Release review: 24 October 2026
+Author: Thanos Leftheriotis
+Submission directory slug / text domain: dynamic-notice-toasts-for-woocommerce
+Main file: woocommerce-toasts.php
+Package name: wc-dynamic-notice-toasts
+Archive layout: runtime files and folders directly at the ZIP root; no enclosing directory.
+
+IMPLEMENTED
+- Four supplied palettes, used by all four layouts.
+- Margin Note, System Capsule, Retro Outline, and Status Canvas on the storefront.
+- 24 optional color-token overrides beside a live preview in WordPress.
+- Standalone design lab with the same styling engine, editable tokens, reset and JSON export.
+- Palette/layout-specific defaults, with user overrides taking precedence.
+- Latest layout refinements: 20px Margin Note padding, filled close control, text-only action hover;
+  charcoal/white buttons for Lime System Capsule only; transparent bordered Retro symbols,
+  filled close controls and 8px/6px gaps; compact Status Canvas padding and <=36px icons.
+- Documented PHP filters, CSS tokens, JavaScript API and browser lifecycle events.
+- Safe notice HTML/URL handling, validated token allowlist, nonce/capability-protected saves.
+- Keyboard-focus timer pause, optional banner suppression, and footer delivery deduplication.
+- WordPress.org readme, GPL/MIT/OFL licenses, POT template, build tools and CI checks.
+- Submission text-domain correction: translation calls, header, POT, WPCS and Plugin Check
+  now use dynamic-notice-toasts-for-woocommerce, matching the submission scan.
+- Directory icons, banners, screenshots and a live-preview Blueprint in .wordpress-org/.
+
+REVIEW ENVIRONMENTS
+- WordPress 7.1.3, WooCommerce 11.2.1.
+- Native review: portable PHP 8.3.36 and the official SQLite integration.
+- Browser review: Chromium 149.0.7827.55 on Windows.
+- WPCS: WordPress Coding Standards 3.4.1 / PHPCS 3.13.6.
+- PHPCompatibilityWP checks target PHP 7.4 and later; plugin syntax also uses PHP 7.4-compatible constructs.
+- Plugin Check 2.1.0: native execution, runtime loader enabled, strict format and experimental checks.
+
+AUTOMATED REVIEW EVIDENCE
+- composer lint: full WordPress ruleset and PHPCompatibilityWP; zero errors or warnings.
+- WordPress Plugin Check: no errors or warnings with strict/experimental checks enabled.
+- JavaScript syntax checks: frontend, admin and shared styling engine.
+- Unit regressions: token validation, empty-field inheritance, explicit override precedence,
+  palette/layout reset and removal of stale overrides.
+- WordPress integration assertions: activation, malformed inputs, exact palette count,
+  schema agreement, extension registration, safe notice HTML and opt-in uninstall deletion.
+- Browser assertions: 16 production layout/palette combinations, visible token labels,
+  immediate color changes, saved settings, reset, hover overrides, safe HTML and URLs,
+  lifecycle events, keyboard timer pause, banner suppression, design-lab edits and export.
+- Responsive design lab: 96 layout/palette/event combinations at 375px and 320px.
+- Storefront phone layouts: 32 layout/palette combinations at 375px and 320px.
+- Invalid settings-reset nonce: rejected with HTTP 403.
+- npm dependency audit: zero known vulnerabilities after development dependency updates.
+- Composer metadata and lockfile validated.
+
+Reports are regenerated in ignored test-results/. The package is built in dist/.
+Run npm run verify:release for the current package inventory, and read dist/SHA256SUMS.txt for its checksum.
+The GitHub workflow is configured but has not been run on a remote GitHub repository.
+Only runtime files, bundled assets, translations, licenses, readme and the design lab enter the ZIP.
+Development dependencies, test sites, test credentials, reports, archives and Git metadata are excluded.
+
+REPRODUCE
+1. composer install && npm ci
+2. composer lint
+3. npm run check:js && npm run test:unit
+4. npm run build
+5. On Windows: npm run review:setup && npm run review:native
+6. npm run preview -- --port=9410, then npm run test:browser
+7. Native review regenerates the POT file; run npm run build again afterwards.
+
+REMAINING BEFORE / DURING WORDPRESS.ORG SUBMISSION
+1. Confirm that the retained contributor username "thanos" is your actual WordPress.org account.
+   The public author name is already Thanos Leftheriotis.
+2. Keep the public name and submission slug synchronized with WordPress.org: dynamic-notice-toasts-for-woocommerce.
+3. Upload dist/wc-dynamic-notice-toasts.zip through https://wordpress.org/plugins/developers/add/.
+4. Complete the Plugins Team's manual review and respond to any requested changes.
+   Automated checks do not constitute WordPress.org approval; submission and approval are handled separately.
+5. After approval, publish the runtime directory to SVN trunk and tags/1.2.0.
+   Copy .wordpress-org artwork/screenshots to SVN assets; place the Blueprint under assets/blueprints/.
+   Keep the PHP version, readme stable tag and SVN tag synchronized.
+
+TESTING SCOPE
+- This is not a full matrix of every WordPress/PHP/WooCommerce version, browser or third-party theme.
+- SQLite was used for the local integration fixture. CI is configured for WordPress Plugin Check's wp-env environment.
+- Classic WooCommerce notice handling was exercised; broad Cart/Checkout Blocks compatibility is not declared.
+  Test your actual checkout, payment/shipping extensions, mobile devices and screen readers on staging.
+- Custom colors are validated as colors, but contrast depends on the chosen combination.
+  Automatic foreground selection prefers the higher-contrast palette color; it does not guarantee WCAG conformance.
+
+AUTHORITATIVE REVIEW REFERENCES
+https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/
+https://wordpress.org/plugins/plugin-check/
+https://developer.wordpress.org/coding-standards/wordpress-coding-standards/php/
+https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/

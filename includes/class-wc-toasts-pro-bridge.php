@@ -2,7 +2,7 @@
 /**
  * Pro Features Bridge and Extensibility API
  *
- * Provides extension hooks and bridges for the future WooCommerce Dynamic Notice Toasts Pro add-on.
+ * Provides extension hooks and bridges for the future Dynamic Notice Toasts for WooCommerce Pro add-on.
  * Designed to be 100% compliant with WordPress.org guidelines.
  *
  * @package WooCommerce_Toasts
@@ -32,101 +32,53 @@ class WC_Toasts_Pro_Bridge {
 	public static function get_themes() {
 		$themes = array(
 			'editorial-monolith' => array(
-				'label'       => __( 'The Editorial Monolith (Awwwards SOTD)', 'woocommerce-toasts' ),
-				'description' => __( 'Solid rich saturated fields (Alpine Pine, Venetian Red, Ultramarine) with fixed 52px pillar and Swiss typography.', 'woocommerce-toasts' ),
+				'label'       => __( 'Warm Paper', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Warm white surface, dark text, and a restrained status color.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'pro'         => false,
 			),
 			'swiss-basalt'       => array(
-				'label'       => __( 'Swiss Basalt & Signal', 'woocommerce-toasts' ),
-				'description' => __( 'Deep obsidian ground with surgical status beacon, micro-eyebrow metadata, and high-contrast ink.', 'woocommerce-toasts' ),
+				'label'       => __( 'Ink', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Deep charcoal surface with clear, soft white typography.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'pro'         => false,
 			),
 			'nordic-gallery'     => array(
-				'label'       => __( 'The Nordic Gallery', 'woocommerce-toasts' ),
-				'description' => __( 'Crisp chalk-white card with solid state pillar, deep charcoal ink, and monochrome action pills.', 'woocommerce-toasts' ),
+				'label'       => __( 'Gallery White', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Cool white surface and quiet blue-gray text.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'pro'         => false,
 			),
 			'modern-light'       => array(
-				'label'       => __( 'Modern Light', 'woocommerce-toasts' ),
-				'description' => __( 'Clean white background, subtle drop shadow, sleek border accent.', 'woocommerce-toasts' ),
+				'label'       => __( 'Modern Light', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Simple white surface with the shared notice layout.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'pro'         => false,
 			),
 			'glassmorphism'      => array(
-				'label'       => __( 'Frosted Glass (Glassmorphism)', 'woocommerce-toasts' ),
-				'description' => __( 'Translucent backdrop blur with subtle high-contrast borders.', 'woocommerce-toasts' ),
+				'label'       => __( 'Soft Gray', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Muted gray surface with restrained contrast.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'pro'         => false,
 			),
 			'dark-slate'         => array(
-				'label'       => __( 'Dark Slate', 'woocommerce-toasts' ),
-				'description' => __( 'Deep modern slate background, high-contrast text and glowing badges.', 'woocommerce-toasts' ),
+				'label'       => __( 'Dark', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Charcoal surface with accessible text and status colors.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'pro'         => false,
 			),
 			'minimal'            => array(
-				'label'       => __( 'Minimalist Clean', 'woocommerce-toasts' ),
-				'description' => __( 'Flat design with crisp typography and subtle left-accent line.', 'woocommerce-toasts' ),
+				'label'       => __( 'Minimal', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'White surface and a lighter shadow.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'pro'         => false,
 			),
 			'woocommerce-purple' => array(
-				'label'       => __( 'WooCommerce Purple', 'woocommerce-toasts' ),
-				'description' => __( 'Vibrant WooCommerce brand palette with distinct action styling.', 'woocommerce-toasts' ),
+				'label'       => __( 'Plum', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'A subtle purple tint inspired by WooCommerce.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'pro'         => false,
 			),
 			'custom'             => array(
-				'label'       => __( 'Custom Color Palette', 'woocommerce-toasts' ),
-				'description' => __( 'Full control over background, text, accent, and border colors.', 'woocommerce-toasts' ),
+				'label'       => __( 'Custom Color Palette', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Full control over background, text, accent, and border colors.', 'dynamic-notice-toasts-for-woocommerce' ),
 				'pro'         => false,
-			),
-			// Pro preview themes.
-			'neon-glow'          => array(
-				'label'       => __( 'Cyberpunk Neon Glow (PRO)', 'woocommerce-toasts' ),
-				'description' => __( 'Vibrant glowing border pulses with dark ambient lighting.', 'woocommerce-toasts' ),
-				'pro'         => true,
-			),
-			'luxury-gold'        => array(
-				'label'       => __( 'Luxury Obsidian & Gold (PRO)', 'woocommerce-toasts' ),
-				'description' => __( 'Elegance for premium jewelry, watches, and fashion boutiques.', 'woocommerce-toasts' ),
-				'pro'         => true,
 			),
 		);
 
 		return apply_filters( 'wc_toasts_themes', $themes );
-	}
-
-	/**
-	 * Get list of available sounds.
-	 *
-	 * @return array
-	 */
-	public static function get_sounds() {
-		$sounds = array(
-			'gentle_chime' => array(
-				'label' => __( 'Gentle Chime (Web Audio)', 'woocommerce-toasts' ),
-				'pro'   => false,
-			),
-			'modern_ping'  => array(
-				'label' => __( 'Modern Ping (Web Audio)', 'woocommerce-toasts' ),
-				'pro'   => false,
-			),
-			'crisp_pop'    => array(
-				'label' => __( 'Crisp Pop (Web Audio)', 'woocommerce-toasts' ),
-				'pro'   => false,
-			),
-			'bell_ding'    => array(
-				'label' => __( 'Bell Ding (Web Audio)', 'woocommerce-toasts' ),
-				'pro'   => false,
-			),
-			'subtle_click' => array(
-				'label' => __( 'Subtle Haptic Click (Web Audio)', 'woocommerce-toasts' ),
-				'pro'   => false,
-			),
-			// Pro preview sounds.
-			'custom_upload' => array(
-				'label' => __( 'Upload Custom MP3 / WAV Audio (PRO)', 'woocommerce-toasts' ),
-				'pro'   => true,
-			),
-		);
-
-		return apply_filters( 'wc_toasts_sounds', $sounds );
 	}
 
 	/**
@@ -137,34 +89,29 @@ class WC_Toasts_Pro_Bridge {
 	public static function get_pro_features() {
 		return array(
 			array(
-				'title'       => __( 'Custom MP3 / WAV Audio Uploads', 'woocommerce-toasts' ),
-				'description' => __( 'Upload your brand\'s custom sound effects or pick from 25+ studio recorded audio chimes.', 'woocommerce-toasts' ),
-				'badge'       => __( 'Audio Studio', 'woocommerce-toasts' ),
+				'title'       => __( 'In-Toast Cross-Sells & Recommendations', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Display a "Frequently Bought Together" mini item right inside the "Added to Cart" toast!', 'dynamic-notice-toasts-for-woocommerce' ),
+				'badge'       => __( 'Revenue Booster', 'dynamic-notice-toasts-for-woocommerce' ),
 			),
 			array(
-				'title'       => __( 'In-Toast Cross-Sells & Recommendations', 'woocommerce-toasts' ),
-				'description' => __( 'Display a "Frequently Bought Together" mini item right inside the "Added to Cart" toast!', 'woocommerce-toasts' ),
-				'badge'       => __( 'Revenue Booster', 'woocommerce-toasts' ),
+				'title'       => __( 'Toast Analytics & Conversion Tracking', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Track toast impressions, action button click-through rates, and checkout recovery metrics.', 'dynamic-notice-toasts-for-woocommerce' ),
+				'badge'       => __( 'Analytics', 'dynamic-notice-toasts-for-woocommerce' ),
 			),
 			array(
-				'title'       => __( 'Toast Analytics & Conversion Tracking', 'woocommerce-toasts' ),
-				'description' => __( 'Track toast impressions, action button click-through rates, and checkout recovery metrics.', 'woocommerce-toasts' ),
-				'badge'       => __( 'Analytics', 'woocommerce-toasts' ),
+				'title'       => __( 'Free Shipping Progress Meter', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Show a live bar in the toast: "Add $15 more to unlock Free Shipping!" on every add-to-cart.', 'dynamic-notice-toasts-for-woocommerce' ),
+				'badge'       => __( 'High AOV', 'dynamic-notice-toasts-for-woocommerce' ),
 			),
 			array(
-				'title'       => __( 'Free Shipping Progress Meter', 'woocommerce-toasts' ),
-				'description' => __( 'Show a live bar in the toast: "Add $15 more to unlock Free Shipping!" on every add-to-cart.', 'woocommerce-toasts' ),
-				'badge'       => __( 'High AOV', 'woocommerce-toasts' ),
+				'title'       => __( 'Per-Category & Per-Role Display Rules', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Trigger exclusive toast styles for Wholesale / B2B buyers or VIP customer roles.', 'dynamic-notice-toasts-for-woocommerce' ),
+				'badge'       => __( 'Targeting', 'dynamic-notice-toasts-for-woocommerce' ),
 			),
 			array(
-				'title'       => __( 'Per-Category & Per-Role Display Rules', 'woocommerce-toasts' ),
-				'description' => __( 'Trigger exclusive toast styles for Wholesale / B2B buyers or VIP customer roles.', 'woocommerce-toasts' ),
-				'badge'       => __( 'Targeting', 'woocommerce-toasts' ),
-			),
-			array(
-				'title'       => __( 'Polylang & WPML Multilingual Mapping', 'woocommerce-toasts' ),
-				'description' => __( 'Translate custom toast button texts and titles automatically across multi-currency and multi-language stores.', 'woocommerce-toasts' ),
-				'badge'       => __( 'Global', 'woocommerce-toasts' ),
+				'title'       => __( 'Polylang & WPML Multilingual Mapping', 'dynamic-notice-toasts-for-woocommerce' ),
+				'description' => __( 'Translate custom toast button texts and titles automatically across multi-currency and multi-language stores.', 'dynamic-notice-toasts-for-woocommerce' ),
+				'badge'       => __( 'Global', 'dynamic-notice-toasts-for-woocommerce' ),
 			),
 		);
 	}

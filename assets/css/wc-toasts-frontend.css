@@ -1,49 +1,26 @@
-/**
- * WooCommerce Dynamic Notice Toasts - Frontend Styles
- *
- * Modern Awwwards-inspired design system:
- * - 3 Distinct Archetypes (Editorial Monolith, Swiss Basalt & Signal, Nordic Gallery)
- * - Fixed 52px geometric icon pillar with hairline separator
- * - Swiss Neo-Grotesk typography (tight tracking, micro-eyebrows)
- * - Kinetic action buttons with traveling arrow
- * - 1.5px hairline GPU progress line
- * - Pure horizontal exponential deceleration (zero scale)
- *
- * @package WooCommerce_Toasts
- */
-
-:root {
-	--wc-toast-radius: 10px;
-	--wc-toast-width: 400px;
-	--wc-toast-pillar-width: 52px;
-
-	/* Editorial Monolith Saturated Tones (Awwwards Field Colors) */
-	--wc-editorial-pine: #064e3b;
-	--wc-editorial-pine-pillar: #043c2d;
-	--wc-editorial-crimson: #881337;
-	--wc-editorial-crimson-pillar: #70102d;
-	--wc-editorial-ultramarine: #1e3a8a;
-	--wc-editorial-ultramarine-pillar: #172e6e;
-	--wc-editorial-saffron: #78350f;
-	--wc-editorial-saffron-pillar: #612b0c;
-
-	/* Swiss Basalt Ground & Signal Accents */
-	--wc-basalt-ground: #0d0f12;
-	--wc-basalt-pillar: #15181e;
-	--wc-signal-lime: #a3e635;
-	--wc-signal-crimson: #f43f5e;
-	--wc-signal-blue: #38bdf8;
-	--wc-signal-amber: #fbbf24;
-
-	/* Nordic Gallery Tones */
-	--wc-nordic-ground: #ffffff;
-	--wc-nordic-ink: #0f172a;
-	--wc-nordic-muted: #475569;
+/** Storefront notices. The admin preview uses the same component rules. */
+@font-face {
+	font-family: "WC Toast TikTok Sans";
+	src: url("../fonts/TikTokSans-Variable.woff2") format("woff2");
+	font-style: normal;
+	font-weight: 300 900;
+	font-display: swap;
 }
 
-/* ==========================================================================
-   1. Toast Container Positions
-   ========================================================================== */
+.wc-toasts-container,
+.stage-toast-slot {
+	--wc-toast-width: 400px;
+	--wc-toast-radius: 12px;
+	--wc-toast-surface: #fffefa;
+	--wc-toast-ink: #242823;
+	--wc-toast-muted: #555e55;
+	--wc-toast-shadow: 0 10px 28px color-mix(in srgb, var(--wc-toast-shadow-color, #19231b) 13%, transparent), 0 2px 8px color-mix(in srgb, var(--wc-toast-shadow-color, #19231b) 6%, transparent);
+	--wc-toast-success: #26715a;
+	--wc-toast-error: #ae4d45;
+	--wc-toast-info: #466c91;
+	--wc-toast-warning: #916b2c;
+}
+
 .wc-toasts-container {
 	position: fixed;
 	z-index: 9999999;
@@ -54,522 +31,250 @@
 	width: calc(100% - 32px);
 	max-width: var(--wc-toast-width);
 	box-sizing: border-box;
-	padding: 0;
 	margin: 0;
+	padding: 0;
 }
+.wc-toasts-container.pos-top-right { top: 24px; right: 24px; align-items: flex-end; }
+.wc-toasts-container.pos-top-left { top: 24px; left: 24px; align-items: flex-start; }
+.wc-toasts-container.pos-top-center { top: 24px; left: 0; right: 0; margin-inline: auto; align-items: center; }
+.wc-toasts-container.pos-bottom-right { bottom: 24px; right: 24px; align-items: flex-end; }
+.wc-toasts-container.pos-bottom-left { bottom: 24px; left: 24px; align-items: flex-start; }
+.wc-toasts-container.pos-bottom-center { bottom: 24px; left: 0; right: 0; margin-inline: auto; align-items: center; }
 
-.wc-toasts-container.pos-top-right {
-	top: 24px;
-	right: 24px;
-	align-items: flex-end;
-}
-
-.wc-toasts-container.pos-top-left {
-	top: 24px;
-	left: 24px;
-	align-items: flex-start;
-}
-
-.wc-toasts-container.pos-top-center {
-	top: 24px;
-	left: 50%;
-	transform: translateX(-50%);
-	align-items: center;
-}
-
-.wc-toasts-container.pos-bottom-right {
-	bottom: 24px;
-	right: 24px;
-	align-items: flex-end;
-}
-
-.wc-toasts-container.pos-bottom-left {
-	bottom: 24px;
-	left: 24px;
-	align-items: flex-start;
-}
-
-.wc-toasts-container.pos-bottom-center {
-	bottom: 24px;
-	left: 50%;
-	transform: translateX(-50%);
-	align-items: center;
-}
-
-/* ==========================================================================
-   2. Core Toast Card Layout (Zero Borders, Structural Precision)
-   ========================================================================== */
 .wc-toast {
+	--wc-toast-status: var(--wc-toast-info);
 	position: relative;
-	pointer-events: auto;
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
 	width: 100%;
-	border: none !important; /* Zero borders */
-	border-radius: var(--wc-toast-radius);
-	box-shadow: 0 14px 34px -4px rgba(0, 0, 0, 0.22), 0 6px 14px -2px rgba(0, 0, 0, 0.12);
-	box-sizing: border-box;
-	display: flex;
-	align-items: stretch; /* Pillar matches 100% height */
-	overflow: hidden;
-	user-select: text;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-	font-size: 13.5px;
-	line-height: 1.45;
-	transition: opacity 0.24s ease, transform 0.24s ease;
-}
-
-.wc-toast:hover {
-	box-shadow: 0 18px 42px -4px rgba(0, 0, 0, 0.28), 0 8px 18px -2px rgba(0, 0, 0, 0.16);
-}
-
-/* ==========================================================================
-   3. Fixed-Width Geometric Icon Pillar (52px wide, Hairline Divider)
-   ========================================================================== */
-.wc-toast-icon-wrap {
-	flex-shrink: 0;
-	width: var(--wc-toast-pillar-width);
-	min-width: var(--wc-toast-pillar-width);
-	max-width: var(--wc-toast-pillar-width);
-	align-self: stretch;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: var(--wc-toast-radius) 0 0 var(--wc-toast-radius);
-	border: none !important;
-	border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
-	box-sizing: border-box;
-	padding: 0;
-	margin: 0;
-}
-
-.wc-toast-icon-wrap svg {
-	width: 22px;
-	height: 22px;
-	stroke-width: 2.2px;
-}
-
-/* ==========================================================================
-   4. Content Body & Swiss Typography Hierarchy
-   ========================================================================== */
-.wc-toast-content {
-	flex: 1;
 	min-width: 0;
-	padding: 13px 15px 13px 15px;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
+	box-sizing: border-box;
+	padding: 17px 18px 18px;
+	border: 0;
+	border-radius: var(--wc-toast-radius);
+	background: var(--wc-toast-surface);
+	color: var(--wc-toast-ink);
+	box-shadow: var(--wc-toast-shadow);
+	font-family: "WC Toast TikTok Sans", system-ui, "Segoe UI", Arial, sans-serif;
+	font-optical-sizing: auto;
+	font-synthesis: none;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.45;
+	letter-spacing: normal;
+	text-align: start;
+	user-select: text;
+	pointer-events: auto;
+	overflow: hidden;
 }
+.wc-toast.type-success { --wc-toast-status: var(--wc-toast-success); }
+.wc-toast.type-error { --wc-toast-status: var(--wc-toast-error); }
+.wc-toast.type-notice,
+.wc-toast.type-info { --wc-toast-status: var(--wc-toast-info); }
+.wc-toast.type-warning { --wc-toast-status: var(--wc-toast-warning); }
 
-/* Micro Eyebrow Category Tag */
-.wc-toast-eyebrow {
-	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-	font-size: 10px;
-	font-weight: 700;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	margin-bottom: 2px;
-	opacity: 0.72;
-	line-height: 1.2;
-}
-
-/* Title: Tight negative tracking */
-.wc-toast-title {
-	font-weight: 700;
-	font-size: 13.5px;
-	letter-spacing: -0.025em;
-	line-height: 1.25;
-	margin-bottom: 3px;
-}
-
-/* Message: Comfortable reading with tabular figures */
-.wc-toast-message {
-	font-size: 13px;
-	line-height: 1.42;
-	letter-spacing: -0.01em;
-	word-break: break-word;
-	font-variant-numeric: tabular-nums;
-}
-
-.wc-toast-message a {
-	text-decoration: underline;
-	font-weight: 600;
-}
-
-/* Action Button: Kinetic Pill with Traveling Arrow */
-.wc-toast-action {
-	margin-top: 9px;
+.wc-toast-icon-wrap {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	justify-content: center;
+	flex: 0 0 32px;
+	width: 32px;
+	height: 32px;
+	box-sizing: border-box;
+	border: 0;
+	background: var(--wc-toast-icon-bg, transparent);
+	color: var(--wc-toast-icon-ink, var(--wc-toast-icon, var(--wc-toast-ink)));
 }
-
+.wc-toast-icon-wrap svg { width: 21px; height: 21px; }
+.wc-toast-content {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	align-items: flex-start;
+	min-width: 0;
+	padding-top: 1px;
+}
+.wc-toast-eyebrow {
+	margin: 0 0 5px;
+	color: var(--wc-toast-muted);
+	font-family: inherit;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.25;
+	letter-spacing: .035em;
+	text-transform: capitalize;
+}
+.wc-toast-title {
+	margin: 0 0 3px;
+	color: var(--wc-toast-ink);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: -.012em;
+}
+.wc-toast-message {
+	color: var(--wc-toast-muted);
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.46;
+	letter-spacing: 0;
+	word-break: normal;
+	overflow-wrap: anywhere;
+}
+.wc-toast-message a {
+	color: var(--wc-toast-ink);
+	font-weight: 600;
+	text-decoration: none !important;
+	transition: color .18s ease, opacity .18s ease;
+}
+.wc-toast-message a:hover { color: var(--wc-toast-status); }
+.wc-toast-action { display: flex; align-items: center; margin-top: 11px; }
 .wc-toast-action-btn {
 	display: inline-flex;
 	align-items: center;
-	justify-content: center;
-	gap: 6px;
-	padding: 4px 12px;
-	font-size: 11.5px;
-	font-weight: 700;
-	border-radius: 6px;
+	gap: 7px;
+	min-height: 30px;
+	box-sizing: border-box;
+	padding: 5px 0;
+	border: 0 !important;
+	border-radius: 0;
+	background: var(--wc-toast-action-bg, transparent);
+	box-shadow: none !important;
+	color: var(--wc-toast-action-ink, var(--wc-toast-ink));
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 1.3;
 	text-decoration: none !important;
-	border: none !important;
 	cursor: pointer;
-	line-height: 1.2;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-	transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+	transition: color .18s ease, background-color .18s ease;
 }
-
-.wc-toast-action-btn:hover {
-	transform: translateY(-1px);
-}
-
-.wc-toast-action-btn:active {
-	transform: scale(0.97);
-}
-
-.wc-toast-action-btn .arrow-icon {
-	display: inline-block;
-	transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.wc-toast-action-btn:hover .arrow-icon {
-	transform: translateX(3px);
-}
-
-/* Dismiss Close Button */
+.wc-toast-action-btn:is(:hover, :focus-visible) { background: var(--wc-toast-action-hover-bg, var(--wc-toast-control-fill, var(--wc-toast-accent))); color: var(--wc-toast-action-hover-ink, var(--wc-toast-on-accent, var(--wc-toast-ink))); }
+.wc-toast-action-btn .arrow-icon { font-size: 16px; font-weight: 400; text-decoration: none; transition: translate .18s ease; }
+.wc-toast-action-btn:hover .arrow-icon { translate: 3px 0; }
 .wc-toast-close-btn {
-	flex-shrink: 0;
-	align-self: flex-start;
-	background: none;
-	border: none !important;
-	cursor: pointer;
-	padding: 6px;
-	margin: 8px 8px 0 0;
-	border-radius: 5px;
+	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: color 0.15s ease, background 0.15s ease;
+	flex: 0 0 28px;
+	width: 28px;
+	height: 28px;
+	box-sizing: border-box;
+	margin: -3px -5px 0 0;
+	padding: 5px;
+	border: 0 !important;
+	border-radius: 6px;
+	background: var(--wc-toast-close-bg, transparent);
+	color: var(--wc-toast-close-ink, var(--wc-toast-ink));
+	cursor: pointer;
+	transition: color .18s ease, background-color .18s ease;
 }
-
-.wc-toast-close-btn svg {
-	width: 14px;
-	height: 14px;
+.wc-toast-close-btn:is(:hover, :focus-visible) { background: var(--wc-toast-close-hover-bg, var(--wc-toast-control-fill, var(--wc-toast-accent))); color: var(--wc-toast-close-hover-ink, var(--wc-toast-on-accent, var(--wc-toast-ink))); }
+.wc-toast-close-btn::before,
+.wc-toast-close-btn::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 15px;
+	height: 1.5px;
+	border-radius: 2px;
+	background: currentColor;
+	transform: translate(-50%, -50%) rotate(45deg);
 }
-
-/* Hairline 1.5px Progress Track */
+.wc-toast-close-btn::after { transform: translate(-50%, -50%) rotate(-45deg); }
+.wc-toast a { text-decoration: none !important; }
+.wc-toast :is(a, button):focus-visible { outline: 2px solid var(--wc-toast-focus, var(--wc-toast-ink)); outline-offset: 3px; }
 .wc-toast-progress-bar {
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	height: 1.5px;
 	width: 100%;
+	height: 3px;
+	background: var(--wc-toast-status);
+	opacity: .72;
 	transform-origin: left center;
 }
 
-.wc-toast:hover .wc-toast-progress-bar {
-	animation-play-state: paused !important;
-}
-
-/* ==========================================================================
-   5. ARCHETYPE 1: THE EDITORIAL MONOLITH (Saturated Fields & Milk White)
-   ========================================================================== */
-.wc-toasts-container.theme-editorial-monolith .wc-toast {
-	color: #ffffff;
-}
-
-.wc-toasts-container.theme-editorial-monolith .wc-toast.type-success {
-	background: var(--wc-editorial-pine);
-	--wc-toast-accent: var(--wc-editorial-pine);
-}
-.wc-toasts-container.theme-editorial-monolith .wc-toast.type-success .wc-toast-icon-wrap {
-	background: var(--wc-editorial-pine-pillar);
-	color: #ffffff;
-}
-
-.wc-toasts-container.theme-editorial-monolith .wc-toast.type-error {
-	background: var(--wc-editorial-crimson);
-	--wc-toast-accent: var(--wc-editorial-crimson);
-}
-.wc-toasts-container.theme-editorial-monolith .wc-toast.type-error .wc-toast-icon-wrap {
-	background: var(--wc-editorial-crimson-pillar);
-	color: #ffffff;
-}
-
-.wc-toasts-container.theme-editorial-monolith .wc-toast.type-notice,
-.wc-toasts-container.theme-editorial-monolith .wc-toast.type-info {
-	background: var(--wc-editorial-ultramarine);
-	--wc-toast-accent: var(--wc-editorial-ultramarine);
-}
-.wc-toasts-container.theme-editorial-monolith .wc-toast.type-notice .wc-toast-icon-wrap,
-.wc-toasts-container.theme-editorial-monolith .wc-toast.type-info .wc-toast-icon-wrap {
-	background: var(--wc-editorial-ultramarine-pillar);
-	color: #ffffff;
-}
-
-.wc-toasts-container.theme-editorial-monolith .wc-toast.type-warning {
-	background: var(--wc-editorial-saffron);
-	--wc-toast-accent: var(--wc-editorial-saffron);
-}
-.wc-toasts-container.theme-editorial-monolith .wc-toast.type-warning .wc-toast-icon-wrap {
-	background: var(--wc-editorial-saffron-pillar);
-	color: #ffffff;
-}
-
-.wc-toasts-container.theme-editorial-monolith .wc-toast-title {
-	color: #ffffff;
-}
-.wc-toasts-container.theme-editorial-monolith .wc-toast-message {
-	color: rgba(255, 255, 255, 0.92);
-}
-.wc-toasts-container.theme-editorial-monolith .wc-toast-action-btn {
-	background: #ffffff;
-	color: var(--wc-toast-accent) !important;
-}
-.wc-toasts-container.theme-editorial-monolith .wc-toast-close-btn {
-	color: rgba(255, 255, 255, 0.7);
-}
-.wc-toasts-container.theme-editorial-monolith .wc-toast-close-btn:hover {
-	color: #ffffff;
-	background: rgba(255, 255, 255, 0.18);
-}
-.wc-toasts-container.theme-editorial-monolith .wc-toast-progress-bar {
-	background: rgba(255, 255, 255, 0.55);
-	box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
-}
-
-/* ==========================================================================
-   6. ARCHETYPE 2: SWISS BASALT & SIGNAL (Obsidian Ground, Precise Signal)
-   ========================================================================== */
-.wc-toasts-container.theme-swiss-basalt .wc-toast {
-	background: var(--wc-basalt-ground);
-	color: #f8fafc;
-	box-shadow: 0 16px 38px -6px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-}
-.wc-toasts-container.theme-swiss-basalt .wc-toast-icon-wrap {
-	background: var(--wc-basalt-pillar);
-	border-right-color: rgba(255, 255, 255, 0.06) !important;
-}
-
-.wc-toasts-container.theme-swiss-basalt .wc-toast.type-success .wc-toast-icon-wrap {
-	color: var(--wc-signal-lime);
-}
-.wc-toasts-container.theme-swiss-basalt .wc-toast.type-success .wc-toast-eyebrow {
-	color: var(--wc-signal-lime);
-	opacity: 1;
-}
-
-.wc-toasts-container.theme-swiss-basalt .wc-toast.type-error .wc-toast-icon-wrap {
-	color: var(--wc-signal-crimson);
-}
-.wc-toasts-container.theme-swiss-basalt .wc-toast.type-error .wc-toast-eyebrow {
-	color: var(--wc-signal-crimson);
-	opacity: 1;
-}
-
-.wc-toasts-container.theme-swiss-basalt .wc-toast.type-notice .wc-toast-icon-wrap,
-.wc-toasts-container.theme-swiss-basalt .wc-toast.type-info .wc-toast-icon-wrap {
-	color: var(--wc-signal-blue);
-}
-.wc-toasts-container.theme-swiss-basalt .wc-toast.type-notice .wc-toast-eyebrow,
-.wc-toasts-container.theme-swiss-basalt .wc-toast.type-info .wc-toast-eyebrow {
-	color: var(--wc-signal-blue);
-	opacity: 1;
-}
-
-.wc-toasts-container.theme-swiss-basalt .wc-toast.type-warning .wc-toast-icon-wrap {
-	color: var(--wc-signal-amber);
-}
-.wc-toasts-container.theme-swiss-basalt .wc-toast.type-warning .wc-toast-eyebrow {
-	color: var(--wc-signal-amber);
-	opacity: 1;
-}
-
-.wc-toasts-container.theme-swiss-basalt .wc-toast-title {
-	color: #ffffff;
-}
-.wc-toasts-container.theme-swiss-basalt .wc-toast-message {
-	color: #94a3b8;
-}
-.wc-toasts-container.theme-swiss-basalt .wc-toast-action-btn {
-	background: #1e293b;
-	color: #ffffff !important;
-	border: 1px solid rgba(255, 255, 255, 0.12) !important;
-}
-.wc-toasts-container.theme-swiss-basalt .wc-toast-action-btn:hover {
-	background: #334155;
-}
-.wc-toasts-container.theme-swiss-basalt .wc-toast-close-btn {
-	color: #64748b;
-}
-.wc-toasts-container.theme-swiss-basalt .wc-toast-close-btn:hover {
-	color: #ffffff;
-	background: rgba(255, 255, 255, 0.1);
-}
-.wc-toasts-container.theme-swiss-basalt .wc-toast-progress-bar {
-	background: rgba(255, 255, 255, 0.35);
-}
-
-/* ==========================================================================
-   7. ARCHETYPE 3: THE NORDIC GALLERY (Chalk White, Full-Bleed Pillar)
-   ========================================================================== */
-.wc-toasts-container.theme-nordic-gallery .wc-toast {
-	background: var(--wc-nordic-ground);
-	color: var(--wc-nordic-ink);
-	box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.12), inset 0 0 0 1px rgba(15, 23, 42, 0.08);
-}
-.wc-toasts-container.theme-nordic-gallery .wc-toast-icon-wrap {
-	border-right: none !important;
-	color: #ffffff;
-}
-
-.wc-toasts-container.theme-nordic-gallery .wc-toast.type-success .wc-toast-icon-wrap {
-	background: var(--wc-editorial-pine);
-}
-.wc-toasts-container.theme-nordic-gallery .wc-toast.type-error .wc-toast-icon-wrap {
-	background: var(--wc-editorial-crimson);
-}
-.wc-toasts-container.theme-nordic-gallery .wc-toast.type-notice .wc-toast-icon-wrap,
-.wc-toasts-container.theme-nordic-gallery .wc-toast.type-info .wc-toast-icon-wrap {
-	background: var(--wc-editorial-ultramarine);
-}
-.wc-toasts-container.theme-nordic-gallery .wc-toast.type-warning .wc-toast-icon-wrap {
-	background: var(--wc-editorial-saffron);
-}
-
-.wc-toasts-container.theme-nordic-gallery .wc-toast-eyebrow {
-	color: var(--wc-nordic-muted);
-}
-.wc-toasts-container.theme-nordic-gallery .wc-toast-title {
-	color: var(--wc-nordic-ink);
-}
-.wc-toasts-container.theme-nordic-gallery .wc-toast-message {
-	color: var(--wc-nordic-muted);
-}
-.wc-toasts-container.theme-nordic-gallery .wc-toast-action-btn {
-	background: var(--wc-nordic-ink);
-	color: #ffffff !important;
-}
-.wc-toasts-container.theme-nordic-gallery .wc-toast-action-btn:hover {
-	opacity: 0.9;
-}
-.wc-toasts-container.theme-nordic-gallery .wc-toast-close-btn {
-	color: #94a3b8;
-}
-.wc-toasts-container.theme-nordic-gallery .wc-toast-close-btn:hover {
-	color: var(--wc-nordic-ink);
-	background: rgba(15, 23, 42, 0.06);
-}
-.wc-toasts-container.theme-nordic-gallery .wc-toast-progress-bar {
-	background: var(--wc-nordic-ink);
-	opacity: 0.3;
-}
-
-/* ==========================================================================
-   8. Standard / Fallback Themes (Modern Light, Glass, Dark Slate)
-   ========================================================================== */
-.wc-toasts-container.theme-modern-light .wc-toast {
-	background: #ffffff;
-	color: #0f172a;
-}
-.wc-toasts-container.theme-modern-light .wc-toast-title { color: #0f172a; }
-.wc-toasts-container.theme-modern-light .wc-toast-message { color: #64748b; }
-.wc-toasts-container.theme-modern-light .wc-toast-icon-wrap { background: #f1f5f9; color: #0f172a; }
-.wc-toasts-container.theme-modern-light .wc-toast-action-btn { background: #0f172a; color: #ffffff !important; }
-
-/* ==========================================================================
-   9. Horizontal-Only Motion (Cubic-Bezier Deceleration & Exit, Zero Scale)
-   ========================================================================== */
-@keyframes wcToastHorizontalInRight {
-	from {
-		opacity: 0;
-		transform: translateX(70px);
-	}
-	to {
-		opacity: 1;
-		transform: translateX(0);
-	}
-}
-
-@keyframes wcToastHorizontalInLeft {
-	from {
-		opacity: 0;
-		transform: translateX(-70px);
-	}
-	to {
-		opacity: 1;
-		transform: translateX(0);
-	}
-}
-
-@keyframes wcToastHorizontalOutRight {
-	from {
-		opacity: 1;
-		transform: translateX(0);
-	}
-	to {
-		opacity: 0;
-		transform: translateX(70px);
-	}
-}
-
-@keyframes wcToastHorizontalOutLeft {
-	from {
-		opacity: 1;
-		transform: translateX(0);
-	}
-	to {
-		opacity: 0;
-		transform: translateX(-70px);
-	}
-}
-
-.wc-toast.anim-horizontal-in-right {
-	animation: wcToastHorizontalInRight 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.wc-toast.anim-horizontal-in-left {
-	animation: wcToastHorizontalInLeft 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.wc-toast.anim-horizontal-out-right {
-	animation: wcToastHorizontalOutRight 0.20s cubic-bezier(0.7, 0, 0.84, 0) forwards;
-}
-
-.wc-toast.anim-horizontal-out-left {
-	animation: wcToastHorizontalOutLeft 0.20s cubic-bezier(0.7, 0, 0.84, 0) forwards;
-}
-
-/* ==========================================================================
-   10. Mobile Responsiveness
-   ========================================================================== */
+/* Saved theme values share one type and layout system. */
+/* Layouts share the same token contract. Extensions can add layout classes. */
+.layout-editorial .wc-toast { --wc-toast-close-bg: var(--wc-toast-control-fill, var(--wc-toast-accent)); --wc-toast-close-ink: var(--wc-toast-on-accent); --wc-toast-action-hover-bg: transparent; --wc-toast-action-hover-ink: color-mix(in srgb, var(--wc-toast-ink) 72%, var(--wc-toast-surface)); padding: 20px; }
+.layout-editorial .wc-toast-title { font-size: 22px; line-height: 1.12; }
+.layout-utility .wc-toast,
+.layout-retro-outline .wc-toast { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto 38px; align-items: center; gap: 12px; }
+.layout-utility .wc-toast-eyebrow,
+.layout-retro-outline .wc-toast-eyebrow { display: none; }
+.layout-utility .wc-toast-icon-wrap,
+.layout-retro-outline .wc-toast-icon-wrap { width: 40px; height: 40px; }
+.layout-utility .wc-toast-action,
+.layout-retro-outline .wc-toast-action { margin: 0; }
+.layout-utility .wc-toast-action-btn,
+.layout-retro-outline .wc-toast-action-btn { height: 38px; padding: 7px 10px; border-radius: 6px; white-space: nowrap; line-height: 16px; }
+.layout-utility .wc-toast-close-btn,
+.layout-retro-outline .wc-toast-close-btn { grid-column: 4; width: 38px; height: 38px; margin: 0; }
+.layout-retro-outline .wc-toast { --wc-toast-close-bg: var(--wc-toast-control-fill, var(--wc-toast-accent)); --wc-toast-close-ink: var(--wc-toast-on-accent); gap: 8px; padding: 10px; border: 1px solid var(--wc-toast-border, var(--wc-toast-ink)); border-radius: 6px; box-shadow: 4px 4px 1px color-mix(in srgb, var(--wc-toast-shadow-color, var(--wc-toast-ink)) 30%, transparent); overflow: visible; }
+.layout-retro-outline .wc-toast-message { font-size: 12.5px; color: var(--wc-toast-ink); }
+.layout-retro-outline .wc-toast-title { margin-bottom: 0; }
+.layout-retro-outline .wc-toast-icon-wrap { border: 1px solid var(--wc-toast-on-accent, var(--wc-toast-ink)); border-radius: 6px; background: var(--wc-toast-icon-bg, transparent) !important; color: var(--wc-toast-icon-ink, var(--wc-toast-icon, var(--wc-toast-ink))); }
+.layout-retro-outline .wc-toast-icon-wrap svg { width: 20px; height: 20px; }
+.layout-retro-outline .wc-toast-action-btn { gap: 4px; border: 1px solid var(--wc-toast-border, var(--wc-toast-ink)) !important; font-weight: 400; box-shadow: 2px 2px 1px color-mix(in srgb, var(--wc-toast-shadow-color, var(--wc-toast-ink)) 30%, transparent) !important; }
+.layout-retro-outline .wc-toast-progress-bar { border-radius: 0 0 6px 6px; }
+.layout-expressive .wc-toast { padding: 0; gap: 0; }
+.layout-expressive .wc-toast-icon-wrap { align-self: stretch; flex-basis: 74px; width: 74px; height: auto; padding: 18px; background: var(--wc-toast-icon-bg, var(--wc-toast-control-fill, var(--wc-toast-accent))); color: var(--wc-toast-icon-ink, var(--wc-toast-on-accent, var(--wc-toast-ink))); }
+.layout-expressive .wc-toast-icon-wrap svg { width: 36px; max-width: 36px; height: auto; }
+.layout-expressive .wc-toast-content { padding: 16px; }
+.layout-expressive .wc-toast-close-btn { margin: 10px 8px 0 0; }
 @media (max-width: 640px) {
-	.wc-toasts-container {
-		--wc-toast-pillar-width: 46px;
-	}
-
-	.wc-toasts-container.mobile-dock-bottom {
-		top: auto !important;
-		bottom: 16px !important;
-		left: 16px !important;
-		right: 16px !important;
-		width: calc(100% - 32px) !important;
-		max-width: none !important;
-		transform: none !important;
-		align-items: center !important;
-		padding-bottom: env(safe-area-inset-bottom, 0px);
-	}
-
-	.wc-toasts-container.mobile-dock-bottom .wc-toast {
-		width: 100% !important;
-	}
+	.layout-utility .wc-toast, .layout-retro-outline .wc-toast { grid-template-columns: 36px minmax(0, 1fr) 38px; gap: 10px; }
+	.layout-utility .wc-toast-icon-wrap, .layout-retro-outline .wc-toast-icon-wrap { grid-column: 1; grid-row: 1; width: 36px; height: 36px; }
+	.layout-utility .wc-toast-content, .layout-retro-outline .wc-toast-content { grid-column: 2; grid-row: 1; }
+	.layout-utility .wc-toast-close-btn, .layout-retro-outline .wc-toast-close-btn { grid-column: 3; grid-row: 1; }
+	.layout-utility .wc-toast-action, .layout-retro-outline .wc-toast-action { grid-column: 2; grid-row: 2; }
+	.layout-utility .wc-toast-action-btn, .layout-retro-outline .wc-toast-action-btn { white-space: normal; font-size: 12px; }
+	.layout-retro-outline .wc-toast { gap: 6px; }
 }
+@media (prefers-reduced-motion: reduce) {
+	.wc-toast, .wc-toast *, .wc-toast *::before, .wc-toast *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+.theme-nordic-gallery { --wc-toast-surface: #ffffff; --wc-toast-ink: #20282b; --wc-toast-muted: #505e61; }
+.theme-modern-light,
+.theme-minimal { --wc-toast-surface: #ffffff; }
+.theme-minimal { --wc-toast-shadow: 0 2px 10px rgba(25, 35, 27, .06); }
+.theme-swiss-basalt,
+.theme-dark-slate { --wc-toast-surface: #222926; --wc-toast-ink: #f6f6f0; --wc-toast-muted: #d0d8d0; --wc-toast-success: #98d2ac; --wc-toast-error: #f0a39b; --wc-toast-info: #a8c8e7; --wc-toast-warning: #e8c890; }
+.theme-woocommerce-purple { --wc-toast-surface: #fcfaff; --wc-toast-ink: #30253e; --wc-toast-muted: #62576c; --wc-toast-success: #6e4993; --wc-toast-info: #6e4993; }
+.theme-glassmorphism { --wc-toast-surface: #f5f8f6; }
+.theme-custom { --wc-toast-surface: var(--wc-toast-bg, #fffefa); --wc-toast-ink: var(--wc-toast-text, #242823); --wc-toast-muted: color-mix(in srgb, var(--wc-toast-ink) 76%, var(--wc-toast-surface)); --wc-toast-success: var(--wc-toast-accent-success, #26715a); --wc-toast-error: var(--wc-toast-accent-error, #ae4d45); --wc-toast-info: var(--wc-toast-accent-info, #466c91); }
+.theme-custom .wc-toast { --wc-toast-muted: color-mix(in srgb, var(--wc-toast-ink) 76%, var(--wc-toast-surface)); }
+.theme-custom .wc-toast.type-success { --wc-toast-surface: var(--wc-toast-success-bg, var(--wc-toast-bg, #fffefa)); --wc-toast-ink: var(--wc-toast-success-text, var(--wc-toast-text, #242823)); }
+.theme-custom .wc-toast.type-error { --wc-toast-surface: var(--wc-toast-error-bg, var(--wc-toast-bg, #fffefa)); --wc-toast-ink: var(--wc-toast-error-text, var(--wc-toast-text, #242823)); }
+.theme-custom .wc-toast.type-notice,
+.theme-custom .wc-toast.type-info { --wc-toast-surface: var(--wc-toast-info-bg, var(--wc-toast-bg, #fffefa)); --wc-toast-ink: var(--wc-toast-info-text, var(--wc-toast-text, #242823)); }
+.shadow-none { --wc-toast-shadow: none; }
+.shadow-subtle { --wc-toast-shadow: 0 3px 12px color-mix(in srgb, var(--wc-toast-shadow-color, #19231b) 8%, transparent); }
+.shadow-elevated { --wc-toast-shadow: 0 16px 36px color-mix(in srgb, var(--wc-toast-shadow-color, #19231b) 19%, transparent); }
+.shadow-glow { --wc-toast-shadow: 0 9px 28px color-mix(in srgb, var(--wc-toast-shadow-color, #19231b) 15%, transparent); }
 
-/* Layout Shift Prevention */
+@keyframes wcToastHorizontalInRight { from { opacity: 0; transform: translateX(52px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes wcToastHorizontalInLeft { from { opacity: 0; transform: translateX(-52px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes wcToastHorizontalOutRight { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(52px); } }
+@keyframes wcToastHorizontalOutLeft { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-52px); } }
+.wc-toast.anim-horizontal-in-right { animation: wcToastHorizontalInRight .28s cubic-bezier(.2, .7, .2, 1) backwards; }
+.wc-toast.anim-horizontal-in-left { animation: wcToastHorizontalInLeft .28s cubic-bezier(.2, .7, .2, 1) backwards; }
+.wc-toast.anim-horizontal-out-right { animation: wcToastHorizontalOutRight .22s ease-in both; }
+.wc-toast.anim-horizontal-out-left { animation: wcToastHorizontalOutLeft .22s ease-in both; }
+@media (max-width: 640px) {
+	.wc-toasts-container.mobile-dock-bottom { top: auto !important; bottom: 16px !important; left: 16px !important; right: 16px !important; width: calc(100% - 32px) !important; max-width: none !important; transform: none !important; align-items: center !important; padding-bottom: env(safe-area-inset-bottom, 0px); }
+	.wc-toasts-container.mobile-dock-bottom .wc-toast { width: 100%; }
+	.wc-toast { padding: 15px; gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.wc-toast.anim-horizontal-in-right,
+	.wc-toast.anim-horizontal-in-left,
+	.wc-toast.anim-horizontal-out-right,
+	.wc-toast.anim-horizontal-out-left { animation-duration: .01ms; }
+}
 .woocommerce-notices-wrapper:empty,
-.woocommerce-NoticeGroup:empty {
-	display: none !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	height: 0 !important;
-}
+.woocommerce-NoticeGroup:empty { display: none !important; margin: 0 !important; padding: 0 !important; height: 0 !important; }
