@@ -1,12 +1,33 @@
-Dynamic Notice Toasts for WooCommerce 1.2.0
-Release review: 24 October 2026
+Dynamic Notice Toasts for WooCommerce 1.2.1
+Release review: 30 October 2026 (1.2.1); 24 October 2026 (1.2.0)
 Author: Thanos Leftheriotis
 Submission directory slug / text domain: dynamic-notice-toasts-for-woocommerce
 Main file: woocommerce-toasts.php
 Package name: wc-dynamic-notice-toasts
 Archive layout: runtime files and folders directly at the ZIP root; no enclosing directory.
 
-IMPLEMENTED
+1.2.1 FIXES
+- Classic checkout validation errors reach the shopper again. With default banners hidden, 1.2.0
+  emptied WooCommerce's notice templates during AJAX requests, so the checkout response arrived with
+  no messages and WooCommerce showed its generic "error processing your order" text.
+- Invalid coupons show WooCommerce's error as an error toast instead of "applied successfully".
+  WooCommerce 11.2 triggers applied_coupon after errored_coupon for failed coupons.
+- Each notice produces one toast: event handlers take WooCommerce's freshly inserted markup and the
+  observer skips it. The duplicate ajaxSuccess parser was removed.
+- Only WooCommerce button links become toast actions; links inside a sentence stay in the message,
+  and WooCommerce's own notice markup is never modified.
+- Each entry in an error list becomes its own toast.
+
+1.2.1 EVIDENCE
+- npm run test:flows: AJAX add to cart, sold-individually rejection, invalid coupon, valid coupon
+  and empty checkout pass against the built package with the directory blueprint (Storefront).
+  The same test fails on the 1.2.0 code at the invalid-coupon step.
+- composer lint, npm run check:js, npm run test:unit and npm run verify:release pass.
+- Native Plugin Check was not re-run for 1.2.1; the PHP change is two wp_doing_ajax() guards.
+- Known gap: the "AJAX Interception Mode" setting no longer changes behavior, because its only
+  consumer was the removed duplicate parser. Remove it or give it a purpose in a minor release.
+
+IMPLEMENTED (1.2.0)
 - Four supplied palettes, used by all four layouts.
 - Margin Note, System Capsule, Retro Outline, and Status Canvas on the storefront.
 - 24 optional color-token overrides beside a live preview in WordPress.
@@ -61,18 +82,16 @@ REPRODUCE
 4. npm run build
 5. On Windows: npm run review:setup && npm run review:native
 6. npm run preview -- --port=9410, then npm run test:browser
-7. Native review regenerates the POT file; run npm run build again afterwards.
+7. npm run test:flows
+8. Native review regenerates the POT file; run npm run build again afterwards.
 
-REMAINING BEFORE / DURING WORDPRESS.ORG SUBMISSION
-1. Confirm that the retained contributor username "thanos" is your actual WordPress.org account.
-   The public author name is already Thanos Leftheriotis.
-2. Keep the public name and submission slug synchronized with WordPress.org: dynamic-notice-toasts-for-woocommerce.
-3. Upload dist/wc-dynamic-notice-toasts.zip through https://wordpress.org/plugins/developers/add/.
-4. Complete the Plugins Team's manual review and respond to any requested changes.
-   Automated checks do not constitute WordPress.org approval; submission and approval are handled separately.
-5. After approval, publish the runtime directory to SVN trunk and tags/1.2.0.
-   Copy .wordpress-org artwork/screenshots to SVN assets; place the Blueprint under assets/blueprints/.
-   Keep the PHP version, readme stable tag and SVN tag synchronized.
+WORDPRESS.ORG RELEASE HISTORY
+- 30 October 2026: hosting request approved (review ID dynamic-notice-toasts-for-woocommerce/thanosleftheriotis/30Oct26/T1).
+- r3775864: 1.2.0 published to trunk and tags/1.2.0, with directory assets and blueprint.
+- r3775950: 1.2.1 published to trunk and tags/1.2.1, with the Storefront demo blueprint.
+  WordPress.org holds new versions for about six hours before sites receive them.
+- Live Preview: not yet public. Verify Test Preview on 1.2.1, then enable it under Danger Zone.
+- Publishing steps are documented in README.md under "Publishing to WordPress.org".
 
 TESTING SCOPE
 - This is not a full matrix of every WordPress/PHP/WooCommerce version, browser or third-party theme.

@@ -1,6 +1,6 @@
 # Dynamic Notice Toasts for WooCommerce
 
-Customizable storefront notices by Thanos Leftheriotis. Version 1.2.0 requires WordPress 6.5+, PHP 7.4+, and WooCommerce. The release package is named `wc-dynamic-notice-toasts`. The display name remains Dynamic Notice Toasts for WooCommerce and the main plugin file remains `woocommerce-toasts.php`. The WordPress.org submission slug and translation domain are `dynamic-notice-toasts-for-woocommerce`; the plugin header, translation calls, POT filename, WPCS rules and Plugin Check configuration must match that slug. Existing `wc_toasts_settings` options and PHP/JavaScript API names remain unchanged.
+Customizable storefront notices by Thanos Leftheriotis. Version 1.2.1 requires WordPress 6.5+, PHP 7.4+, and WooCommerce. The release package is named `wc-dynamic-notice-toasts`. The display name remains Dynamic Notice Toasts for WooCommerce and the main plugin file remains `woocommerce-toasts.php`. The WordPress.org submission slug and translation domain are `dynamic-notice-toasts-for-woocommerce`; the plugin header, translation calls, POT filename, WPCS rules and Plugin Check configuration must match that slug. Existing `wc_toasts_settings` options and PHP/JavaScript API names remain unchanged.
 
 ## Configure your notices
 
@@ -135,6 +135,8 @@ npm run build
 
 For a disposable Playground site, run `npm run preview -- --port=9410`. After installing a Playwright Chromium browser (`npx playwright install chromium`), run `npm run test:browser`. Set `WC_TOASTS_TEST_URL` or `WC_TOASTS_CHROMIUM_PATH` to use another test site or browser. The suite changes settings only on the test installation, and overwrites `.wordpress-org/screenshot-1.png` with a fresh admin capture. Start the preview from PowerShell or cmd on Windows; Git Bash rewrites the `--mount` path and the server exits. The first request after boot can exceed the suite's 30-second wait, so re-run once if the editor preview times out.
 
+`npm run test:flows` is the end-to-end check for storefront notices. It builds the package, boots Playground from `.wordpress-org/blueprints/blueprint.json` with `dist/wc-dynamic-notice-toasts/` mounted in place of the WordPress.org download, then drives the classic flows in Chromium: AJAX add to cart, a sold-individually rejection, invalid and valid coupons, and an empty checkout. It records every `wc-toasts:render` event and fails on missing, duplicated or wrongly typed toasts, or on generic checkout failures that hide validation messages. Run it before every release. It needs network access to install WooCommerce and Storefront, and uses port 9420 unless `WC_TOASTS_FLOWS_PORT` is set.
+
 On Windows, native Plugin Check avoids WebAssembly process limitations:
 
 ```sh
@@ -145,12 +147,30 @@ npm run review:native
 
 The helper downloads an isolated portable PHP/WordPress/WooCommerce installation into ignored `.runtime/`, using SQLite. It does not modify system PHP or existing sites. The runtime assertions cover activation, token and setting validation, extension registration, safe HTML, and uninstall behavior. Reports are written to `test-results/`. Native review also regenerates the POT translation template; rebuild afterwards to include it. CI runs standards, JavaScript syntax, a release build, and the official WordPress Plugin Check action against the release directory.
 
-## Release and WordPress.org submission
+## Release packaging
 
 `npm run build` writes `dist/wc-dynamic-notice-toasts.zip` and stages the runtime files in `dist/wc-dynamic-notice-toasts/`, with a SHA-256 checksum in `dist/SHA256SUMS.txt`. Every ZIP must be flat: `assets/`, `includes/`, `languages/`, `templates/`, `woocommerce-toasts.php`, and the other runtime files sit directly at the archive root. Zip the directory contents, never an enclosing plugin/project folder. This project rule is also recorded in `AGENTS.md` and enforced by `npm run verify:release`.
 
 The archive includes runtime PHP, templates, assets, translations, readme, and licenses. The design lab, development dependencies, test sites, tests, reports, archives, and Git files are excluded. The verifier also rejects inline `<script>`/`<style>` tags and arbitrary CSS settings in packaged PHP, plus any standalone HTML page, because the WordPress.org review requires enqueued assets and no code-insertion fields. GPLv2-or-later covers the plugin; bundled Iconoir icons use MIT and TikTok Sans uses SIL OFL 1.1.
 
-Use `RELEASE-REVIEW.txt` for the review evidence and remaining submission steps. Confirm that `thanos` is your actual WordPress.org account username before uploading; the public author name is Thanos Leftheriotis. The proposed slug is subject to WordPress.org approval. Upload the ZIP through the official [Add Your Plugin](https://wordpress.org/plugins/developers/add/) form. Automated checks do not replace the directory team's manual review. No submission or publishing is automated by this repository.
+`RELEASE-REVIEW.txt` keeps the review evidence and release history.
 
-After approval, copy the release directory contents to SVN `trunk/`, copy that release to `tags/1.2.0/`, and keep the PHP version, readme stable tag, and SVN tag synchronized. Directory screenshots and artwork belong in SVN `assets/`, outside the plugin's runtime directory. Review the current [plugin guidelines](https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/) before submission.
+## Publishing to WordPress.org
+
+The plugin is listed at [wordpress.org/plugins/dynamic-notice-toasts-for-woocommerce](https://wordpress.org/plugins/dynamic-notice-toasts-for-woocommerce/). Releases go through SVN at `https://plugins.svn.wordpress.org/dynamic-notice-toasts-for-woocommerce` as the committer `thanosleftheriotis`. The SVN password is separate from the WordPress.org login. Generate it under [Account & Security](https://profiles.wordpress.org/me/profile/edit/group/3/?screen=svn-password), where it is shown once. Committer pages such as Test Preview and the Advanced view's Danger Zone only appear when logged in with two-factor authentication.
+
+`tools/deploy-svn.mjs` publishes the verified build. It needs a Subversion client. On Windows, `winget install Slik.Subversion` installs one to the default path the script checks; set `SVN_BIN` to use another. It keeps a sparse working copy in ignored `.svn-deploy/`, mirrors `dist/wc-dynamic-notice-toasts/` into `trunk/` and `.wordpress-org/` into `assets/`, sets image mime types, and copies `trunk/` to `tags/<version>/`. Every run is a dry run unless `--commit` is passed.
+
+To release a new version:
+
+1. Bump `Version` and `WC_TOASTS_VERSION` in `woocommerce-toasts.php`, `Stable tag` in `readme.txt`, the POT header, and the expected version in `tools/verify-release.mjs`. Add Changelog and Upgrade Notice entries.
+2. Run `composer lint`, `npm run check:js`, `npm run test:unit`, `npm run test:flows`, `npm run build` and `npm run verify:release`.
+3. Commit and tag `v<version>` in Git.
+4. Run `node tools/deploy-svn.mjs` and review the dry-run status.
+5. Set `SVN_PASSWORD` for the user, run `node tools/deploy-svn.mjs --commit`, then delete the variable. The password is passed through `--password-from-stdin` with `--no-auth-cache`, so it is never stored by Subversion or shown in process arguments.
+
+Run the script with `node` rather than `npm run deploy:svn -- --commit` in PowerShell, because PowerShell drops the `--` separator for npm and the run silently stays a dry run. The script refuses to reuse an existing SVN tag. For banners, icons, screenshots or the blueprint alone, use `--assets-only`, which updates `assets/` without rebuilding, touching `trunk/` or tagging.
+
+WordPress.org holds each new version for about six hours of moderation and security scanning before sites receive it. Test the Live Preview and announce a release only after the plugin page shows the new version. Ask `plugins@wordpress.org` for an earlier release only for security fixes.
+
+The Live Preview blueprint in `.wordpress-org/blueprints/` installs Storefront, WooCommerce and the plugin from WordPress.org, uses the classic Cart and Checkout shortcodes, enables Cash on Delivery, and creates demo products, including a sold-individually item and the coupon `toast10`. The classic theme is deliberate: Cart and Checkout Blocks use notice interfaces the plugin does not cover. Plugin Preview must be made public under Danger Zone > Toggle Live Preview; until then only committers see a Test Preview button. The directory hides tags that no other plugin uses, which is why `toasts` is saved but not shown. Review the current [plugin guidelines](https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/) before each release.
