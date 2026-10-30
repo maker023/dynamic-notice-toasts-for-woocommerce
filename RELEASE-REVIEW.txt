@@ -23,7 +23,8 @@ Archive layout: runtime files and folders directly at the ZIP root; no enclosing
   and empty checkout pass against the built package with the directory blueprint (Storefront).
   The same test fails on the 1.2.0 code at the invalid-coupon step.
 - composer lint, npm run check:js, npm run test:unit and npm run verify:release pass.
-- Native Plugin Check was not re-run for 1.2.1; the PHP change is two wp_doing_ajax() guards.
+- GitHub Actions (Plugin checks workflow) passed for main, v1.2.0 and v1.2.1, including the official
+  WordPress Plugin Check action in strict mode against the release directory.
 - Known gap: the "AJAX Interception Mode" setting no longer changes behavior, because its only
   consumer was the removed duplicate parser. Remove it or give it a purpose in a minor release.
 
@@ -71,7 +72,7 @@ AUTOMATED REVIEW EVIDENCE
 
 Reports are regenerated in ignored test-results/. The package is built in dist/.
 Run npm run verify:release for the current package inventory, and read dist/SHA256SUMS.txt for its checksum.
-The GitHub workflow is configured but has not been run on a remote GitHub repository.
+Source repository: https://github.com/maker023/dynamic-notice-toasts-for-woocommerce (CI runs on every push).
 Only runtime files, bundled assets, translations, licenses, readme and the design lab enter the ZIP.
 Development dependencies, test sites, test credentials, reports, archives and Git metadata are excluded.
 
