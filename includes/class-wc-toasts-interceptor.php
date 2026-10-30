@@ -82,7 +82,8 @@ class WC_Toasts_Interceptor {
 	 * Intercept and capture server notices from WooCommerce session.
 	 */
 	public function capture_server_notices() {
-		if ( ! function_exists( 'wc_get_notices' ) ) {
+		// AJAX responses carry notices back to WooCommerce's scripts, which insert them for the frontend observer.
+		if ( ! function_exists( 'wc_get_notices' ) || wp_doing_ajax() ) {
 			return;
 		}
 
@@ -148,7 +149,7 @@ class WC_Toasts_Interceptor {
 	 * @return string
 	 */
 	public function filter_wc_notice_templates( $located, $template_name ) {
-		if ( ! WC_Toasts_Settings::get( 'hide_default_notices', 1 ) ) {
+		if ( ! WC_Toasts_Settings::get( 'hide_default_notices', 1 ) || wp_doing_ajax() ) {
 			return $located;
 		}
 

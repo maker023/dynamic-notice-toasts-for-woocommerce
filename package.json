@@ -4,6 +4,7 @@
   "scripts": {
     "test:browser": "node tools/browser-review.mjs",
     "test:unit": "node --test tests/styling.test.cjs",
+    "test:flows": "node tools/notice-flows.mjs",
     "review": "node tools/native-review.mjs",
     "review:setup": "node tools/native-review-setup.mjs",
     "review:native": "node tools/native-review.mjs",

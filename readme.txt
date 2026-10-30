@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,12 @@ Settings are retained unless you enable the option to delete them on uninstall.
 
 == Changelog ==
 
+= 1.2.1 =
+* Fixed classic checkout validation errors being replaced by a generic "error processing your order" message while standard notice banners were hidden.
+* Fixed invalid coupons showing an "applied successfully" toast. Coupon errors now appear as error toasts.
+* Fixed checkout errors appearing twice and links being removed from the middle of notice text.
+* Each entry in a WooCommerce error list now gets its own toast.
+
 = 1.2.0 =
 * Added four storefront layouts and the four new palettes.
 * Added a token color editor with a live preview and reset controls.
@@ -69,6 +75,9 @@ Settings are retained unless you enable the option to delete them on uninstall.
 * Refined typography, icons, positions, transitions, and reduced-motion behavior.
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+Restores checkout validation messages and correct coupon error toasts on classic cart and checkout pages. Recommended for all stores.
 
 = 1.2.0 =
 Adds a new palette and layout system and removes the Custom CSS field. Copy any custom CSS to Additional CSS before updating, then review your appearance settings and checkout notices on a staging site.

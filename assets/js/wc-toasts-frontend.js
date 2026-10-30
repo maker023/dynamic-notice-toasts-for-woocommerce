@@ -56,7 +56,6 @@
 			this.processInitialNotices();
 			this.bindWooCommerceEvents();
 			this.bindMutationObserver();
-			this.bindAjaxInterception();
 		},
 
 		/**
@@ -450,16 +449,38 @@
 				});
 			});
 
-			// 2. Checkout Error.
+			// 2. Checkout Error. WooCommerce inserts the notice markup before triggering this event.
 			$(document.body).on('checkout_error', function (event, errorMessage) {
-				if (!errorMessage) {
-					return;
+				if (!self.flushDomNotices() && errorMessage) {
+					self.extractAndShowNoticesFromHtml(errorMessage, 'error');
 				}
-				self.extractAndShowNoticesFromHtml(errorMessage, 'error');
 			});
 
-			// 3. Applied Coupon.
+			// 3. Coupon errors. WooCommerce shows these inline and still triggers applied_coupon afterwards.
+			var erroredCoupon = null;
+			$(document.body).on('errored_coupon', function (event, couponCode, response) {
+				erroredCoupon = couponCode;
+				self.parseNoticeHtml(response).forEach(function (item) {
+					self.show({
+						case_id: 'coupon_error',
+						category: 'coupon',
+						type: 'error',
+						title: i18n.error || 'Error',
+						message: item.message,
+						icon: 'ticket_alert'
+					});
+				});
+			});
+
+			// 4. Applied Coupon.
 			$(document.body).on('applied_coupon', function (event, couponCode) {
+				if (erroredCoupon === couponCode) {
+					erroredCoupon = null;
+					return;
+				}
+				if (self.flushDomNotices()) {
+					return;
+				}
 				self.show({
 					case_id: 'coupon_applied',
 					category: 'coupon',
@@ -470,8 +491,11 @@
 				});
 			});
 
-			// 4. Removed Coupon.
+			// 5. Removed Coupon.
 			$(document.body).on('removed_coupon', function (event, couponCode) {
+				if (self.flushDomNotices()) {
+					return;
+				}
 				self.show({
 					case_id: 'coupon_removed',
 					category: 'coupon',
@@ -490,85 +514,94 @@
 		 * @param {string} fallbackType Default type if not determined.
 		 */
 		extractAndShowNoticesFromHtml: function (html, fallbackType) {
-			if (!html || typeof html !== 'string') return;
-
-			var temp = document.createElement('template');
-			temp.innerHTML = html;
-			temp = temp.content;
-
-			var items = temp.querySelectorAll('.woocommerce-error li, .woocommerce-message, .woocommerce-info');
-
-			if (items.length > 0) {
-				for (var i = 0; i < items.length; i++) {
-					var item = items[i];
-					var type = fallbackType || 'notice';
-
-					if (item.closest('.woocommerce-error') || item.classList.contains('woocommerce-error')) {
-						type = 'error';
-					} else if (item.closest('.woocommerce-message') || item.classList.contains('woocommerce-message')) {
-						type = 'success';
-					}
-
-					var actionLink = item.querySelector('a');
-					var action = null;
-					if (actionLink && actionLink.getAttribute('href')) {
-						action = {
-							text: actionLink.textContent.trim(),
-							url: actionLink.getAttribute('href'),
-							target: actionLink.getAttribute('target') || '_self'
-						};
-						actionLink.parentNode.removeChild(actionLink);
-					}
-
-					var text = item.textContent.trim();
-					if (text) {
-						this.show({
-							type: type,
-							category: 'checkout',
-							title: type === 'error' ? (i18n.checkout_alert || 'Checkout Alert') : (i18n.store_notice || 'Store Notice'),
-							message: text,
-							action: action,
-							icon: type === 'error' ? 'alert_triangle' : 'check'
-						});
-					}
-				}
-			} else {
-				// Strip tags fallback.
-				var cleanText = temp.textContent.trim();
-				if (cleanText) {
-					this.show({
-						type: fallbackType || 'error',
-						category: 'checkout',
-						title: i18n.alert || 'Alert',
-						message: cleanText
-					});
-				}
-			}
+			var self = this;
+			this.parseNoticeHtml(html).forEach(function (item) {
+				var type = item.type || fallbackType || 'error';
+				self.show({
+					type: type,
+					category: 'checkout',
+					title: item.type ? (type === 'error' ? (i18n.checkout_alert || 'Checkout Alert') : (i18n.store_notice || 'Store Notice')) : (i18n.alert || 'Alert'),
+					message: item.message,
+					action: item.action,
+					icon: item.type ? (type === 'error' ? 'alert_triangle' : 'check') : undefined
+				});
+			});
 		},
 
 		/**
-		 * Intercept standard AJAX responses (Fetch & XMLHttpRequest).
+		 * Parse notices from an HTML string. Markup without notice wrappers becomes one untyped item.
+		 *
+		 * @param {string} html Raw notice HTML.
+		 * @return {Array} Parsed items with type, message, and action.
 		 */
-		bindAjaxInterception: function () {
-			if (settings.ajax_interception === 'standard') {
-				return;
+		parseNoticeHtml: function (html) {
+			if (!html || typeof html !== 'string') return [];
+
+			var template = document.createElement('template');
+			template.innerHTML = html;
+
+			var nodes = template.content.querySelectorAll('.woocommerce-error, .woocommerce-message, .woocommerce-info');
+			if (!nodes.length) {
+				var text = template.content.textContent.replace(/\s+/g, ' ').trim();
+				return text ? [{ type: '', message: text, action: null }] : [];
 			}
 
 			var self = this;
+			var parsed = [];
+			Array.prototype.forEach.call(nodes, function (node) {
+				parsed = parsed.concat(self.parseNoticeElement(node));
+			});
+			return parsed;
+		},
 
-			// Intercept jQuery global ajaxSuccess if jQuery is loaded.
-			if (window.jQuery) {
-				window.jQuery(document).ajaxSuccess(function (event, xhr, ajaxOptions, data) {
-					if (!data) return;
-
-					// WooCommerce AJAX Add to cart / checkout response.
-					if (typeof data === 'object') {
-						if (data.result === 'failure' && data.messages) {
-							self.extractAndShowNoticesFromHtml(data.messages, 'error');
-						}
-					}
-				});
+		/**
+		 * Parse a WooCommerce notice element into one item per list entry.
+		 *
+		 * @param {HTMLElement} node Notice element.
+		 * @return {Array} Parsed items with type, message, and action.
+		 */
+		parseNoticeElement: function (node) {
+			var type = 'notice';
+			if (node.classList.contains('woocommerce-error') || node.querySelector('.woocommerce-error')) {
+				type = 'error';
+			} else if (node.classList.contains('woocommerce-message') || node.querySelector('.woocommerce-message')) {
+				type = 'success';
 			}
+
+			var entries = node.querySelectorAll('li');
+			var sources = entries.length ? Array.prototype.slice.call(entries) : [node];
+
+			return sources.map(function (source) {
+				// Work on a copy so WooCommerce's own notice markup is never modified.
+				var copy = source.cloneNode(true);
+				// Only WooCommerce's button links are actions; links inside a sentence stay in the message.
+				var actionLink = copy.querySelector('a.button, a.wc-forward');
+				var action = null;
+				if (actionLink && actionLink.getAttribute('href')) {
+					action = {
+						text: actionLink.textContent.trim(),
+						url: actionLink.getAttribute('href'),
+						target: actionLink.getAttribute('target') || '_self'
+					};
+					actionLink.parentNode.removeChild(actionLink);
+				}
+				return { type: type, message: copy.textContent.replace(/\s+/g, ' ').trim(), action: action };
+			}).filter(function (item) {
+				return item.message;
+			});
+		},
+
+		/**
+		 * Toast notices WooCommerce has just inserted into the page, before the observer sees them.
+		 *
+		 * @return {boolean} Whether any notice was found.
+		 */
+		flushDomNotices: function () {
+			var nodes = document.querySelectorAll('.woocommerce-error:not([data-wct-processed]), .woocommerce-message:not([data-wct-processed]), .woocommerce-info:not([data-wct-processed])');
+			for (var i = 0; i < nodes.length; i++) {
+				this.handleObservedNoticeNode(nodes[i]);
+			}
+			return nodes.length > 0;
 		},
 
 		/**
@@ -620,35 +653,17 @@
 			// Hide immediately to eliminate layout shift.
 			if (settings.hide_default_notices) node.style.setProperty('display', 'none', 'important');
 
-			var type = 'notice';
-			if (node.classList.contains('woocommerce-error') || node.querySelector('.woocommerce-error')) {
-				type = 'error';
-			} else if (node.classList.contains('woocommerce-message') || node.querySelector('.woocommerce-message')) {
-				type = 'success';
-			}
-
-			var actionLink = node.querySelector('a');
-			var action = null;
-			if (actionLink && actionLink.getAttribute('href')) {
-				action = {
-					text: actionLink.textContent.trim(),
-					url: actionLink.getAttribute('href'),
-					target: actionLink.getAttribute('target') || '_self'
-				};
-				actionLink.parentNode.removeChild(actionLink);
-			}
-
-			var text = node.textContent.trim();
-			if (text) {
-				this.show({
-					type: type,
+			var self = this;
+			this.parseNoticeElement(node).forEach(function (item) {
+				self.show({
+					type: item.type,
 					category: 'system',
-					title: type === 'success' ? (i18n.store_notice || 'Store Notice') : (type === 'error' ? (i18n.notice_alert || 'Notice Alert') : (i18n.information || 'Information')),
-					message: text,
-					action: action,
-					icon: type === 'success' ? 'check' : (type === 'error' ? 'alert_triangle' : 'info')
+					title: item.type === 'success' ? (i18n.store_notice || 'Store Notice') : (item.type === 'error' ? (i18n.notice_alert || 'Notice Alert') : (i18n.information || 'Information')),
+					message: item.message,
+					action: item.action,
+					icon: item.type === 'success' ? 'check' : (item.type === 'error' ? 'alert_triangle' : 'info')
 				});
-			}
+			});
 		}
 	};
 
