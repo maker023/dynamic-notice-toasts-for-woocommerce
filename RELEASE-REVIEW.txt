@@ -107,6 +107,7 @@ WORDPRESS.ORG RELEASE HISTORY
 - r3775864: 1.2.0 published to trunk and tags/1.2.0, with directory assets and blueprint.
 - r3775950: 1.2.1 published to trunk and tags/1.2.1, with the Storefront demo blueprint.
   WordPress.org holds new versions for about six hours before sites receive them.
+- r3777311: 1.3.0 published to trunk and tags/1.3.0, with real-toast banners.
 - 31 October 2026: Test Preview verified on 1.2.1 (Storefront demo, all classic flows).
 - Live Preview: not yet public. Enable it under Danger Zone once 1.3.0 is released.
 - Publishing steps are documented in README.md under "Publishing to WordPress.org".
