@@ -651,20 +651,6 @@ class WC_Toasts {
 
 								<table class="form-table">
 									<tr>
-										<th scope="row"><?php esc_html_e( 'AJAX Interception Mode', 'dynamic-notice-toasts-for-woocommerce' ); ?></th>
-										<td>
-											<select name="wc_toasts[ajax_interception]">
-												<option value="full" <?php selected( $settings['ajax_interception'], 'full' ); ?>>
-													<?php esc_html_e( 'Full Interception (jQuery Events + Fetch/XHR + DOM Observer) - Recommended', 'dynamic-notice-toasts-for-woocommerce' ); ?>
-												</option>
-												<option value="standard" <?php selected( $settings['ajax_interception'], 'standard' ); ?>>
-													<?php esc_html_e( 'Standard Only (WooCommerce Core Events)', 'dynamic-notice-toasts-for-woocommerce' ); ?>
-												</option>
-											</select>
-											<p class="description"><?php esc_html_e( 'Full mode also intercepts 3rd party plugins that dynamically inject notices via raw DOM insertion or custom AJAX endpoints.', 'dynamic-notice-toasts-for-woocommerce' ); ?></p>
-										</td>
-									</tr>
-									<tr>
 										<th scope="row"><?php esc_html_e( 'Data Cleanup on Uninstall', 'dynamic-notice-toasts-for-woocommerce' ); ?></th>
 										<td>
 											<label>

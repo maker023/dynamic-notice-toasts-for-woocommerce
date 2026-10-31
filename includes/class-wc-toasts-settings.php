@@ -76,7 +76,6 @@ class WC_Toasts_Settings {
 			'enable_cat_system'        => 1,
 
 			// Advanced.
-			'ajax_interception'        => 'full',
 			'delete_data_on_uninstall' => 0,
 		);
 		return apply_filters( 'wc_toasts_default_settings', $defaults );
@@ -221,9 +220,6 @@ class WC_Toasts_Settings {
 		}
 
 		// Advanced.
-		$allowed_interception        = array( 'full', 'standard' );
-		$output['ajax_interception'] = ( isset( $input['ajax_interception'] ) && in_array( $input['ajax_interception'], $allowed_interception, true ) ) ? $input['ajax_interception'] : $defaults['ajax_interception'];
-
 		$output['delete_data_on_uninstall'] = ! empty( $input['delete_data_on_uninstall'] ) ? 1 : 0;
 
 		self::$cached_settings = $output;

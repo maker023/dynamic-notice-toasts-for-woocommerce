@@ -35,6 +35,11 @@
 		return template.content;
 	}
 
+	// Classic notice wrappers plus the banner markup used by WooCommerce Blocks and block themes.
+	var bannerClass = 'wc-block-components-notice-banner';
+	var noticeSelectors = ['.woocommerce-error', '.woocommerce-message', '.woocommerce-info', '.' + bannerClass];
+	var noticeSelector = noticeSelectors.join(', ');
+
 	// If plugin is disabled, exit.
 	if (settings.enabled === 0 || settings.enabled === '0' || settings.enabled === false) {
 		return;
@@ -415,48 +420,34 @@
 
 			var $ = window.jQuery;
 
-			// 1. Added to cart (AJAX).
+			// 1. Added to cart (classic AJAX).
+			var lastAddButton = null;
+			$(document).on('click', '.add_to_cart_button', function () {
+				lastAddButton = $(this);
+			});
 			$(document.body).on('added_to_cart', function (event, fragments, cart_hash, $button) {
-				var productName = '';
-				if ($button && $button.length) {
-					productName = $button.attr('data-product_name') || $button.attr('data-product_title') || '';
-					if (!productName) {
-						var aria = $button.attr('aria-label') || '';
-						var match = aria.match(/“([^”]+)”|"[^"]+"/);
-						if (match) {
-							productName = match[0].replace(/["“”]/g, '');
-						}
-					}
-				}
-
-				var messageText = productName
-					? '“' + productName + '” ' + (i18n.added_notice || 'has been added to your cart.')
-					: (i18n.added_notice || 'Product has been added to your cart.');
-
-				var cartUrl = config.cart_url || (window.wc_cart_params && window.wc_cart_params.cart_url) || '';
-
-				self.show({
-					case_id: 'cart_item_added',
-					category: 'cart',
-					type: 'success',
-					title: i18n.added_to_cart || 'Added to Cart',
-					message: messageText,
-					icon: 'cart_check',
-					action: cartUrl ? {
-						text: i18n.view_cart || 'View cart',
-						url: cartUrl
-					} : null
-				});
+				lastAddButton = null;
+				self.showAddedToCart($button);
 			});
 
-			// 2. Checkout Error. WooCommerce inserts the notice markup before triggering this event.
+			// 2. Added to cart (Blocks). Mini-Cart re-dispatches the classic event without detail; that case is handled above.
+			$(document.body).on('wc-blocks_added_to_cart', function (event) {
+				var detail = event.originalEvent ? event.originalEvent.detail : null;
+				if (!detail || !Object.prototype.hasOwnProperty.call(detail, 'preserveCartData')) {
+					return;
+				}
+				self.showAddedToCart(lastAddButton);
+				lastAddButton = null;
+			});
+
+			// 3. Checkout Error. WooCommerce inserts the notice markup before triggering this event.
 			$(document.body).on('checkout_error', function (event, errorMessage) {
 				if (!self.flushDomNotices() && errorMessage) {
 					self.extractAndShowNoticesFromHtml(errorMessage, 'error');
 				}
 			});
 
-			// 3. Coupon errors. WooCommerce shows these inline and still triggers applied_coupon afterwards.
+			// 4. Coupon errors. WooCommerce shows these inline and still triggers applied_coupon afterwards.
 			var erroredCoupon = null;
 			$(document.body).on('errored_coupon', function (event, couponCode, response) {
 				erroredCoupon = couponCode;
@@ -472,7 +463,7 @@
 				});
 			});
 
-			// 4. Applied Coupon.
+			// 5. Applied Coupon.
 			$(document.body).on('applied_coupon', function (event, couponCode) {
 				if (erroredCoupon === couponCode) {
 					erroredCoupon = null;
@@ -491,7 +482,7 @@
 				});
 			});
 
-			// 5. Removed Coupon.
+			// 6. Removed Coupon.
 			$(document.body).on('removed_coupon', function (event, couponCode) {
 				if (self.flushDomNotices()) {
 					return;
@@ -504,6 +495,44 @@
 					message: (i18n.coupon_removed_message || 'Coupon code "%s" has been removed.').replace('%s', function () { return couponCode; }),
 					icon: 'ticket_cross'
 				});
+			});
+		},
+
+		/**
+		 * Show the added-to-cart toast, naming the product when the clicked button identifies it.
+		 *
+		 * @param {jQuery|null} $button Add to cart button.
+		 */
+		showAddedToCart: function ($button) {
+			var productName = '';
+			if ($button && $button.length) {
+				productName = $button.attr('data-product_name') || $button.attr('data-product_title') || '';
+				if (!productName) {
+					var aria = $button.attr('aria-label') || '';
+					var match = aria.match(/“([^”]+)”|"[^"]+"/);
+					if (match) {
+						productName = match[0].replace(/["“”]/g, '');
+					}
+				}
+			}
+
+			var messageText = productName
+				? '“' + productName + '” ' + (i18n.added_notice || 'has been added to your cart.')
+				: (i18n.added_notice || 'Product has been added to your cart.');
+
+			var cartUrl = config.cart_url || (window.wc_cart_params && window.wc_cart_params.cart_url) || '';
+
+			this.show({
+				case_id: 'cart_item_added',
+				category: 'cart',
+				type: 'success',
+				title: i18n.added_to_cart || 'Added to Cart',
+				message: messageText,
+				icon: 'cart_check',
+				action: cartUrl ? {
+					text: i18n.view_cart || 'View cart',
+					url: cartUrl
+				} : null
 			});
 		},
 
@@ -540,7 +569,7 @@
 			var template = document.createElement('template');
 			template.innerHTML = html;
 
-			var nodes = template.content.querySelectorAll('.woocommerce-error, .woocommerce-message, .woocommerce-info');
+			var nodes = template.content.querySelectorAll(noticeSelector);
 			if (!nodes.length) {
 				var text = template.content.textContent.replace(/\s+/g, ' ').trim();
 				return text ? [{ type: '', message: text, action: null }] : [];
@@ -562,7 +591,11 @@
 		 */
 		parseNoticeElement: function (node) {
 			var type = 'notice';
-			if (node.classList.contains('woocommerce-error') || node.querySelector('.woocommerce-error')) {
+			if (node.classList.contains(bannerClass)) {
+				type = node.classList.contains('is-error') ? 'error' : (node.classList.contains('is-success') ? 'success' : (node.classList.contains('is-warning') ? 'warning' : 'notice'));
+				// Read only the message: banners also hold an icon, a dismiss button, and a summary line above lists.
+				node = node.querySelector('.' + bannerClass + '__content') || node;
+			} else if (node.classList.contains('woocommerce-error') || node.querySelector('.woocommerce-error')) {
 				type = 'error';
 			} else if (node.classList.contains('woocommerce-message') || node.querySelector('.woocommerce-message')) {
 				type = 'success';
@@ -597,7 +630,9 @@
 		 * @return {boolean} Whether any notice was found.
 		 */
 		flushDomNotices: function () {
-			var nodes = document.querySelectorAll('.woocommerce-error:not([data-wct-processed]), .woocommerce-message:not([data-wct-processed]), .woocommerce-info:not([data-wct-processed])');
+			var nodes = document.querySelectorAll(noticeSelectors.map(function (selector) {
+				return selector + ':not([data-wct-processed])';
+			}).join(', '));
 			for (var i = 0; i < nodes.length; i++) {
 				this.handleObservedNoticeNode(nodes[i]);
 			}
@@ -621,10 +656,10 @@
 						var node = mutation.addedNodes[i];
 						if (node.nodeType !== 1) continue;
 
-						if (node.classList && (node.classList.contains('woocommerce-message') || node.classList.contains('woocommerce-error') || node.classList.contains('woocommerce-info'))) {
+						if (node.matches(noticeSelector)) {
 							self.handleObservedNoticeNode(node);
-						} else if (node.querySelectorAll) {
-							var nested = node.querySelectorAll('.woocommerce-message, .woocommerce-error, .woocommerce-info');
+						} else {
+							var nested = node.querySelectorAll(noticeSelector);
 							for (var j = 0; j < nested.length; j++) {
 								self.handleObservedNoticeNode(nested[j]);
 							}
@@ -642,10 +677,23 @@
 		/**
 		 * Handle and hide dynamically injected notice elements.
 		 *
-		 * @param {HTMLElement} node Found notice DOM node.
+		 * @param {HTMLElement} node    Found notice DOM node.
+		 * @param {number}      attempt Frames already spent waiting for the notice text.
 		 */
-		handleObservedNoticeNode: function (node) {
+		handleObservedNoticeNode: function (node, attempt) {
 			if (node.hasAttribute('data-wct-processed')) {
+				return;
+			}
+
+			var self = this;
+			var items = this.parseNoticeElement(node);
+			attempt = attempt || 0;
+
+			// Block notices can be inserted before their text renders; wait up to half a second for it.
+			if (!items.length && attempt < 30 && document.body.contains(node)) {
+				requestAnimationFrame(function () {
+					self.handleObservedNoticeNode(node, attempt + 1);
+				});
 				return;
 			}
 			node.setAttribute('data-wct-processed', 'true');
@@ -653,8 +701,7 @@
 			// Hide immediately to eliminate layout shift.
 			if (settings.hide_default_notices) node.style.setProperty('display', 'none', 'important');
 
-			var self = this;
-			this.parseNoticeElement(node).forEach(function (item) {
+			items.forEach(function (item) {
 				self.show({
 					type: item.type,
 					category: 'system',

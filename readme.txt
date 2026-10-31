@@ -1,11 +1,11 @@
 === Dynamic Notice Toasts for WooCommerce ===
 Contributors: thanosleftheriotis
-Tags: woocommerce, notices, notifications, toasts, accessibility
+Tags: woocommerce, notices, notifications, toast, accessibility
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 1.2.1
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,12 +19,14 @@ Dynamic Notice Toasts for WooCommerce presents store notices as dismissible noti
 * Four palettes: Sky Blue & Dark Aubergine, Lime Chartreuse & Charcoal, Default Light, and Default Dark.
 * Edit background, text, accent, icons, borders, focus rings, controls, status colors, and shadows beside a live preview.
 * Choose where notifications appear, how long they remain, and whether to pause on hover.
-* Supports standard WooCommerce notices, classic AJAX cart events, coupon notices, and checkout errors exposed through WooCommerce notice markup.
+* Supports classic and block-based stores: standard WooCommerce notices, AJAX and block add-to-cart events, coupon notices, checkout errors, and the notice banners used by block themes and the Cart and Checkout blocks.
 * Includes category controls, duplicate prevention, and optional suppression of standard notice banners.
 * Provides CSS variables, WordPress filters, browser events, and a JavaScript API for extensions.
 * Respects reduced-motion preferences and keeps notice actions keyboard accessible.
 
-The plugin does not send analytics, load remote fonts, or call external services at runtime. Its font and icons are bundled locally. It does not read or write order storage directly. HPOS compatibility is declared. WooCommerce Blocks can use different notice interfaces; test your checkout before enabling notice suppression on a live store.
+The plugin does not send analytics, load remote fonts, or call external services at runtime. Its font and icons are bundled locally. It does not read or write order storage directly. HPOS compatibility is declared. In the Cart and Checkout blocks, form field errors stay next to their fields, where shoppers fix them. Test your checkout and any payment or shipping extensions before enabling notice suppression on a live store.
+
+Source code and issue tracker: https://github.com/maker023/dynamic-notice-toasts-for-woocommerce
 
 == Installation ==
 
@@ -55,6 +57,12 @@ Settings are retained unless you enable the option to delete them on uninstall.
 
 == Changelog ==
 
+= 1.3.0 =
+* Added support for block themes and WooCommerce Blocks: block add-to-cart toasts with the product name, Store Notices block messages, and Cart and Checkout block notices.
+* Notice banners from block themes and the Cart and Checkout blocks are hidden while toasts replace them. Form field errors stay inline.
+* Fixed the close icon showing a single stroke in themes that hide button pseudo-elements, such as Storefront.
+* Removed the AJAX Interception Mode setting. Since 1.2.1 every notice is handled once regardless of mode, so the option had no effect.
+
 = 1.2.1 =
 * Fixed classic checkout validation errors being replaced by a generic "error processing your order" message while standard notice banners were hidden.
 * Fixed invalid coupons showing an "applied successfully" toast. Coupon errors now appear as error toasts.
@@ -75,6 +83,9 @@ Settings are retained unless you enable the option to delete them on uninstall.
 * Refined typography, icons, positions, transitions, and reduced-motion behavior.
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+Adds toasts for block themes and the WooCommerce Cart and Checkout blocks, and fixes the close icon in Storefront. Review your checkout on staging if you use the block-based Cart or Checkout.
 
 = 1.2.1 =
 Restores checkout validation messages and correct coupon error toasts on classic cart and checkout pages. Recommended for all stores.

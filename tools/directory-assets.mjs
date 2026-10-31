@@ -1,40 +1,94 @@
+// Generates WordPress.org directory banners and icons. Banners show a real toast rendered by the built plugin
+// in the demo store, so the artwork always matches the shipped design.
 import fs from 'node:fs';
 import path from 'node:path';
-import os from 'node:os';
-import { chromium } from '@playwright/test';
-const cached=path.join(os.homedir(),'AppData/Local/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-win64/chrome-headless-shell.exe');
-const browser=await chromium.launch({headless:true,executablePath:process.env.WC_TOASTS_CHROMIUM_PATH||(fs.existsSync(cached)?cached:undefined)});
-const page=await browser.newPage();
-const banner=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1544 500" width="1544" height="500">
-<rect width="1544" height="500" fill="#F8F7F2"/>
-<path d="M1090 0h454v500h-620z" fill="#D7EBFF"/>
-<g font-family="Arial,sans-serif" fill="#1F2328">
-<text x="72" y="154" font-size="62" font-weight="700">Dynamic Notice Toasts</text>
-<text x="74" y="214" font-size="38">for WooCommerce</text>
-<text x="75" y="293" font-size="28">Four layouts. Your colors.</text>
-<g transform="translate(76 339)"><rect width="42" height="22" rx="4" fill="#D7EBFF"/><rect x="52" width="42" height="22" rx="4" fill="#D9F752"/><rect x="104" width="42" height="22" rx="4" fill="#D8DDE6"/><rect x="156" width="42" height="22" rx="4" fill="#1E222A"/></g>
-</g>
-<rect x="908" y="201" width="552" height="126" rx="8" fill="#3B2350" opacity=".24"/>
-<rect x="900" y="193" width="552" height="126" rx="8" fill="#1E222A" stroke="#F4F1E8" stroke-width="2"/>
-<g font-family="Arial,sans-serif" fill="#F4F1E8"><text x="982" y="244" font-size="25" font-weight="600">Added to your bag</text><text x="982" y="277" font-size="20">Ready when you are.</text></g>
-<rect x="916" y="223" width="48" height="48" rx="6" fill="none" stroke="#F4F1E8" stroke-width="2"/>
-<path d="m929 246 8 8 15-19" fill="none" stroke="#F4F1E8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="1283" y="233" width="102" height="44" rx="6" fill="none" stroke="#F4F1E8"/>
-<text x="1301" y="261" fill="#F4F1E8" font-family="Arial,sans-serif" font-size="18">View bag</text>
-<rect x="1396" y="233" width="40" height="44" rx="6" fill="#4B7BFF"/>
-<path d="m1409 249 14 14m0-14-14 14" stroke="#F4F1E8" stroke-width="2"/>
-</svg>`;
+import { buildPackage, writeDemoBlueprint, startPlayground, launchBrowser, visit, root } from './playground.mjs';
+
+const port = Number(process.env.WC_TOASTS_ASSETS_PORT || 9421);
+const directory = path.join(root, '.wordpress-org');
+const sample = {
+  type: 'success',
+  category: 'cart',
+  title: 'Added to Cart',
+  message: '“Wool Beanie” has been added to your cart.',
+  icon: 'cart_check',
+  action: { text: 'View cart', url: '/cart/' }
+};
+
+async function captureToast(browser, url) {
+  const page = await browser.newPage({ viewport: { width: 900, height: 500 }, deviceScaleFactor: 2 });
+  await visit(page, url + '/shop/');
+  await page.evaluate(notice => {
+    document.documentElement.style.background = 'transparent';
+    document.body.style.background = 'transparent';
+    Array.from(document.body.children).forEach(child => { child.style.visibility = 'hidden'; });
+    window.WCToasts.show(notice);
+    document.getElementById('wc-toasts-container').style.visibility = 'visible';
+  }, sample);
+  const toast = page.locator('.wc-toast').first();
+  await toast.waitFor();
+  // Let the entrance animation finish, then hover the message to pause the progress bar.
+  await page.waitForTimeout(450);
+  await toast.locator('.wc-toast-message').hover();
+  await page.waitForTimeout(300);
+  const box = await toast.boundingBox();
+  const margin = 24;
+  const image = await page.screenshot({
+    omitBackground: true,
+    clip: { x: box.x - margin, y: box.y - margin, width: box.width + margin * 2, height: box.height + margin * 2 }
+  });
+  await page.close();
+  return { image, width: box.width + margin * 2, height: box.height + margin * 2 };
+}
+
+function bannerHtml(toast) {
+  const font = fs.readFileSync(path.join(root, 'assets/fonts/TikTokSans-Variable.woff2')).toString('base64');
+  const scale = 1.45;
+  return `<!doctype html><html><head><style>
+@font-face { font-family: "TikTok Sans"; src: url(data:font/woff2;base64,${font}) format("woff2"); font-weight: 300 900; }
+html, body { margin: 0; width: 1544px; height: 500px; overflow: hidden; }
+body { position: relative; background: #F8F7F2; font-family: "TikTok Sans", sans-serif; color: #1F2328; }
+.panel { position: absolute; inset: 0; background: #D7EBFF; clip-path: polygon(1090px 0, 1544px 0, 1544px 500px, 924px 500px); }
+.copy { position: absolute; left: 72px; top: 96px; }
+h1 { margin: 0; font-size: 62px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.05; }
+h2 { margin: 14px 0 0; font-size: 38px; font-weight: 400; }
+p { margin: 42px 0 0; font-size: 28px; }
+.swatches { display: flex; gap: 10px; margin-top: 28px; }
+.swatches span { width: 42px; height: 22px; border-radius: 4px; }
+.toast { position: absolute; right: 64px; top: 50%; width: ${toast.width * scale}px; transform: translateY(-50%); }
+</style></head><body>
+<div class="panel"></div>
+<div class="copy">
+<h1>Dynamic Notice Toasts</h1>
+<h2>for WooCommerce</h2>
+<p>Four layouts. Your colors.</p>
+<div class="swatches"><span style="background:#D7EBFF"></span><span style="background:#D9F752"></span><span style="background:#D8DDE6"></span><span style="background:#1E222A"></span></div>
+</div>
+<img class="toast" alt="" src="data:image/png;base64,${toast.image.toString('base64')}">
+</body></html>`;
+}
+
+const icon = fs.readFileSync(path.join(directory, 'icon.svg'), 'utf8');
+buildPackage();
+const site = await startPlayground({ port, blueprint: writeDemoBlueprint() });
+const browser = await launchBrowser();
 try {
-  for(const [width,height] of [[1544,500],[772,250]]){
-    await page.setViewportSize({width,height});
-    await page.setContent('<style>body{margin:0;overflow:hidden}svg{display:block;width:100vw;height:100vh}</style>'+banner);
-    await page.screenshot({path:'.wordpress-org/banner-'+width+'x'+height+'.png'});
+  const html = bannerHtml(await captureToast(browser, site.url));
+  for (const [width, height, scale] of [[1544, 500, 1], [772, 250, 0.5]]) {
+    const page = await browser.newPage({ viewport: { width: 1544, height: 500 }, deviceScaleFactor: scale });
+    await page.setContent(html);
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: path.join(directory, 'banner-' + width + 'x' + height + '.png') });
+    await page.close();
   }
-  const icon=fs.readFileSync('.wordpress-org/icon.svg','utf8');
-  for(const width of [128,256]){
-    await page.setViewportSize({width,height:width});
-    await page.setContent('<style>body{margin:0}svg{display:block;width:100vw;height:100vh}</style>'+icon);
-    await page.screenshot({path:'.wordpress-org/icon-'+width+'x'+width+'.png',omitBackground:true});
+  const page = await browser.newPage();
+  for (const width of [128, 256]) {
+    await page.setViewportSize({ width, height: width });
+    await page.setContent('<style>body{margin:0}svg{display:block;width:100vw;height:100vh}</style>' + icon);
+    await page.screenshot({ path: path.join(directory, 'icon-' + width + 'x' + width + '.png'), omitBackground: true });
   }
   console.log('Directory banners and icons generated.');
-}finally{await browser.close()}
+} finally {
+  await browser.close();
+  site.stop();
+}

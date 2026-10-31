@@ -1,10 +1,28 @@
-Dynamic Notice Toasts for WooCommerce 1.2.1
-Release review: 30 October 2026 (1.2.1); 24 October 2026 (1.2.0)
+Dynamic Notice Toasts for WooCommerce 1.3.0
+Release review: 31 October 2026 (1.3.0); 30 October 2026 (1.2.1); 24 October 2026 (1.2.0)
 Author: Thanos Leftheriotis
 Submission directory slug / text domain: dynamic-notice-toasts-for-woocommerce
 Main file: woocommerce-toasts.php
 Package name: wc-dynamic-notice-toasts
 Archive layout: runtime files and folders directly at the ZIP root; no enclosing directory.
+
+1.3.0 CHANGES
+- Block themes and WooCommerce Blocks: block add to cart (wc-blocks_added_to_cart, product name from
+  the clicked button), Store Notices block errors, Cart block snackbars, and block-theme notice templates
+  become toasts. Their wc-block-components-notice-banner markup is hidden while toasts replace it.
+- Mini-Cart re-dispatches classic added_to_cart as wc-blocks_added_to_cart without detail; those are
+  ignored so each add produces one toast.
+- Cart and Checkout block field errors stay inline next to their fields.
+- Close icon: both strokes declare display and margin, so themes such as Storefront
+  (button::after { display: none; }) can no longer hide one.
+- Removed the no-op AJAX Interception Mode setting and its translation strings.
+- Directory banners now show a real toast rendered by the built plugin.
+
+1.3.0 EVIDENCE
+- npm run test:flows: 6 classic flows (Storefront) and 5 block flows (default block theme, Product
+  Collection, Cart and Checkout blocks) pass against the built package.
+- composer lint, npm run check:js, npm run test:unit and npm run verify:release pass.
+- The POT was regenerated with WP-CLI i18n make-pot from the release directory.
 
 1.2.1 FIXES
 - Classic checkout validation errors reach the shopper again. With default banners hidden, 1.2.0
@@ -25,8 +43,6 @@ Archive layout: runtime files and folders directly at the ZIP root; no enclosing
 - composer lint, npm run check:js, npm run test:unit and npm run verify:release pass.
 - GitHub Actions (Plugin checks workflow) passed for main, v1.2.0 and v1.2.1, including the official
   WordPress Plugin Check action in strict mode against the release directory.
-- Known gap: the "AJAX Interception Mode" setting no longer changes behavior, because its only
-  consumer was the removed duplicate parser. Remove it or give it a purpose in a minor release.
 
 IMPLEMENTED (1.2.0)
 - Four supplied palettes, used by all four layouts.
@@ -91,13 +107,15 @@ WORDPRESS.ORG RELEASE HISTORY
 - r3775864: 1.2.0 published to trunk and tags/1.2.0, with directory assets and blueprint.
 - r3775950: 1.2.1 published to trunk and tags/1.2.1, with the Storefront demo blueprint.
   WordPress.org holds new versions for about six hours before sites receive them.
-- Live Preview: not yet public. Verify Test Preview on 1.2.1, then enable it under Danger Zone.
+- 31 October 2026: Test Preview verified on 1.2.1 (Storefront demo, all classic flows).
+- Live Preview: not yet public. Enable it under Danger Zone once 1.3.0 is released.
 - Publishing steps are documented in README.md under "Publishing to WordPress.org".
 
 TESTING SCOPE
 - This is not a full matrix of every WordPress/PHP/WooCommerce version, browser or third-party theme.
 - SQLite was used for the local integration fixture. CI is configured for WordPress Plugin Check's wp-env environment.
-- Classic WooCommerce notice handling was exercised; broad Cart/Checkout Blocks compatibility is not declared.
+- Classic and block-based stores were exercised with WooCommerce 11.2 and the default block theme.
+  Third-party block integrations and custom checkout fields can render notices differently.
   Test your actual checkout, payment/shipping extensions, mobile devices and screen readers on staging.
 - Custom colors are validated as colors, but contrast depends on the chosen combination.
   Automatic foreground selection prefers the higher-contrast palette color; it does not guarantee WCAG conformance.

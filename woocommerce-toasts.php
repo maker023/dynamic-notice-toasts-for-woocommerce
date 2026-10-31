@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Dynamic Notice Toasts for WooCommerce
  * Description:       Replaces WooCommerce notice banners with readable, customizable toasts, progress bars, and action links.
- * Version:           1.2.1
+ * Version:           1.3.0
  * Author:            Thanos Leftheriotis
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 
 // Plugin constants.
 if ( ! defined( 'WC_TOASTS_VERSION' ) ) {
-	define( 'WC_TOASTS_VERSION', '1.2.1' );
+	define( 'WC_TOASTS_VERSION', '1.3.0' );
 }
 if ( ! defined( 'WC_TOASTS_PLUGIN_FILE' ) ) {
 	define( 'WC_TOASTS_PLUGIN_FILE', __FILE__ );

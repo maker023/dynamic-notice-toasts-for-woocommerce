@@ -19,9 +19,9 @@ for(const [name,bytes] of Object.entries(files)){
 const decode=name=>new TextDecoder().decode(files[name]);
 const main=decode('woocommerce-toasts.php');
 const readme=decode('readme.txt');
-assert.ok(main.includes('Version:           1.2.1'));
+assert.ok(main.includes('Version:           1.3.0'));
 assert.equal(main.match(/^ \* Text Domain:\s*(\S+)/m)?.[1],pluginSlug,'Text Domain must match the WordPress.org submission slug.');
-assert.ok(readme.includes('Stable tag: 1.2.1'));
+assert.ok(readme.includes('Stable tag: 1.3.0'));
 const data=JSON.parse(decode('assets/config/styling.json'));
 assert.deepEqual(Object.keys(data.palettes),['sky-aubergine','lime-charcoal','default-light','default-dark']);
 for(const name of ['LICENSE','assets/fonts/TikTokSans-OFL.txt','assets/icons/ICONOIR-LICENSE.txt','languages/'+pluginSlug+'.pot','assets/js/wc-toasts-styling.js'])assert.ok(files[name],name+' is missing');
@@ -33,7 +33,7 @@ for(const name of Object.keys(files).filter(name=>name.endsWith('.php'))){
   assert.ok(!source.includes('wc_toasts[custom_css]')&&!source.includes('wp_add_inline_style'),'Arbitrary CSS setting or output in '+name+'.');
 }
 assert.ok(!Object.keys(files).some(name=>name.endsWith('.html')),'Standalone HTML pages must not ship in the package.');
-const report={package:packageName,slug:pluginSlug,textDomain:pluginSlug,archiveLayout:'flat',files:Object.keys(files).filter(name=>!name.endsWith('/')).length,bytes:zip.length,sourceMatch:true,version:'1.2.1',palettes:4,developmentFilesExcluded:true};
+const report={package:packageName,slug:pluginSlug,textDomain:pluginSlug,archiveLayout:'flat',files:Object.keys(files).filter(name=>!name.endsWith('/')).length,bytes:zip.length,sourceMatch:true,version:'1.3.0',palettes:4,developmentFilesExcluded:true};
 fs.mkdirSync(path.join(root,'test-results'),{recursive:true});
 fs.writeFileSync(path.join(root,'test-results/package-review.json'),JSON.stringify(report,null,2));
 console.log(JSON.stringify(report));

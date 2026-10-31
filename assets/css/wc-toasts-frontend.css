@@ -172,9 +172,12 @@
 	transition: color .18s ease, background-color .18s ease;
 }
 .wc-toast-close-btn:is(:hover, :focus-visible) { background: var(--wc-toast-close-hover-bg, var(--wc-toast-control-fill, var(--wc-toast-accent))); color: var(--wc-toast-close-hover-ink, var(--wc-toast-on-accent, var(--wc-toast-ink))); }
+/* Declare display and margin so theme rules such as Storefront's `button::after { display: none; }` cannot hide a stroke. */
 .wc-toast-close-btn::before,
 .wc-toast-close-btn::after {
 	content: "";
+	display: block;
+	margin: 0;
 	position: absolute;
 	top: 50%;
 	left: 50%;

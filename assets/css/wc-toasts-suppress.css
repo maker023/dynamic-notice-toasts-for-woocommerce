@@ -6,6 +6,7 @@
 .woocommerce-NoticeGroup .woocommerce-message,
 div.woocommerce-message,
 ul.woocommerce-error,
-div.woocommerce-info {
+div.woocommerce-info,
+.wc-block-components-notice-banner {
 	display: none !important;
 }
